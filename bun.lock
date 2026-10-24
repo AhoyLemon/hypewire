@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "starthere",
+      "name": "hypewire",
       "dependencies": {
         "@atproto/api": "^0.29.4",
       },
