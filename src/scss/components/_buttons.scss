@@ -1,0 +1,40 @@
+@use "../abstracts/variables" as vars;
+
+.button {
+  appearance: none;
+  border: 2px solid vars.$copy;
+  border-radius: 999px;
+  background: vars.$paper;
+  color: vars.$copy;
+  font: inherit;
+  font-weight: vars.$bold;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: vars.$copy;
+    color: vars.$paper;
+  }
+
+  &:focus-visible {
+    outline: 3px solid vars.$focus-ring;
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &.primary {
+    background: vars.$accent;
+    border-color: vars.$accent;
+    color: vars.$paper;
+
+    &:hover,
+    &:focus-visible {
+      background: vars.$ink-link;
+      border-color: vars.$ink-link;
+    }
+  }
+}

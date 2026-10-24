@@ -14,8 +14,12 @@
 // LIBRARIES is for third party Scss
 
 // COMPONENTS is for stuff like buttons, cards, callouts, toasts, etc... Essentially - reusable rectangles.
+@use "components/buttons";
+@use "components/controls";
+@use "components/post";
 
 // LAYOUT is for stuff like a grid system, topnav, footer, etc.
+@use "layout/workbench";
 
 // SECTIONS is a stripe (like a hero section) - like a component, but bigger.
 

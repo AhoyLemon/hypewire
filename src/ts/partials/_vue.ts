@@ -2,27 +2,13 @@
  * Vue application setup
  */
 
-// Import Vue from CDN (it should be loaded in the HTML)
-declare const Vue: any;
+import { useWorkbench } from "./_useWorkbench.js";
 
-const { createApp } = Vue;
+// Vue is loaded from a CDN <script> in _javascripts.pug, not bundled.
+declare const Vue: typeof import("vue");
 
-const app = createApp({
-  data() {
-    return {
-      h1: "It works!",
-      h5: "Whenever you're ready, delete this text and start writing code.",
-    };
-  },
-  methods: {
-    // Add your methods here
-  },
-  computed: {
-    // Add your computed properties here
-  },
-  mounted() {
-    // Code to run when the app is mounted
-  },
+const app = Vue.createApp({
+  setup: useWorkbench,
 });
 
 app.mount("#app");
