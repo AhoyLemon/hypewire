@@ -78,20 +78,18 @@ Add it to `_subjects.ts`. Set `plural: true` for plural nouns, `activity` if it 
 
 Create `structures/_yourStructure.ts`, export a `Structure`, and add it to `_corpus.ts`. Use `requires: ["activity"]` if it needs `{subject.activity}`.
 
-Every structure should have its own excerpt, built with `excerptWith({ lede, quote, background, kicker })`. Any part you leave out falls back to the generic pool in `_excerpts.ts`. To mix the generic pool into your own at a lower rate, add it as one weighted option: `lede: ["your line", "another line", w(ledes, 1)]`.
+A structure brings its own excerpt with `excerptWith({ lede, quote, background, kicker })`. Any part you leave out falls back to the generic pool in `_excerpts.ts`. To mix the generic pool into your own at a lower rate, add it as one weighted option: `lede: ["your line", "another line", w(ledes, 1)]`.
 
 When a structure has several different jokes and each headline needs its own matching excerpt, give it `variants` instead of `headline` and `excerpt`. The Study and the Market Panic work this way. Each variant has an `id`, a `label`, an optional `weight`, a `headline`, and an `excerpt`. The workbench lists each variant under its structure, so you can force one.
 
-Not every structure needs the subject. Use it where it earns its place, and let the structure's own material carry the rest.
+### What the engine and tests enforce
 
-### Rules of thumb
-
-- **Specific beats generic.** "A synthwave DJ with the moniker The Inhuman" beats "a musician." If a line could describe anybody, it isn't done yet.
-- **Let people tell on themselves.** The narrator never judges. A quoted person complains, and the attribution quietly reveals they're guilty of the same thing.
-- **Twist the format now and then.** A line like "said {speaker}, sitting." works because everything around it plays it straight.
-- **Put the joke first.** The excerpt almost always gets cut off, so the funny part belongs in the lede and the quote. The background and kicker pools mostly exist to get cut off.
-- **Real brands are cultural signifiers, not targets.** "A brand advocate for Malibu" does more work than "a brand advocate for a rum company," so use them. But never make a real company or person the subject of a made-up claim about what they do. Experts, startups, investors and quoted people are always invented.
-- **Run `bun run test` after editing.** The coverage test renders every structure with every subject and wrapper that fits it, and fails on unfilled tokens, lowercase sentence starts, double spaces, or posts that don't fit.
+- **The cut.** Posts max out at 300 graphemes. The headline is never cut. The excerpt is cut at a word boundary and ends in `…`, so the lede and quote usually show, and the background and kicker usually don't.
+- **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must always fit whole. Keep each one a single sentence. A `!` or `?` inside a quote is fine.
+- **Quote punctuation.** Periods and commas go inside closing quotes (`“like this.”`).
+- **Tokens.** Every `{token}` has to resolve, and a capitalized token has to start each headline and sentence.
+- **Real brands.** They're fine as background detail, but don't make up claims about what a real company or person does. Quoted people, experts, startups and investors are invented.
+- **Run `bun run test` after editing.** The coverage test renders every structure and variant with every subject and wrapper that fits it, and it prints the exact post when something breaks.
 
 ## The workbench
 
