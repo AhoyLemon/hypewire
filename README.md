@@ -95,7 +95,7 @@ When a structure has several different jokes and each headline needs its own mat
 
 `bun run dev` serves a local page for testing the corpus. You can force a structure and/or a subject, type a seed, generate a batch of 20, and open the full excerpt from before the cut. The URL (`?seed=…&structure=…&subject=…`) reproduces whatever is on screen, which is handy when a post comes out broken or perfect.
 
-It's only for local use for now. `.github/workflows/deploy.yml.example` is left as an example on purpose, so nothing gets published.
+It's also published at https://ahoylemon.github.io/hypewire/. `.github/workflows/deploy.yml` builds the site and deploys it to GitHub Pages on every push to `main`, which needs the repo's Pages source set to GitHub Actions.
 
 ## Posting
 
