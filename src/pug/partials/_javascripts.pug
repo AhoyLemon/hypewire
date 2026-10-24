@@ -1,0 +1,11 @@
+.javascripts
+  if testing
+    script(src="https://unpkg.com/vue@3/dist/vue.global.js")
+    script.
+      const testing = true;
+  else
+    script(src="https://unpkg.com/vue@3/dist/vue.global.prod.js")
+    script.
+      const testing = false;
+
+  script(type="module" src="js/min/src/ts/site.js?updated="+lastUpdated)
