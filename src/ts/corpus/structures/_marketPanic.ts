@@ -28,18 +28,16 @@ const trivialFeat: CorpusNode = [
   "Wrote an Email",
   "Remembered to Drink Water",
   "Tied a Shoe",
-  "Went to the Bathroom",
+  "Took a Shit",
   "Parallel Parked",
   "Made Toast",
-  "Found the Car Keys",
+  "Looked At a Restaurant Menu",
   "Replied to a Text",
-  "Read a Whole Paragraph",
-  "Did Long Division",
-  "Took a Nap",
+  "Did Basic Math",
   "Boiled an Egg",
-  "Read a Paper Map",
   "Waited in Line",
-  "Declined a Meeting",
+  "Paid With Cash",
+  "Talked To Their Kids",
 ];
 
 const humanQuotes: CorpusNode = [
@@ -131,13 +129,7 @@ export const marketPanic: Structure = {
           " Without AI",
         ),
         seq("Markets Reel as ", someone, " ", trivialFeat, " Unassisted"),
-        seq(
-          "AI Bubble Wobbles After ",
-          someone,
-          " ",
-          trivialFeat,
-          ", Live, With No Prompt",
-        ),
+        seq("AI Bubble Wobbles After ", someone, " ", trivialFeat),
         seq(
           "Investors Flee AI Stocks After ",
           someone,

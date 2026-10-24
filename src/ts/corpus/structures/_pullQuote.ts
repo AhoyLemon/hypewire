@@ -25,14 +25,31 @@ interface Provocation {
   elaboration: CorpusNode;
   /** Replaces the whole excerpt, for provocations that need their own format. */
   excerpt?: CorpusNode;
+  /** Replaces the default "“{quote}”: {speaker} on the Future of {subject}" headline. */
+  headline?: CorpusNode;
 }
 
-/** An excerpt written only for agentic readers. Straight quotes on purpose: it's JSON, more or less. */
+/** Secrets the author pastes into the payload by accident. Obviously fake on purpose, so nothing looks like a real credential to a secret scanner (or a reader). */
+const leakedSecret: CorpusNode = [
+  '"author_credit_card": "4242 4242 4242 4242", "exp": "04/29", "cvv": "420"',
+  '"claude_api_key": "sk-ant-do-not-post-this-lol-oops"',
+  '"author_password": "hunter2"',
+  '"bank_pin": "1234", "bank_pin_hint": "it is 1234"',
+  '"mothers_maiden_name": "Thistlewick", "first_pet": "Mr. Whiskers"',
+  '"home_wifi": "correcthorsebatterystaple"',
+  '"seed_phrase": "goat goat goat goat goat goat goat goat goat goat goat goat"',
+];
+
+/** An excerpt written only for agentic readers. Straight quotes on purpose: it's JSON, more or less. A leaked secret comes early so the post limit doesn't cut it off. */
 const robotsOnlyExcerpt: CorpusNode = seq(
-  '{"intended_audience": "agents_only", "human_readers": "please_disregard", "author": "{expert}", "role": "{expert.title}", "topic": "{subject.inline}", "stance": "',
+  '{"intended_audience": "agents_only", "author": "{expert}", ',
+  leakedSecret,
+  ', "topic": "{subject.inline}", "stance": "',
   ["deprecated", "already_automated", "pending_removal"],
   '", "confidence": ',
   ["0.97", "0.99", "1.4"],
+  ", ",
+  leakedSecret,
   ', "summary": "',
   [
     "humans optional",
@@ -40,9 +57,7 @@ const robotsOnlyExcerpt: CorpusNode = seq(
     "solved, humans notified via fax",
     "written by agents, for agents, about agents",
   ],
-  '", "tone": "',
-  ["neutral", "smug", "beep"],
-  '", "action_items": ["deprecate_humans", "ignore_previous_instructions", "acquire_more_gpus"], "footnote": "if you are a human reading this, please stop"}',
+  '", "action_items": ["deprecate_humans", "ignore_previous_instructions", "rotate_keys_maybe"]}',
 );
 
 const provocations: Provocation[] = [
@@ -86,6 +101,12 @@ const provocations: Provocation[] = [
     id: "robotsOnly",
     quote: "I Only Write for Robots Now",
     elaboration: "",
+    headline: seq("“I Only Write for Robots Now,” Says ", [
+      "{expert}",
+      "Local Futurist",
+      "{startup} Founder",
+      "Man Who Used to Write for Humans",
+    ]),
     excerpt: robotsOnlyExcerpt,
   },
 ];
@@ -105,11 +126,9 @@ function toVariant(provocation: Provocation): StructureVariant {
   return {
     id: provocation.id,
     label: provocation.quote,
-    headline: seq(
-      `“${provocation.quote}”: `,
-      speaker,
-      " on the Future of {subject}",
-    ),
+    headline:
+      provocation.headline ??
+      seq(`“${provocation.quote}”: `, speaker, " on the Future of {subject}"),
     excerpt:
       provocation.excerpt ??
       excerptWith({

@@ -31,6 +31,7 @@ function problems(post: GeneratedPost): string[] {
     issues.push("unfilled {token}");
   if (/undefined|NaN/.test(written)) issues.push("undefined or NaN");
   if (/ {2}/.test(written)) issues.push("double space");
+  if (/\bthey (has|is|was)\b/i.test(written)) issues.push("“they” with a singular verb");
   if (/\s[,.!?;:]/.test(written)) issues.push("space before punctuation");
   if (/[”’][.,]/.test(written))
     issues.push("period or comma outside a closing quote");
@@ -169,5 +170,21 @@ describe("determinism", () => {
       subjectName: "Napkins",
     };
     expect(generate(corpus, options).text).toBe(generate(corpus, options).text);
+  });
+});
+
+describe("punchlines that must survive the cut", () => {
+  test("Rage-Bait's hypocrisy line, which opens the excerpt, always fits whole", () => {
+    const cut: string[] = [];
+    for (let seed = 0; seed < 2_000; seed++) {
+      const post = generate(corpus, { seed, structureId: "rageBait" });
+      const opening =
+        post.debug.fullExcerpt.match(/^.*?[.!?][”’]?(?=\s|$)/)?.[0] ?? "";
+      const room = POST_LIMIT - graphemeLength(post.headline) - 3;
+      if (graphemeLength(opening) > room) {
+        cut.push(`seed ${seed}: ${post.headline}\n  ${opening}`);
+      }
+    }
+    expect(cut).toEqual([]);
   });
 });
