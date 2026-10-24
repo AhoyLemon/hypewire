@@ -114,25 +114,29 @@ export const cast: CastPools = {
   ],
   // Reads after "in", "Sweeping", and "barred from", so a specific place works as well as a city.
   cities: [
-    "Duluth",
-    "Boise",
-    "Scranton",
-    "Sheboygan",
-    "Fargo",
-    "Tulsa",
-    "Bozeman",
-    "Akron",
-    "Dubuque",
-    "Muncie",
-    "Walla Walla",
-    "Kalamazoo",
-    "Palo Alto",
-    "Brooklyn",
-    "Austin",
-    w("a WeWork in Menlo Park", 0.5),
-    w("a Panera in Scottsdale", 0.5),
-    w("the food court of a dying mall in Omaha", 0.5),
-    w("a Cracker Barrel off I-94", 0.5),
+    { name: "Duluth" },
+    { name: "Boise" },
+    { name: "Scranton" },
+    { name: "Sheboygan" },
+    { name: "Fargo" },
+    { name: "Tulsa" },
+    { name: "Bozeman" },
+    { name: "Akron" },
+    { name: "Dubuque" },
+    { name: "Muncie" },
+    { name: "Walla Walla" },
+    { name: "Kalamazoo" },
+    { name: "Palo Alto" },
+    { name: "Brooklyn" },
+    { name: "Austin" },
+    { name: "a WeWork in Menlo Park", weight: 0.5 },
+    { name: "a Panera in Scottsdale", weight: 0.5 },
+    {
+      name: "the Food Court of a Dying Mall in Omaha",
+      inline: "the food court of a dying mall in Omaha",
+      weight: 0.5,
+    },
+    { name: "a Cracker Barrel off I-94", weight: 0.5 },
   ],
   money: [
     "$40M",
@@ -149,7 +153,7 @@ export const cast: CastPools = {
   //   venue: reads after "in"
   //   catchphrase: something cute they'd post, no end punctuation
   //   quirk: a harmless identifying habit, reads after "Boomers,"
-  //   hypocrisy: one sentence where {speaker} (name plus an age from `ages`) complains about another generation while telling on their own; no sentence breaks before the end, or the never-cut test can't find it
+  //   hypocrisy: one sentence where {speaker} (a spokesperson with an age from `ages`) complains about another generation while telling on their own. It opens the Rage-Bait excerpt, and the tests check it still fits under the longest possible headline
   generations: [
     {
       name: "Millennials",
@@ -319,7 +323,7 @@ export const cast: CastPools = {
           "“Kids today depend on gadgets for everything,” says {speaker}, who needs their grandson to turn on the TV for them.",
           "“Kids today have no manners,” says {speaker}, who just twenty minutes ago called me fat.",
           "“Everybody got a fair shake back then,” says {speaker}, who speaks fondly of how “nice” water fountains were back then.",
-          "“They should get a job,” says {speaker}, a retired factory worker who was originally hired because his boss “liked his handshake.”",
+          "“They should get a job,” says {speaker}, a retired factory worker who was originally hired because the boss “liked that handshake.”",
           "“This country is going to shit,” said {speaker}, shitting.",
           "“People used to know their place,” whispered {speaker}, meaning exactly what you think.",
         ],

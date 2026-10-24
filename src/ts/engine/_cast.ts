@@ -1,6 +1,7 @@
 import { pickWeighted, randomInt, type Rng } from "./_rng.js";
 import { fillTokens, resolveNode } from "./_resolve.js";
 import type {
+  CastPools,
   Corpus,
   Generation,
   Phrase,
@@ -30,7 +31,7 @@ export interface ResolvedGeneration {
   name: string;
   plural: boolean;
   age: number;
-  /** The cast's {person} plus this generation's age: "Juniper Turnblatt, 29". */
+  /** This generation's own spokesperson, name plus age: "Juniper Turnblatt, 29". */
   speaker: string;
   traits: Record<string, string>;
 }
@@ -45,7 +46,7 @@ export interface Cast {
   person: Person & { age: number };
   relative: string;
   startup: string;
-  city: string;
+  city: Phrase;
   money: string;
   age: number;
   percent: number;
@@ -160,7 +161,7 @@ function pickSubject(
 }
 
 /** Name plus age, mostly in newswire style. */
-const SPEAKER_FORMATS: Array<{
+export const SPEAKER_FORMATS: Array<{
   weight: number;
   format: (name: string, age: number) => string;
 }> = [
@@ -169,15 +170,16 @@ const SPEAKER_FORMATS: Array<{
   { weight: 1, format: (name, age) => `${name} (${age})` },
 ];
 
-/** Picks the generation's traits and age. {speaker} inside a trait means this generation's spokesperson, so it's filled here. */
+/** Picks the generation's traits, age, and its own spokesperson, so a speaker's age never contradicts another character's. {speaker} inside a trait is filled here. */
 function resolveGeneration(
   generation: Generation,
-  person: Person,
+  pools: CastPools,
   rng: Rng,
 ): ResolvedGeneration {
   const age = randomInt(generation.ages[0], generation.ages[1], rng);
+  const name = `${resolveNode(pools.firstNames, rng)} ${resolveNode(pools.lastNames, rng)}`;
   const { format } = pickWeighted(SPEAKER_FORMATS, byWeight, rng);
-  const speaker = format(`${person.first} ${person.last}`, age);
+  const speaker = format(name, age);
   const traits = Object.fromEntries(
     Object.entries(generation.traits).map(([key, node]) => [
       key,
@@ -218,8 +220,8 @@ export function pickCast(
 
   return {
     subject,
-    generation: resolveGeneration(generation, person, rng),
-    rival: resolveGeneration(rival, person, rng),
+    generation: resolveGeneration(generation, cast, rng),
+    rival: resolveGeneration(rival, cast, rng),
     model: { name: modelName, new: versions.new, old: versions.old },
     expert: {
       first: resolveNode(cast.firstNames, rng),
@@ -229,7 +231,7 @@ export function pickCast(
     person,
     relative: resolveNode(cast.relatives, rng),
     startup: resolveNode(cast.startups, rng),
-    city: resolveNode(cast.cities, rng),
+    city: pickWeighted(cast.cities, byWeight, rng),
     money: resolveNode(cast.money, rng),
     age: randomInt(15, 23, rng),
     percent: randomInt(51, 97, rng),
@@ -316,7 +318,9 @@ export function castTokens(cast: Cast): TokenMap {
     "person.age": String(person.age),
     relative: cast.relative,
     startup: cast.startup,
-    city: cast.city,
+    // Unlike other phrases, a place keeps its capitals mid-sentence ("Duluth"), so inline only differs when the corpus says so.
+    city: cast.city.name,
+    "city.inline": cast.city.inline ?? cast.city.name,
     money: cast.money,
     age: String(cast.age),
     percent: String(cast.percent),

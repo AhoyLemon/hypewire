@@ -71,7 +71,7 @@ export const stuntPiece: Structure = {
         "I am now legally barred from ",
         [
           "three separate public pools",
-          "{city}",
+          "{city.inline}",
           "every electronics store in the Midwest",
           "my own HOA meetings",
         ],

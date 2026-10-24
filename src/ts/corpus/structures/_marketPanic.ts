@@ -50,7 +50,7 @@ const humanQuotes: CorpusNode = [
 const humanKickers: CorpusNode = [
   "{startup} has formed a task force to make the old way worse.",
   "The human involved has declined all interview requests and would like everyone to calm down.",
-  "Copycat incidents have been reported in {city}.",
+  "Copycat incidents have been reported in {city.inline}.",
 ];
 
 export const marketPanic: Structure = {
@@ -107,7 +107,7 @@ export const marketPanic: Structure = {
       ],
       excerpt: excerptWith({
         lede: [
-          "The panic began when a video surfaced of a man in {city} finishing a task with no assistance whatsoever.",
+          "The panic began when a video surfaced of a man in {city.inline} finishing a task with no assistance whatsoever.",
           "The footage, which shows a human completing a task from start to finish without a single prompt, has been viewed 40 million times.",
           "Analysts called the incident a “catastrophic vulnerability” in the AI economy: things that already worked.",
           "Witnesses say the human didn't even seem proud of it, which analysts found the most chilling part.",

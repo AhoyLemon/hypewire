@@ -114,7 +114,8 @@ export interface CastPools {
   titles: CorpusNode;
   relatives: CorpusNode;
   startups: CorpusNode;
-  cities: CorpusNode;
+  /** `name` is headline case, `inline` is the mid-sentence form (defaults to `name`, unlike other phrases). */
+  cities: Phrase[];
   money: CorpusNode;
   generations: Generation[];
   timeframes: Phrase[];

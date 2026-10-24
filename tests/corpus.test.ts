@@ -3,16 +3,21 @@ import { describe, expect, test } from "bun:test";
 import { corpus } from "../src/ts/corpus/_corpus";
 import {
   canWrap,
+  castTokens,
   resolveSubject,
+  SPEAKER_FORMATS,
   subjectFits,
   wrapperFits,
+  type Cast,
+  type ResolvedGeneration,
 } from "../src/ts/engine/_cast";
 import {
   generate,
   variantsOf,
   type GeneratedPost,
 } from "../src/ts/engine/_generate";
-import { TOKEN_PATTERN } from "../src/ts/engine/_resolve";
+import { fillTokens, TOKEN_PATTERN } from "../src/ts/engine/_resolve";
+import type { CorpusNode, Generation } from "../src/ts/engine/_types";
 import { ELLIPSIS, POST_LIMIT } from "../src/ts/engine/_truncate";
 import { graphemeLength } from "../src/ts/lib/graphemes";
 
@@ -174,53 +179,86 @@ describe("determinism", () => {
   });
 });
 
-/**
- * The first sentence of some text. A ! or ? inside a quote ("Ugh! It's fake!” says…) doesn't end it, but a quote that closes on . ! or ? and is followed by a new sentence does.
- */
-function firstSentence(text: string): string {
-  let inQuote = false;
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    if (char === "“") inQuote = true;
-    if (char === "”") inQuote = false;
-    if (!/[.!?]/.test(char)) continue;
-
-    const closesQuote = text[i + 1] === "”";
-    if (inQuote && !closesQuote) continue;
-    const end = closesQuote ? i + 2 : i + 1;
-    const rest = text.slice(end);
-    if (rest === "" || /^\s+[A-Z“]/.test(rest)) return text.slice(0, end);
-  }
-  return text;
+/** Every leaf string in a pool made of plain options and w() (no seq). */
+function leaves(node: CorpusNode): string[] {
+  if (typeof node === "string") return [node];
+  if (Array.isArray(node)) return node.flatMap(leaves);
+  if ("node" in node) return leaves(node.node);
+  throw new Error("leaves() only handles plain options and w(), not seq()");
 }
 
-describe("punchlines that must survive the cut", () => {
-  test("firstSentence understands quotes", () => {
-    expect(
-      firstSentence("“Ugh! It's fake!” says Greg, 30, at a wedding. Next."),
-    ).toBe("“Ugh! It's fake!” says Greg, 30, at a wedding.");
-    expect(
-      firstSentence(
-        "“What is it? Handouts,” says Greg (74), on the “Nice Face” program. Gen Z",
-      ),
-    ).toBe(
-      "“What is it? Handouts,” says Greg (74), on the “Nice Face” program.",
-    );
-    expect(
-      firstSentence("“Nope,” says Greg, hired for his “handshake.” Gen Z, who"),
-    ).toBe("“Nope,” says Greg, hired for his “handshake.”");
-  });
+function longest(items: string[]): string {
+  return items.reduce(
+    (best, item) => (graphemeLength(item) > graphemeLength(best) ? item : best),
+    "",
+  );
+}
 
-  test("Rage-Bait's hypocrisy line, which opens the excerpt, always fits whole", () => {
+function asResolved(generation: Generation): ResolvedGeneration {
+  const { name, plural } = generation;
+  return { name, plural, age: 0, speaker: "", traits: {} };
+}
+
+/** Cast fields Rage-Bait headlines never use, so blanks are fine. */
+const blankCast: Omit<Cast, "subject" | "generation" | "rival"> = {
+  model: { name: "", new: "", old: "" },
+  expert: { first: "", last: "", title: "" },
+  person: { first: "", last: "", age: 0 },
+  relative: "",
+  startup: "",
+  city: { name: "" },
+  money: "",
+  age: 0,
+  percent: 0,
+  timeframe: { name: "" },
+  group: { name: "" },
+  product: { name: "" },
+};
+
+describe("punchlines that must survive the cut", () => {
+  test("Rage-Bait's hypocrisy line fits whole even under the longest possible headline", () => {
+    const rageBait = corpus.structures.find((s) => s.id === "rageBait");
+    if (!rageBait?.headline) throw new Error("Rage-Bait has no headline");
+    const templates = leaves(rageBait.headline);
+    const pools = corpus.cast;
+    const name = `${longest(leaves(pools.firstNames))} ${longest(leaves(pools.lastNames))}`;
     const cut: string[] = [];
-    for (let seed = 0; seed < 2_000; seed++) {
-      const post = generate(corpus, { seed, structureId: "rageBait" });
-      const opening = firstSentence(post.debug.fullExcerpt);
-      const room = POST_LIMIT - graphemeLength(post.headline) - 3;
+
+    for (const rival of pools.generations) {
+      // The longest opening: every hypocrisy line with the longest name, the oldest age, and the widest format.
+      const speakers = SPEAKER_FORMATS.map(({ format }) =>
+        format(name, rival.ages[1]),
+      );
+      const opening = longest(
+        leaves(rival.traits.hypocrisy).flatMap((line) =>
+          speakers.map((speaker) => fillTokens(line, { speaker })),
+        ),
+      );
+
+      // The longest headline this rival can appear under: every template, partner generation, and subject.
+      const headlines: string[] = [];
+      for (const generation of pools.generations) {
+        if (generation.name === rival.name) continue;
+        for (const subject of corpus.subjects) {
+          const tokens = castTokens({
+            ...blankCast,
+            subject: resolveSubject(subject),
+            generation: asResolved(generation),
+            rival: asResolved(rival),
+          });
+          headlines.push(...templates.map((t) => fillTokens(t, tokens)));
+        }
+      }
+      const headline = longest(headlines);
+
+      const room = POST_LIMIT - graphemeLength(headline) - 3;
       if (graphemeLength(opening) > room) {
-        cut.push(`seed ${seed}: ${post.headline}\n  ${opening}`);
+        cut.push(
+          `${rival.name}: ${graphemeLength(opening)} graphemes, room for ${room}\n  ${headline}\n  ${opening}`,
+        );
       }
     }
+
     expect(cut).toEqual([]);
   });
 });

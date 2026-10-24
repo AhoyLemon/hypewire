@@ -21,7 +21,7 @@ export const ledes: CorpusNode = [
     ["4,000", "600", "nine", "a solid 90"],
     " years, humans have relied on {subject.inline}. ",
     [
-      "A startup in {city} thinks that was the problem.",
+      "A startup in {city.inline} thinks that was the problem.",
       "That ends Tuesday.",
       "{startup} would like a word.",
       "Investors are calling that “a missed opportunity.”",
@@ -94,7 +94,7 @@ export const ledes: CorpusNode = [
     ],
     ", and now we know why.",
   ),
-  "Somewhere in {city}, a dropout who just turned {age} is building the future of {subject.inline}. Nobody can stop them.",
+  "Somewhere in {city.inline}, a dropout who just turned {age} is building the future of {subject.inline}. Nobody can stop them.",
 ];
 
 /** What a pundit says, before the attribution. No closing punctuation, because the attribution adds it. */

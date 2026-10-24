@@ -65,7 +65,7 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 | `{expert}` `{expert.first}` `{expert.last}` `{expert.title}` | Brindle Thistlewick, Chief Vibes Officer |
 | `{person}` `{person.first}` `{person.last}` `{person.age}` | a second fake person, for anecdotes |
 | `{relative}` | Estranged Uncle of AI |
-| `{startup}` `{city}` `{money}` `{age}` `{percent}` | Frothr, Duluth, $40M, 19, 61 |
+| `{startup}` `{city}` `{money}` `{age}` `{percent}` | Frothr, Duluth, $40M, 19, 61. Use `{city}` in headlines and `{city.inline}` mid-sentence. They only differ for places like "the Food Court of a Dying Mall in Omaha" |
 | `{timeframe}` `{group}` `{product}` | each with an `.inline` form for mid-sentence use |
 
 **Capitalize the token to capitalize the output.** The case of the last part of the token decides it: `{subject.Is}` gives "Is" or "Are", and `{Subject}` gives "The Casserole". Use the capitalized form at the start of a headline or sentence.
@@ -85,7 +85,7 @@ When a structure has several different jokes and each headline needs its own mat
 ### What the engine and tests enforce
 
 - **The cut.** Posts max out at 300 graphemes. The headline is never cut. The excerpt is cut at a word boundary and ends in `…`, so the lede and quote usually show, and the background and kicker usually don't.
-- **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must always fit whole. Keep each one a single sentence. A `!` or `?` inside a quote is fine.
+- **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must fit whole, even under the longest possible Rage-Bait headline with the longest name and oldest age. The tests check that worst case directly.
 - **Quote punctuation.** Periods and commas go inside closing quotes (`“like this.”`).
 - **Tokens.** Every `{token}` has to resolve, and a capitalized token has to start each headline and sentence.
 - **Real brands.** They're fine as background detail, but don't make up claims about what a real company or person does. Quoted people, experts, startups and investors are invented.

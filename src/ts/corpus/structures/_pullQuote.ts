@@ -31,7 +31,7 @@ interface Provocation {
 
 /** Secrets the author pastes into the payload by accident. Obviously fake on purpose, so nothing looks like a real credential to a secret scanner (or a reader). */
 const leakedSecret: CorpusNode = [
-  '"author_credit_card": "4242 4242 4242 4242", "exp": "04/29", "cvv": "420"',
+  '"author_credit_card": "1234 5678 9012 3456", "exp": "04/29", "cvv": "420"',
   '"claude_api_key": "sk-ant-do-not-post-this-lol-oops"',
   '"author_password": "hunter2"',
   '"bank_pin": "1234", "bank_pin_hint": "it is 1234"',

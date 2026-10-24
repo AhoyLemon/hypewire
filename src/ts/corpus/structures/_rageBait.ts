@@ -21,8 +21,8 @@ export const rageBait: Structure = {
   excerpt: excerptWith({
     lede: "{rival.hypocrisy}",
     quote: [
-      "{Generation}, {generation.quirk}, {generation.has} gone all in on AI anyway.",
-      "{Generation}, {generation.quirk}, insist{generation.s} {generation.it} did nothing wrong.",
+      "{Generation}, {generation.quirk}, went all in on AI anyway.",
+      "{Generation}, {generation.quirk}, insisted they did nothing wrong.",
       "{Generation}, {generation.quirk}, responded in {generation.venue}, which {rival} could not figure out how to open.",
     ],
     background: [
