@@ -83,7 +83,7 @@ const provocations: Provocation[] = [
     id: "kidsAreAgents",
     quote: "My Kids Are Agents Now, and They're Thriving",
     elaboration:
-      "{expert} says the transition was seamless, and that the children, now billed monthly, have never once asked about {subject.inline}.",
+      "{expert} says the transition was seamless, and that {expert.his} children, now billed monthly, have never once asked about {subject.inline}.",
   },
   {
     id: "books",

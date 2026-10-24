@@ -1,5 +1,5 @@
 import { graphemeLength } from "../lib/graphemes.js";
-import { castTokens, pickCast } from "./_cast.js";
+import { castPronouns, castTokens, pickCast } from "./_cast.js";
 import { fillTokens, resolveNode } from "./_resolve.js";
 import { pickWeighted, randomSeed, seededRng, type Rng } from "./_rng.js";
 import { fitPost } from "./_truncate.js";
@@ -99,13 +99,14 @@ export function generate(
     wrapperId: options.wrapperId,
   });
   const tokens = castTokens(cast);
+  const pronouns = castPronouns(cast);
 
   const headline = fillTokens(
-    resolveNode(variant.headline, rng),
+    resolveNode(variant.headline, rng, pronouns),
     tokens,
   ).trim();
   const fullExcerpt = fillTokens(
-    resolveNode(variant.excerpt ?? corpus.sharedExcerpt, rng),
+    resolveNode(variant.excerpt ?? corpus.sharedExcerpt, rng, pronouns),
     tokens,
   ).trim();
   const { text, excerpt } = fitPost(headline, fullExcerpt);

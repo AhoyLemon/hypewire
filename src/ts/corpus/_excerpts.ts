@@ -125,7 +125,7 @@ export const punditTails: CorpusNode = [
   "from inside a sensory deprivation tank",
   "before bursting into tears, unprompted",
   "to a room that had already emptied",
-  "while being gently restrained by a publicist",
+  "while being gently restrained by {expert.his} publicist",
   "before refusing to elaborate, or blink",
 ];
 

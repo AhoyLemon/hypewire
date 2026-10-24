@@ -18,6 +18,7 @@ Lemon's general comedy preferences (go too far, specific beats generic, people t
 
 - Put the joke in the lede and the quote. The cut usually drops the background and kicker.
 - The subject has to earn its place. A structure doesn't need to mention it, and the Study and the Market Panic deliberately skip the subject-heavy generic pools.
+- Don't write around a cast member's gender. Use a pronoun token or a gendered word ({speaker.his} grandson, a Local {person.Man}). Save `lock()` for gendered words with no neutral twin, like Godfather, draft deferments, or a Guy Named Greg.
 - The narrator never judges. In Rage-Bait, the angry generation's spokesperson gives themselves away through their own attribution (`hypocrisy`), and the generation using AI just gets a harmless `quirk`.
 - Keep the README to the mechanics. Joke-craft notes belong here, not there.
 

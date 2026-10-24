@@ -9,13 +9,26 @@ export interface Sequence {
   readonly seq: readonly CorpusNode[];
 }
 
+export type Pronouns = "he" | "she" | "they";
+
+/** Who can be named in lock(), and their pronouns: { expert: "she" }. The keys match token prefixes. */
+export type PronounMap = Readonly<Record<string, Pronouns>>;
+
+/** An option that only shows up when a cast member uses these pronouns. */
+export interface Locked {
+  readonly who: string;
+  readonly pronouns: Pronouns;
+  readonly node: CorpusNode;
+}
+
 /**
  * The corpus is written with three shapes:
  *   string      -> literal text (may contain {tokens})
  *   array       -> pick ONE option, by weight
  *   seq(...)    -> resolve every part, in order, and join them
  */
-export type CorpusNode = string | Weighted | Sequence | readonly CorpusNode[];
+export type CorpusNode =
+  string | Weighted | Sequence | Locked | readonly CorpusNode[];
 
 /** Marks an option as more (or less) likely than its siblings. */
 export function w(node: CorpusNode, weight: number): Weighted {
@@ -25,6 +38,15 @@ export function w(node: CorpusNode, weight: number): Weighted {
 /** Joins its parts in order. */
 export function seq(...nodes: CorpusNode[]): Sequence {
   return { seq: nodes };
+}
+
+/** Keeps an option out of the pick unless `who` uses these pronouns: lock("expert", "he", "Godfather of AI"). Only works as an option in an array. */
+export function lock(
+  who: string,
+  pronouns: Pronouns,
+  node: CorpusNode,
+): Locked {
+  return { who, pronouns, node };
 }
 
 /** A pool entry with a headline form and an optional mid-sentence form. */
@@ -107,10 +129,22 @@ export interface StructureVariant {
   excerpt?: CorpusNode;
 }
 
+/** A first name and the pronouns of everyone who has it. */
+export interface FirstName {
+  name: string;
+  pronouns: Pronouns;
+  weight?: number;
+}
+
+/** A word that follows a cast member's pronouns, as [he, she, they]. The "he" form names the token: {expert.man}. */
+export type GenderedWord = readonly [he: string, she: string, they: string];
+
 /** Everything picked once per article so the headline and excerpt agree. */
 export interface CastPools {
-  firstNames: CorpusNode;
+  firstNames: FirstName[];
   lastNames: CorpusNode;
+  /** Words like man/woman/person, for {expert.man} and friends. */
+  genderedWords: GenderedWord[];
   titles: CorpusNode;
   relatives: CorpusNode;
   startups: CorpusNode;

@@ -1,4 +1,5 @@
 import {
+  lock,
   seq,
   w,
   type CorpusNode,
@@ -13,14 +14,15 @@ const marketBackground: CorpusNode = [
   "Trading was halted twice, once for volatility and once because everyone needed a minute.",
 ];
 
-/** Someone completely ordinary, in headline case. */
+/** Someone completely ordinary, in headline case. They follow {person}'s pronouns, so a feat can say “{person.His} Kids.” */
 const someone: CorpusNode = [
   w("Someone", 2),
-  "a Guy Named Greg",
-  "a Local Man",
-  "a Woman in {city}",
+  lock("person", "he", "a Guy Named Greg"),
+  "a Local {person.Man}",
+  "a {person.Man} in {city}",
   "an Intern",
   "a Retired Dentist",
+  "{person}",
 ];
 
 /** Something trivial, done without a single prompt. Past tense, headline case. */
@@ -37,7 +39,7 @@ const trivialFeat: CorpusNode = [
   "Boiled an Egg",
   "Waited in Line",
   "Paid With Cash",
-  "Talked To Their Kids",
+  "Talked To {person.His} Kids",
 ];
 
 const humanQuotes: CorpusNode = [
@@ -107,7 +109,7 @@ export const marketPanic: Structure = {
       ],
       excerpt: excerptWith({
         lede: [
-          "The panic began when a video surfaced of a man in {city.inline} finishing a task with no assistance whatsoever.",
+          "The panic began when a video surfaced of a {person.man} in {city.inline} finishing a task with no assistance whatsoever.",
           "The footage, which shows a human completing a task from start to finish without a single prompt, has been viewed 40 million times.",
           "Analysts called the incident a “catastrophic vulnerability” in the AI economy: things that already worked.",
           "Witnesses say the human didn't even seem proud of it, which analysts found the most chilling part.",
@@ -151,7 +153,7 @@ export const marketPanic: Structure = {
         ],
         background: marketBackground,
         kicker: [
-          "The human has asked for privacy, and also a sandwich, which they plan to make themselves.",
+          "The human has asked for privacy, and also a sandwich, which {person.he} plan{person.s} to make {person.himself}.",
           w(humanKickers, 2),
         ],
       }),
@@ -176,7 +178,7 @@ export const marketPanic: Structure = {
           "{expert} has been in a continuous state of panic since 2008 and describes it as “a lifestyle.”",
           "The selloff began at 9:31 a.m., when {expert}, {expert.title} at {startup}, sneezed during a trading call and everyone assumed the worst.",
           "{expert} first sensed something was wrong when the office coffee machine made “a judgmental noise.”",
-          "By noon, {expert} had sold every stock, then the office furniture, then a houseplant that did not technically belong to {expert.first}.",
+          "By noon, {expert} had sold every stock, then the office furniture, then a houseplant that did not technically belong to {expert.him}.",
         ],
         quote: seq(
           "“",

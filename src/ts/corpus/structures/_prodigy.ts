@@ -39,7 +39,7 @@ export const prodigy: Structure = {
       "And Also AI.",
       "And the Moon.",
       "And Also in Your Walls.",
-      "Their Mom Is Very Proud.",
+      "{person.His} Mom Is Very Proud.",
       "Nobody Has Asked Why.",
     ]),
   ],
