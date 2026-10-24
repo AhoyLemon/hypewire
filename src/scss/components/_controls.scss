@@ -26,6 +26,8 @@
 
   select,
   input {
+    width: 100%;
+    min-width: 0;
     font: inherit;
     border: 1px solid vars.$muted;
     border-radius: 6px;
@@ -53,7 +55,8 @@
 }
 
 @container (min-width: 560px) {
+  // minmax(0, ...) stops a long option label from widening its column past the card.
   .controls .fields {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1fr);
   }
 }

@@ -131,7 +131,7 @@ export const cast: CastPools = {
     w("$6", 0.4),
     w("$11.50", 0.3),
   ],
-  // Traits: `venue` reads after "in", `insult` is what others call them, `catchphrase` has no end punctuation, `grievance` is what they're always mad about.
+  // Traits: `venue` reads after "in", `insult` is what others call them, `catchphrase` has no end punctuation, `grievance` is what they're always mad about, and `sin` is what they did and would rather not discuss (past tense, reads after "a generation that").
   generations: [
     {
       name: "Millennials",
@@ -150,14 +150,20 @@ export const cast: CastPools = {
           "renters for life, and they know it",
         ],
         catchphrase: [
-          "I'm literally shaking",
-          "I can't even",
+          "This is literally violence",
+          "I'm just so tired",
           "We were promised jetpacks",
         ],
         grievance: [
           "the housing market",
           "student loans",
           "being blamed for everything",
+        ],
+        sin: [
+          "profited handsomely from accelerated ecological collapse",
+          "turned every hobby into a side hustle",
+          "invented the influencer",
+          "had a single burrito delivered by three separate gig workers",
         ],
       },
     },
@@ -178,11 +184,16 @@ export const cast: CastPools = {
           "people who film themselves crying",
         ],
         catchphrase: [
+          "Respectfully, this is giving obsolete",
           "No cap, this is mid",
-          "It's giving obsolete",
           "OK, Boomer",
         ],
         grievance: ["phone calls", "the job market", "anyone over 25"],
+        sin: [
+          "turned mental health into content",
+          "made fast fashion a personality",
+          "ghosted every job interview they ever landed",
+        ],
       },
     },
     {
@@ -200,14 +211,18 @@ export const cast: CastPools = {
           "people who peaked in 1994",
         ],
         catchphrase: [
-          "Whatever",
-          "Nobody asked us, as usual",
-          "We were ironic about this before it was cool",
+          "Whatever, nobody asked us",
+          "We had to raise ourselves",
+          "This is why we can't have nice things",
         ],
         grievance: [
-          "being ignored",
-          "everyone else",
-          "explaining the internet to their parents and their kids",
+          "Boomers and Millennials, equally",
+          "being forgotten, which they also prefer",
+        ],
+        sin: [
+          "sold out every ideal they had in 1991 for a mortgage",
+          "raised the iPad generation and then blamed the iPad",
+          "invented cynicism and called it a personality",
         ],
       },
     },
@@ -229,13 +244,19 @@ export const cast: CastPools = {
         ],
         catchphrase: [
           "Nobody wants to work anymore",
-          "Back in my day, we did it by hand",
+          "Back in my day, we earned things",
           "Kids today have no respect",
+          "I worked hard for everything I have",
         ],
         grievance: [
           "participation trophies",
           "the self-checkout",
-          "having to tip at a kiosk",
+          "young people being too sensitive",
+        ],
+        sin: [
+          "dismantled the social safety net and then retired on it",
+          "bought four houses on summer-job wages and pulled the ladder up behind them",
+          "voted for every single one of these problems",
         ],
       },
     },
@@ -255,6 +276,11 @@ export const cast: CastPools = {
         ],
         catchphrase: ["Skibidi", "That's so Ohio", "Six seven"],
         grievance: ["bedtime", "screen time limits", "slow Wi-Fi"],
+        sin: [
+          "ruined Ohio as a word",
+          "got raised entirely by autoplay",
+          "screamed at a waiter through an iPad",
+        ],
       },
     },
     {
@@ -272,10 +298,15 @@ export const cast: CastPools = {
           "the only generation that ever fixed anything",
         ],
         catchphrase: [
-          "We didn't storm beaches for this",
-          "In my day, we built computers out of vacuum tubes",
+          "We didn't complain, we just suffered quietly",
+          "Young people don't know what hardship is",
         ],
         grievance: ["young people", "the price of a stamp"],
+        sin: [
+          "built the suburbs and then segregated them",
+          "institutionalized segregation and called it tradition",
+          "invented the nuclear family and the nuclear bomb in the same decade",
+        ],
       },
     },
   ],

@@ -59,7 +59,7 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 | `{subject.s}` | "s" or nothing, for verbs: `Need{subject.s}` |
 | `{subject.activity}` `{subject.activityInline}` | Whittling · whittling (only on subjects that have one) |
 | `{generation}` `{rival}` | Millennials · Gen Z, with the same `.is` / `.was` / `.has` / `.s` grammar. `{rival}` is always the one who's mad |
-| `{generation.venue}` `{generation.insult}` `{generation.catchphrase}` `{generation.grievance}` | Stereotypes from `_castPools.ts` (same keys on `{rival}`): "a Facebook group with 40,000 members", "people who still print their emails" |
+| `{generation.venue}` `{generation.insult}` `{generation.catchphrase}` `{generation.grievance}` `{generation.sin}` | Stereotypes from `_castPools.ts` (same keys on `{rival}`): "a Facebook group with 40,000 members", "people who still print their emails", "dismantled the social safety net and then retired on it". Generations take verb agreement from their name ("Gen Z Is") but always use "they" pronouns |
 | `{model}` `{model.new}` `{model.old}` | Mindloaf · Mindloaf 5 · Mindloaf 4.9 |
 | `{expert}` `{expert.first}` `{expert.last}` `{expert.title}` | Brindle Thistlewick, Chief Vibes Officer |
 | `{person}` `{person.first}` `{person.last}` `{person.age}` | a second fake person, for anecdotes |

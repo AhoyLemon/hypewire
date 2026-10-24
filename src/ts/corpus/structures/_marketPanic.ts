@@ -1,4 +1,9 @@
-import { seq, type CorpusNode, type Structure } from "../../engine/_types.js";
+import {
+  seq,
+  w,
+  type CorpusNode,
+  type Structure,
+} from "../../engine/_types.js";
 import { excerptWith, punditTails } from "../_excerpts.js";
 
 // The Market Panic skips the generic pools, so the subject only shows up where a headline puts it.
@@ -6,6 +11,30 @@ const marketBackground: CorpusNode = [
   "Futures in everything else also fell, out of sympathy.",
   "Several hedge funds have reportedly pivoted to holding cash, and each other.",
   "Trading was halted twice, once for volatility and once because everyone needed a minute.",
+];
+
+/** Someone completely ordinary, in headline case. */
+const someone: CorpusNode = [
+  w("Someone", 2),
+  "a Guy Named Greg",
+  "a Local Man",
+  "a Woman in {city}",
+  "an Intern",
+  "a Retired Dentist",
+];
+
+/** Something trivial, done without a single prompt. Past tense, headline case. */
+const trivialFeat: CorpusNode = [
+  "Wrote an Email",
+  "Remembered to Drink Water",
+  "Tied a Shoe",
+  "Went to the Bathroom",
+  "Parallel Parked",
+  "Made Toast",
+  "Found the Car Keys",
+  "Replied to a Text",
+  "Read a Whole Paragraph",
+  "Did Long Division",
 ];
 
 export const marketPanic: Structure = {
@@ -44,37 +73,47 @@ export const marketPanic: Structure = {
     },
     {
       id: "humansWin",
-      label: "The non-AI thing wins",
+      label: "A human did something",
       headline: [
-        "AI Stocks Plunge as Report Suggests {subject} Work{subject.s} Fine Without AI",
+        w(
+          "Investors Panic After Viral Video Shows a Human Successfully Doing Something",
+          2,
+        ),
         seq(
           "Tech Stocks Crater After ",
-          [
-            "a Pencil",
-            "a Golden Retriever",
-            "a Guy Named Greg",
-            "an Abacus",
-            "a Grandmother With a Recipe Card",
-          ],
-          " Outperforms Leading AI Model",
+          someone,
+          " ",
+          trivialFeat,
+          " Without AI",
         ),
-        "Investors Panic After Viral Video Shows a Human Successfully Doing Something",
+        seq(
+          "AI Stocks Plunge as Footage Emerges of ",
+          someone,
+          " Doing Something Unassisted",
+        ),
+        w(
+          "AI Stocks Plunge as Report Suggests {subject} Work{subject.s} Fine Without AI",
+          0.5,
+        ),
       ],
       excerpt: excerptWith({
         lede: [
           "The panic began when a video surfaced of a man in {city} finishing a task with no assistance whatsoever.",
+          "The footage, which shows a human completing a task from start to finish without a single prompt, has been viewed 40 million times.",
           "Analysts called the incident a “catastrophic vulnerability” in the AI economy: things that already worked.",
-          "The non-AI participant finished in under a minute, on the first try, without asking a single clarifying question.",
+          "Witnesses say the human didn't even seem proud of it, which analysts found the most chilling part.",
         ],
         quote: [
           "“If things can just work on their own, what are we even doing here?” asks {expert}, {expert.title} at {startup}, visibly shaken.",
           "“This is the darkest day for innovation since the invention of the off switch,” says {expert} of {startup}.",
-          "“We spent $40 billion to avoid this exact outcome,” says {expert} of {startup}, gripping a pencil.",
+          "“We spent $40 billion to make sure this never happened,” says {expert} of {startup}, gripping a pencil.",
+          "“They just did it. Who told them they could just do it?” asks {expert}, {expert.title} at {startup}.",
         ],
         background: marketBackground,
         kicker: [
           "{startup} has formed a task force to make the old way worse.",
           "The human involved has declined all interview requests and would like everyone to calm down.",
+          "Copycat incidents have been reported in {city}.",
         ],
       }),
     },
@@ -86,12 +125,19 @@ export const marketPanic: Structure = {
         "“Sell Everything,” Says Analyst Who Says “Sell Everything” Every Day",
         "Markets Tumble After Analyst Has a Bad Feeling",
         "Wall Street Panics for No Clear Reason, Again",
+        "Hedge Fund Manager Liquidates Everything After Seeing a Weird Cloud",
+        "Markets Rattled After Analyst Reads a Headline, Any Headline",
+        "Investor Sells Entire Portfolio Over a Dream About a Chatbot",
+        "“Something's Coming,” Warns Analyst, Gesturing Vaguely",
       ],
       excerpt: excerptWith({
         lede: [
           "{expert}, who has correctly predicted 41 of the last three crashes, says the panic began “around breakfast.”",
           "Asked what specifically caused the alarm, {expert}, {expert.title} at {startup}, gestured at the sky and said “all of it.”",
           "{expert} has been in a continuous state of panic since 2008 and describes it as “a lifestyle.”",
+          "The selloff began at 9:31 a.m., when {expert}, {expert.title} at {startup}, sneezed during a trading call and everyone assumed the worst.",
+          "{expert} first sensed something was wrong when the office coffee machine made “a judgmental noise.”",
+          "By noon, {expert} had sold every stock, then the office furniture, then a houseplant that did not technically belong to {expert.first}.",
         ],
         quote: seq(
           "“",
@@ -99,16 +145,24 @@ export const marketPanic: Structure = {
             "I can't explain it. I just know we're doomed",
             "Something is about to happen, or already happened, or won't",
             "It's the AI. Or the moon. Something is off",
+            "Nobody panics as well as I do, and I am panicking",
+            "I don't need a reason. Reasons are for people who aren't already selling",
+            "Buy gold. No, sell gold. Buy a boat. Sell the boat",
           ],
           ",” says {expert.last}, ",
           punditTails,
           ".",
         ),
-        background: marketBackground,
+        background: [
+          "Several other analysts joined the panic, mostly to feel included.",
+          w(marketBackground, 2),
+        ],
         kicker: [
           "{expert.last} expects to panic again tomorrow, weather permitting.",
           "Markets recovered by lunch. {expert.last} did not.",
           "{expert.last}'s therapist has asked not to be named.",
+          "{expert.last} has already scheduled tomorrow's panic for 9:30 a.m. Eastern.",
+          "Asked if things would be okay, {expert.last} laughed for a long time and then hung up.",
         ],
       }),
     },

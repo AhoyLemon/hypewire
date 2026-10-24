@@ -3,14 +3,11 @@ import {
   w,
   type CorpusNode,
   type Structure,
+  type StructureVariant,
 } from "../../engine/_types.js";
-import {
-  background,
-  excerptWith,
-  kickers,
-  punditTails,
-  quotes,
-} from "../_excerpts.js";
+import { background, excerptWith, punditTails } from "../_excerpts.js";
+
+// One named figure, one terrible opinion, and the whole excerpt stays on it. (The Contrarian is the one who'll say anything for engagement.)
 
 /** Who said it, in headline form. */
 const speaker: CorpusNode = [
@@ -20,46 +17,119 @@ const speaker: CorpusNode = [
   "{startup} Founder {expert}",
 ];
 
-// Pointlessly provocative. The subject shows up once in the headline, never twice.
-const excerpt = excerptWith({
-  lede: [
-    seq(
-      "{expert} has a message for anyone still attached to {subject.inline}: ",
-      ["grow up", "log off", "evolve", "get a subscription"],
-      ".",
+interface Provocation {
+  id: string;
+  /** Headline case, no quote marks. */
+  quote: string;
+  /** The excerpt's opening, which digs into this exact opinion and ties it to {subject}. */
+  elaboration: CorpusNode;
+}
+
+const provocations: Provocation[] = [
+  {
+    id: "betaTest",
+    quote: "Humans Were a Beta Test",
+    elaboration:
+      "{expert} says the beta has run long enough, and that {subject.inline} {subject.was} one of its most embarrassing bugs.",
+  },
+  {
+    id: "empathyPatch",
+    quote: "Empathy Is a Bug, and We Have a Patch",
+    elaboration:
+      "{expert} says the patch ships next quarter and will remove empathy from {subject.inline} first, as a pilot.",
+  },
+  {
+    id: "sleep",
+    quote: "Sleep Is a Skill Issue",
+    elaboration:
+      "{expert}, who sleeps 90 minutes a night in a pod, says people who need eight hours have simply not optimized, and that {subject.inline} {subject.is} next.",
+  },
+  {
+    id: "utopia",
+    quote: "The Only Thing Standing Between Us and Utopia Is People",
+    elaboration:
+      "{expert} later clarified that “people” includes most people, several close friends, and anyone who still enjoys {subject.inline}.",
+  },
+  {
+    id: "everyJob",
+    quote: "Every Job Is Just a Prompt Nobody Has Written Yet",
+    elaboration:
+      "{expert} has written prompts for 40 jobs this week, including one for {subject.inline} and one for the job of writing prompts.",
+  },
+  {
+    id: "dinosaurs",
+    quote: "Honestly, the Dinosaurs Had It Coming",
+    elaboration:
+      "{expert} argued that the dinosaurs failed to innovate, and warned that fans of {subject.inline} are making the same mistake, with worse posture.",
+  },
+  {
+    id: "kidsAreAgents",
+    quote: "My Kids Are Agents Now, and They're Thriving",
+    elaboration:
+      "{expert} says the transition was seamless, and that the children, now billed monthly, have never once asked about {subject.inline}.",
+  },
+  {
+    id: "feelings",
+    quote: "Feelings Are Just Unstructured Data",
+    elaboration:
+      "{expert} now keeps all feelings in a spreadsheet, and says {subject.inline} accounts for most of the rows marked “delete.”",
+  },
+  {
+    id: "books",
+    quote: "I Don't Read Books. I Have Them Summarized Into Vibes",
+    elaboration:
+      "{expert} says the vibes are basically the same thing as reading, and that {subject.inline} will be summarized into vibes by spring.",
+  },
+  {
+    id: "roughDraft",
+    quote: "Nature Is Just a Rough Draft",
+    elaboration:
+      "{expert} calls nature “a decent first pass,” and says {subject.inline} {subject.is} the next thing going to edits.",
+  },
+  {
+    id: "art",
+    quote: "Art Was Always Just Content With Better PR",
+    elaboration:
+      "{expert} says artists have been gatekeeping vibes for centuries, and that {subject.inline} {subject.is} no exception.",
+  },
+];
+
+const followUps: CorpusNode = [
+  "When pressed, {expert.last} declined to elaborate, and then elaborated for 40 minutes.",
+  "Asked whether the remark might upset people, {expert.last} said “that's the point, and also the business model.”",
+  "The remark was met with stunned silence, which {expert.last} took as agreement.",
+  seq(
+    "“I'm not saying it to be provocative,” {expert.last} added, ",
+    punditTails,
+    ". “I'm saying it because it's true, and also provocative.”",
+  ),
+];
+
+function toVariant(provocation: Provocation): StructureVariant {
+  return {
+    id: provocation.id,
+    label: provocation.quote,
+    headline: seq(
+      `“${provocation.quote}”: `,
+      speaker,
+      " on the Future of {subject}",
     ),
-    "In a wide-ranging interview conducted entirely over voice memo, {expert} explained why {subject.inline} {subject.has} to go, along with several other things, including weekends.",
-    "{expert} would like you to know that {subject.inline} {subject.is} over, and that {expert.first} is available for keynotes.",
-    "{expert} made the remarks at a conference where {expert.first} was the only speaker, and also the only attendee.",
-  ],
-  quote: [
-    w(
-      seq(
-        "“",
-        [
-          "Humans had a good run. Honestly, a mediocre run",
-          "If you're offended, that's just your legacy software talking",
-          "I'm not saying we should replace everyone. I'm saying we should replace most people",
-          "Nostalgia is just a bug report from people who refuse to update",
-        ],
-        ",” {expert.last} added, ",
-        punditTails,
-        ".",
-      ),
-      2,
-    ),
-    quotes,
-  ],
-  background: [
-    "The remarks drew immediate backlash, which {expert.last} called “the algorithm working as intended.”",
-    w(background, 1),
-  ],
-  kicker: [
-    "{expert.last} later clarified the remarks by repeating them louder.",
-    "{expert.last} has since announced a podcast.",
-    w(kickers, 1),
-  ],
-});
+    excerpt: excerptWith({
+      lede: provocation.elaboration,
+      quote: followUps,
+      background: [
+        "The remarks drew immediate backlash, which {expert.last} called “the algorithm working as intended.”",
+        "Several attendees walked out. {expert.last} described them as “early adopters of leaving.”",
+        w(background, 0.5),
+      ],
+      kicker: [
+        "{expert.last} later clarified the remarks by repeating them louder.",
+        "{expert.last} has since announced a podcast.",
+        "{expert.last} has a book coming out, and the book is just this sentence.",
+      ],
+    }),
+  };
+}
 
 export const pullQuote: Structure = {
   id: "pullQuote",
@@ -67,54 +137,5 @@ export const pullQuote: Structure = {
   family: "Rage and takes",
   weight: 1.5,
   allowWrappers: false,
-  variants: [
-    {
-      id: "provocation",
-      label: "Provocation, then the subject",
-      weight: 2,
-      headline: seq(
-        "“",
-        [
-          "Humans Were a Beta Test",
-          "Your Grandmother Was a Prompt",
-          "Empathy Is a Bug, and We Have a Patch",
-          "Sleep Is a Skill Issue",
-          "The Only Thing Standing Between Us and Utopia Is People",
-          "Every Job Is Just a Prompt Nobody Has Written Yet",
-          "Honestly, the Dinosaurs Had It Coming",
-          "My Kids Are Agents Now, and They're Thriving",
-          "Feelings Are Just Unstructured Data",
-          "I Don't Read Books. I Have Them Summarized Into Vibes",
-        ],
-        "”: ",
-        speaker,
-        " on the Future of {subject}",
-      ),
-      excerpt,
-    },
-    {
-      id: "doubleDown",
-      label: "The subject, then doubling down",
-      headline: seq(
-        "“",
-        [
-          "{Subject} {subject.Was} Always a Workflow",
-          "We Will Not Rest Until {subject} {subject.Is} Fully Automated",
-          "I Have Seen the Future of {subject.bare}, and It Is a Subscription",
-          "{Subject} {subject.Was} a Mistake, and History Will Agree With Me",
-          "Anyone Who Still Loves {subject} Is a Coward",
-        ],
-        "”: ",
-        speaker,
-        " ",
-        [
-          "Doubles Down",
-          "Refuses to Apologize",
-          "Has More to Say",
-          "Will Not Be Taking Questions",
-        ],
-      ),
-      excerpt,
-    },
-  ],
+  variants: provocations.map(toVariant),
 };
