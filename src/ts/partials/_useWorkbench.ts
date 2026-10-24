@@ -79,15 +79,21 @@ export function useWorkbench(): Workbench {
   const batch = ref<BatchItem[]>([]);
   const error = ref("");
 
-  const selection = (): Selection => ({ structureId: structureId.value, subjectName: subjectName.value });
+  const selection = (): Selection => ({
+    structureId: structureId.value,
+    subjectName: subjectName.value,
+  });
 
   const compatibleSubjects = computed(() => {
     const structure = corpus.structures.find((s) => s.id === structureId.value);
-    return structure ? corpus.subjects.filter((s) => subjectFits(s, structure)) : corpus.subjects;
+    return structure
+      ? corpus.subjects.filter((s) => subjectFits(s, structure))
+      : corpus.subjects;
   });
 
   watch(compatibleSubjects, (subjects) => {
-    if (!subjects.some((s) => s.name === subjectName.value)) subjectName.value = "";
+    if (!subjects.some((s) => s.name === subjectName.value))
+      subjectName.value = "";
   });
 
   const meterState = computed(() => {
@@ -121,7 +127,11 @@ export function useWorkbench(): Workbench {
     for (let i = 0; i < BATCH_SIZE; i++) {
       const seed = randomSeed();
       try {
-        items.push({ seed, post: generateWith(seed), href: buildHref(seed, selection()) });
+        items.push({
+          seed,
+          post: generateWith(seed),
+          href: buildHref(seed, selection()),
+        });
       } catch (err) {
         console.warn(`Seed ${seed} failed:`, err);
       }

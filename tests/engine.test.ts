@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import { applyWrapper, resolveSubject } from "../src/ts/engine/_cast";
+import {
+  applyWrapper,
+  resolveSubject,
+  wrapperFits,
+} from "../src/ts/engine/_cast";
 import { fillTokens, resolveNode } from "../src/ts/engine/_resolve";
 import { seededRng } from "../src/ts/engine/_rng";
 import { seq, w } from "../src/ts/engine/_types";
@@ -28,26 +32,39 @@ describe("resolveNode", () => {
     const rng = seededRng(1);
     const node = [w("heavy", 9), "light"];
     let heavy = 0;
-    for (let i = 0; i < 10_000; i++) if (resolveNode(node, rng) === "heavy") heavy++;
+    for (let i = 0; i < 10_000; i++)
+      if (resolveNode(node, rng) === "heavy") heavy++;
     expect(heavy / 10_000).toBeGreaterThan(0.85);
     expect(heavy / 10_000).toBeLessThan(0.95);
   });
 });
 
 describe("fillTokens", () => {
-  const tokens = { subject: "the Casserole", "subject.is": "is", "subject.inline": "the casserole" };
+  const tokens = {
+    subject: "the Casserole",
+    "subject.is": "is",
+    "subject.inline": "the casserole",
+  };
 
   test("fills known tokens", () => {
-    expect(fillTokens("The End of {subject}", tokens)).toBe("The End of the Casserole");
+    expect(fillTokens("The End of {subject}", tokens)).toBe(
+      "The End of the Casserole",
+    );
   });
 
   test("capitalizes the output when the token's last segment is capitalized", () => {
-    expect(fillTokens("{Subject} {subject.Is} Dead", tokens)).toBe("The Casserole Is Dead");
-    expect(fillTokens("{subject.Inline} {subject.is} over.", tokens)).toBe("The casserole is over.");
+    expect(fillTokens("{Subject} {subject.Is} Dead", tokens)).toBe(
+      "The Casserole Is Dead",
+    );
+    expect(fillTokens("{subject.Inline} {subject.is} over.", tokens)).toBe(
+      "The casserole is over.",
+    );
   });
 
   test("leaves unknown tokens alone so tests can catch them", () => {
-    expect(fillTokens("{nope} and {subject.nope}", tokens)).toBe("{nope} and {subject.nope}");
+    expect(fillTokens("{nope} and {subject.nope}", tokens)).toBe(
+      "{nope} and {subject.nope}",
+    );
   });
 });
 
@@ -65,17 +82,52 @@ describe("seededRng", () => {
 
 describe("applyWrapper", () => {
   test("wraps the bare name, and wrapped subjects are singular with no activity", () => {
-    const napkins = resolveSubject({ name: "Napkins", plural: true, activity: "Folding" });
-    const wrapped = applyWrapper(napkins, { id: "big", name: "Big {bare}", inline: "Big {bare}" });
-    expect(wrapped).toMatchObject({ name: "Big Napkins", inline: "Big Napkins", plural: false, wrapperId: "big" });
+    const napkins = resolveSubject({
+      name: "Napkins",
+      plural: true,
+      activity: "Folding",
+    });
+    const wrapped = applyWrapper(napkins, {
+      id: "big",
+      name: "Big {bare}",
+      inline: "Big {bare}",
+    });
+    expect(wrapped).toMatchObject({
+      name: "Big Napkins",
+      inline: "Big Napkins",
+      plural: false,
+      wrapperId: "big",
+    });
     expect(wrapped.activity).toBeUndefined();
   });
 
   test("drops a leading 'the' before wrapping", () => {
     const casserole = resolveSubject({ name: "the Casserole" });
-    const wrapped = applyWrapper(casserole, { id: "economy", name: "the {bare} Economy", inline: "the {bareInline} economy" });
+    const wrapped = applyWrapper(casserole, {
+      id: "economy",
+      name: "the {bare} Economy",
+      inline: "the {bareInline} economy",
+    });
     expect(wrapped.name).toBe("the Casserole Economy");
     expect(wrapped.inline).toBe("the casserole economy");
     expect(wrapped.bare).toBe("Casserole Economy");
+  });
+
+  test("singular-only wrappers skip plural subjects, so nothing reads “Bowling Leagues Culture”", () => {
+    const culture = {
+      id: "culture",
+      name: "{bare} Culture",
+      inline: "{bareInline} culture",
+      allowPlural: false,
+    };
+    expect(
+      wrapperFits(
+        culture,
+        resolveSubject({ name: "Bowling Leagues", plural: true }),
+      ),
+    ).toBe(false);
+    expect(wrapperFits(culture, resolveSubject({ name: "Small Talk" }))).toBe(
+      true,
+    );
   });
 });

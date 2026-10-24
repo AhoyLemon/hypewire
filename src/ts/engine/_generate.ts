@@ -41,7 +41,10 @@ function findStructure(corpus: Corpus, id: string): Structure {
 }
 
 /** Picks a structure, picks a cast, resolves the headline and excerpt, and cuts the excerpt to fit. */
-export function generate(corpus: Corpus, options: GenerateOptions = {}): GeneratedPost {
+export function generate(
+  corpus: Corpus,
+  options: GenerateOptions = {},
+): GeneratedPost {
   const seed = options.rng ? null : (options.seed ?? randomSeed());
   const rng = options.rng ?? seededRng(seed ?? 0);
 
@@ -55,8 +58,14 @@ export function generate(corpus: Corpus, options: GenerateOptions = {}): Generat
   });
   const tokens = castTokens(cast);
 
-  const headline = fillTokens(resolveNode(structure.headline, rng), tokens).trim();
-  const fullExcerpt = fillTokens(resolveNode(structure.excerpt ?? corpus.sharedExcerpt, rng), tokens).trim();
+  const headline = fillTokens(
+    resolveNode(structure.headline, rng),
+    tokens,
+  ).trim();
+  const fullExcerpt = fillTokens(
+    resolveNode(structure.excerpt ?? corpus.sharedExcerpt, rng),
+    tokens,
+  ).trim();
   const { text, excerpt } = fitPost(headline, fullExcerpt);
 
   return {

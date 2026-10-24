@@ -1,6 +1,14 @@
 import { pickWeighted, randomInt, type Rng } from "./_rng.js";
 import { fillTokens, resolveNode } from "./_resolve.js";
-import type { Corpus, Generation, Phrase, Structure, Subject, TokenMap, Wrapper } from "./_types.js";
+import type {
+  Corpus,
+  Generation,
+  Phrase,
+  Structure,
+  Subject,
+  TokenMap,
+  Wrapper,
+} from "./_types.js";
 
 /** A subject after defaults (and any wrapper) are applied. */
 export interface ResolvedSubject {
@@ -49,11 +57,23 @@ function inlineOf(item: { name: string; inline?: string }): string {
 }
 
 export function subjectFits(subject: Subject, structure: Structure): boolean {
-  return (structure.requires ?? []).every((field) => subject[field] !== undefined);
+  return (structure.requires ?? []).every(
+    (field) => subject[field] !== undefined,
+  );
 }
 
 export function canWrap(structure: Structure): boolean {
-  return structure.allowWrappers !== false && !(structure.requires ?? []).includes("activity");
+  return (
+    structure.allowWrappers !== false &&
+    !(structure.requires ?? []).includes("activity")
+  );
+}
+
+export function wrapperFits(
+  wrapper: Wrapper,
+  subject: ResolvedSubject,
+): boolean {
+  return wrapper.allowPlural !== false || !subject.plural;
 }
 
 export function resolveSubject(subject: Subject): ResolvedSubject {
@@ -68,8 +88,14 @@ export function resolveSubject(subject: Subject): ResolvedSubject {
 }
 
 /** "the Casserole" + "Big {bare}" -> "Big Casserole". Wrapped subjects are singular and lose their activity. */
-export function applyWrapper(subject: ResolvedSubject, wrapper: Wrapper): ResolvedSubject {
-  const parts = { bare: subject.bare, bareInline: stripArticle(subject.inline) };
+export function applyWrapper(
+  subject: ResolvedSubject,
+  wrapper: Wrapper,
+): ResolvedSubject {
+  const parts = {
+    bare: subject.bare,
+    bareInline: stripArticle(subject.inline),
+  };
   const name = fillTokens(wrapper.name, parts);
   return {
     name,
@@ -80,12 +106,20 @@ export function applyWrapper(subject: ResolvedSubject, wrapper: Wrapper): Resolv
   };
 }
 
-function pickSubject(corpus: Corpus, structure: Structure, rng: Rng, overrides: CastOverrides): ResolvedSubject {
+function pickSubject(
+  corpus: Corpus,
+  structure: Structure,
+  rng: Rng,
+  overrides: CastOverrides,
+): ResolvedSubject {
   let subject: Subject;
   if (overrides.subjectName !== undefined) {
     const found = corpus.subjects.find((s) => s.name === overrides.subjectName);
     if (!found) throw new Error(`Unknown subject "${overrides.subjectName}"`);
-    if (!subjectFits(found, structure)) throw new Error(`Subject "${found.name}" doesn't fit structure "${structure.id}"`);
+    if (!subjectFits(found, structure))
+      throw new Error(
+        `Subject "${found.name}" doesn't fit structure "${structure.id}"`,
+      );
     subject = found;
   } else {
     subject = pickWeighted(
@@ -101,15 +135,25 @@ function pickSubject(corpus: Corpus, structure: Structure, rng: Rng, overrides: 
   if (overrides.wrapperId !== undefined) {
     const wrapper = corpus.wrappers.find((wr) => wr.id === overrides.wrapperId);
     if (!wrapper) throw new Error(`Unknown wrapper "${overrides.wrapperId}"`);
+    if (!wrapperFits(wrapper, resolved))
+      throw new Error(
+        `Wrapper "${wrapper.id}" doesn't fit plural subject "${resolved.name}"`,
+      );
     return applyWrapper(resolved, wrapper);
   }
 
-  if (rng() >= corpus.wrapperChance) return resolved;
-  return applyWrapper(resolved, pickWeighted(corpus.wrappers, byWeight, rng));
+  const fitting = corpus.wrappers.filter((wr) => wrapperFits(wr, resolved));
+  if (rng() >= corpus.wrapperChance || fitting.length === 0) return resolved;
+  return applyWrapper(resolved, pickWeighted(fitting, byWeight, rng));
 }
 
 /** Picks every shared detail once, so the headline and excerpt agree. */
-export function pickCast(corpus: Corpus, structure: Structure, rng: Rng, overrides: CastOverrides = {}): Cast {
+export function pickCast(
+  corpus: Corpus,
+  structure: Structure,
+  rng: Rng,
+  overrides: CastOverrides = {},
+): Cast {
   const { cast } = corpus;
   const subject = pickSubject(corpus, structure, rng, overrides);
   const generation = pickWeighted(cast.generations, byWeight, rng);
@@ -145,12 +189,32 @@ export function pickCast(corpus: Corpus, structure: Structure, rng: Rng, overrid
   };
 }
 
-const SINGULAR = { is: "is", isnt: "isn't", was: "was", has: "has", it: "it", its: "it's", them: "it", s: "s" };
-const PLURAL = { is: "are", isnt: "aren't", was: "were", has: "have", it: "they", its: "they're", them: "them", s: "" };
+const SINGULAR = {
+  is: "is",
+  isnt: "isn't",
+  was: "was",
+  has: "has",
+  it: "it",
+  its: "it's",
+  them: "it",
+  s: "s",
+};
+const PLURAL = {
+  is: "are",
+  isnt: "aren't",
+  was: "were",
+  has: "have",
+  it: "they",
+  its: "they're",
+  them: "them",
+  s: "",
+};
 
 function grammarTokens(prefix: string, plural: boolean): TokenMap {
   const forms = plural ? PLURAL : SINGULAR;
-  return Object.fromEntries(Object.entries(forms).map(([key, value]) => [`${prefix}.${key}`, value]));
+  return Object.fromEntries(
+    Object.entries(forms).map(([key, value]) => [`${prefix}.${key}`, value]),
+  );
 }
 
 function phraseTokens(prefix: string, phrase: Phrase): TokenMap {
@@ -164,6 +228,7 @@ export function castTokens(cast: Cast): TokenMap {
     subject: subject.name,
     "subject.bare": subject.bare,
     "subject.inline": subject.inline,
+    "subject.bareInline": stripArticle(subject.inline),
     ...grammarTokens("subject", subject.plural),
     generation: cast.generation.name,
     ...grammarTokens("generation", cast.generation.plural),

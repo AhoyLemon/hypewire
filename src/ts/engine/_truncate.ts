@@ -28,9 +28,20 @@ function cutToWord(text: string, budget: number): string {
 /**
  * Builds "headline, blank line, excerpt…" within the limit. The headline is never cut. The excerpt runs until it hits the limit, then ends with an ellipsis, even when it would have fit, so every post reads like a news summary.
  */
-export function fitPost(headline: string, excerpt: string, limit: number = POST_LIMIT): FittedPost {
-  const budget = limit - graphemeLength(headline) - graphemeLength(SEPARATOR) - graphemeLength(ELLIPSIS);
-  if (budget <= 0) throw new Error(`Headline is too long for a ${limit}-grapheme post: "${headline}"`);
+export function fitPost(
+  headline: string,
+  excerpt: string,
+  limit: number = POST_LIMIT,
+): FittedPost {
+  const budget =
+    limit -
+    graphemeLength(headline) -
+    graphemeLength(SEPARATOR) -
+    graphemeLength(ELLIPSIS);
+  if (budget <= 0)
+    throw new Error(
+      `Headline is too long for a ${limit}-grapheme post: "${headline}"`,
+    );
 
   const cut = cutToWord(excerpt.trim(), budget).replace(TRAILING_JUNK, "");
   const fitted = cut + ELLIPSIS;

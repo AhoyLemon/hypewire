@@ -19,8 +19,13 @@ export function randomSeed(): number {
 }
 
 /** Picks one item, where heavier items are proportionally more likely. Weights default to 1. */
-export function pickWeighted<T>(items: readonly T[], weightOf: (item: T) => number, rng: Rng): T {
-  if (items.length === 0) throw new Error("pickWeighted called with an empty list");
+export function pickWeighted<T>(
+  items: readonly T[],
+  weightOf: (item: T) => number,
+  rng: Rng,
+): T {
+  if (items.length === 0)
+    throw new Error("pickWeighted called with an empty list");
 
   const total = items.reduce((sum, item) => sum + weightOf(item), 0);
   let roll = rng() * total;

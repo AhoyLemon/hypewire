@@ -14,7 +14,11 @@ for (let i = 0; i < count; i++) {
   const { seed, structureLabel, wrapperId, graphemes } = post.debug;
   const wrapper = wrapperId ? ` · wrapper: ${wrapperId}` : "";
 
-  console.log(chalk.dim(`seed ${seed} · ${structureLabel}${wrapper} · ${graphemes}/${POST_LIMIT}`));
+  console.log(
+    chalk.dim(
+      `seed ${seed} · ${structureLabel}${wrapper} · ${graphemes}/${POST_LIMIT}`,
+    ),
+  );
   console.log(chalk.bold(post.headline));
   console.log(`${post.excerpt}\n`);
 }

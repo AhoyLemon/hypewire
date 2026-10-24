@@ -40,6 +40,10 @@ export const stuntPiece: Structure = {
       "My family staged an intervention, which the agent scheduled, summarized, and declined on my behalf.",
     ],
     " ",
-    ["Day 30 is in the comments.", "I'll explain the goat later.", "Part two is behind a paywall, as is my dignity."],
+    [
+      "Day 30 is in the comments.",
+      "I'll explain the goat later.",
+      "Part two is behind a paywall, as is my dignity.",
+    ],
   ),
 };

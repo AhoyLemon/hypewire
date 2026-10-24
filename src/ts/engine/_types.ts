@@ -58,6 +58,8 @@ export interface Wrapper {
   /** Templates using {bare} and {bareInline}. */
   name: string;
   inline: string;
+  /** Defaults to true. Set false when the wrapper reads wrong after a plural ("Bowling Leagues Culture"). */
+  allowPlural?: boolean;
   weight?: number;
 }
 
@@ -67,7 +69,8 @@ export interface Generation {
   weight?: number;
 }
 
-export type Family = "Obituaries" | "Hype machine" | "Journalism tropes" | "Rage and takes";
+export type Family =
+  "Obituaries" | "Hype machine" | "Journalism tropes" | "Rage and takes";
 
 export interface Structure {
   id: string;

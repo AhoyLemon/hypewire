@@ -13,10 +13,12 @@ export const betteridge: Structure = {
     "Can a Chatbot Love {subject} More Than You Do?",
     "Could {subject} Be the Next Industry Transformed by AI?",
   ],
-  excerpt: excerptWith([
-    "Experts are divided.",
-    "Experts are divided, mostly along the lines of who owns equity in {startup}.",
-    "The short answer is no. The long answer is a 14-part newsletter.",
-    "We asked {percent} experts. They are divided.",
-  ]),
+  excerpt: excerptWith({
+    lede: [
+      "Experts are divided.",
+      "Experts are divided, mostly along the lines of who owns equity in {startup}.",
+      "The short answer is no. The long answer is a 14-part newsletter.",
+      "We asked {percent} experts. They are divided.",
+    ],
+  }),
 };

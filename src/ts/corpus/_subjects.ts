@@ -11,7 +11,6 @@ const hobbies: Subject[] = [
   { name: "Bowling Leagues", plural: true, activity: "Bowling" },
   { name: "Pen Pals", plural: true },
   { name: "Whittling", activity: "Whittling" },
-  { name: "Lighthouse Keeping", activity: "Lighthouse Keeping" },
   { name: "Taxidermy", activity: "Taxidermy" },
   { name: "the Polka", activity: "Polka" },
   { name: "Cribbage", activity: "Cribbage" },
@@ -34,7 +33,6 @@ const food: Subject[] = [
   { name: "Napkins", plural: true },
   { name: "the Deviled Egg" },
   { name: "Fruitcake" },
-  { name: "the Relish Tray" },
   { name: "Latte Art", activity: "Latte Art" },
 ];
 
@@ -67,7 +65,11 @@ const abstractNouns: Subject[] = [
 const hometown: Subject[] = [
   { name: "Hot Dish", weight: 0.3 },
   { name: "Ice Fishing", activity: "Ice Fishing", weight: 0.3 },
-  { name: "the Minnesota Goodbye", inline: "the Minnesota goodbye", weight: 0.3 },
+  {
+    name: "the Minnesota Goodbye",
+    inline: "the Minnesota goodbye",
+    weight: 0.3,
+  },
   { name: "Lutefisk", weight: 0.3 },
   { name: "Meat Raffles", plural: true, weight: 0.3 },
   { name: "Duck Duck Gray Duck", inline: "Duck Duck Gray Duck", weight: 0.3 },
@@ -75,4 +77,10 @@ const hometown: Subject[] = [
   { name: "the State Fair", inline: "the State Fair", weight: 0.3 },
 ];
 
-export const subjects: Subject[] = [...hobbies, ...food, ...rituals, ...abstractNouns, ...hometown];
+export const subjects: Subject[] = [
+  ...hobbies,
+  ...food,
+  ...rituals,
+  ...abstractNouns,
+  ...hometown,
+];

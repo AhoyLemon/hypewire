@@ -34,9 +34,9 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 | --- | --- |
 | `structures/_*.ts` | One file per headline structure, with its headline options and (optionally) its own excerpt |
 | `_subjects.ts` | The things AI is about to end, with their grammar |
-| `_wrappers.ts` | "the {X} Economy", "Big {X}" and friends, plus how often they show up |
+| `_wrappers.ts` | "the {X} Economy", "Big {X}" and friends, plus how often they show up. `allowPlural: false` keeps a wrapper off plural subjects, so nothing reads "Bowling Leagues Culture" |
 | `_castPools.ts` | Fake names, titles, startups, cities, generations, timeframes, groups, products |
-| `_excerpts.ts` | The shared lede, quote, background and kicker pools |
+| `_excerpts.ts` | The generic lede, quote, background and kicker pools that structures fall back on |
 | `_corpus.ts` | The index that ties it all together |
 
 ### Syntax
@@ -53,6 +53,7 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 | `{subject}` | the Casserole · Napkins |
 | `{subject.bare}` | Casserole (no leading "the") |
 | `{subject.inline}` | the casserole (for mid-sentence use) |
+| `{subject.bareInline}` | casserole (mid-sentence, no leading "the") |
 | `{subject.is}` `{subject.isnt}` `{subject.was}` `{subject.has}` | is / are, isn't / aren't, was / were, has / have |
 | `{subject.it}` `{subject.its}` `{subject.them}` | it / they, it's / they're, it / them |
 | `{subject.s}` | "s" or nothing, for verbs: `Need{subject.s}` |
@@ -72,7 +73,9 @@ Add it to `_subjects.ts`. Set `plural: true` for plural nouns, `activity` if it 
 
 ### Adding a structure
 
-Create `structures/_yourStructure.ts`, export a `Structure`, and add it to `_corpus.ts`. Use `requires: ["activity"]` if it needs `{subject.activity}`. Leave `excerpt` out to use the shared one, or build your own with `excerptWith(yourLedes, yourQuotes?)`.
+Create `structures/_yourStructure.ts`, export a `Structure`, and add it to `_corpus.ts`. Use `requires: ["activity"]` if it needs `{subject.activity}`.
+
+Every structure should have its own excerpt, built with `excerptWith({ lede, quote, background, kicker })`. Any part you leave out falls back to the generic pool in `_excerpts.ts`. To mix the generic pool into your own at a lower rate, add it as one weighted option: `lede: ["your line", "another line", w(ledes, 1)]`.
 
 ### Rules of thumb
 

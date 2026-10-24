@@ -9,7 +9,6 @@ import { betteridge } from "./structures/_betteridge.js";
 import { contrarian } from "./structures/_contrarian.js";
 import { countdown } from "./structures/_countdown.js";
 import { deathNotice } from "./structures/_deathNotice.js";
-import { fundingRound } from "./structures/_fundingRound.js";
 import { marketPanic } from "./structures/_marketPanic.js";
 import { prodigy } from "./structures/_prodigy.js";
 import { pullQuote } from "./structures/_pullQuote.js";
@@ -28,7 +27,6 @@ export const corpus: Corpus = {
     countdown,
     // Hype machine
     prodigy,
-    fundingRound,
     reframe,
     trendCoinage,
     // Journalism tropes

@@ -18,7 +18,10 @@ function appendSummary(markdown: string): void {
 
 /** Escapes a message for use in a GitHub Actions workflow command (::notice::/::warning::). */
 function escapeForWorkflowCommand(message: string): string {
-  return message.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+  return message
+    .replace(/%/g, "%25")
+    .replace(/\r/g, "%0D")
+    .replace(/\n/g, "%0A");
 }
 
 /** Retries with a fresh seed if a headline ever comes out too long to fit. Returns null once MAX_ATTEMPTS is spent. */
@@ -27,7 +30,10 @@ function generatePost(): GeneratedPost | null {
     try {
       return generate(corpus);
     } catch (err) {
-      console.warn(`Attempt ${attempt} failed:`, err instanceof Error ? err.message : err);
+      console.warn(
+        `Attempt ${attempt} failed:`,
+        err instanceof Error ? err.message : err,
+      );
     }
   }
   return null;
@@ -38,7 +44,9 @@ async function main(): Promise<void> {
   if (!post) {
     const message = `Could not generate a post within ${MAX_ATTEMPTS} attempts; skipping this run.`;
     console.warn(message);
-    console.log(`::warning title=BlueSky: skipped::${escapeForWorkflowCommand(message)}`);
+    console.log(
+      `::warning title=BlueSky: skipped::${escapeForWorkflowCommand(message)}`,
+    );
     appendSummary(`## ⚠️ Skipped\n\n${message}`);
     return;
   }
@@ -53,7 +61,9 @@ async function main(): Promise<void> {
   const identifier = process.env.BLUESKY_IDENTIFIER;
   const password = process.env.BLUESKY_APP_PASSWORD;
   if (!identifier || !password) {
-    throw new Error("Missing BLUESKY_IDENTIFIER or BLUESKY_APP_PASSWORD environment variable.");
+    throw new Error(
+      "Missing BLUESKY_IDENTIFIER or BLUESKY_APP_PASSWORD environment variable.",
+    );
   }
 
   const session = new CredentialSession(new URL("https://bsky.social"));
@@ -66,8 +76,12 @@ async function main(): Promise<void> {
   const result = await agent.post({ text: post.text });
   const postUrl = postUrlFromAtUri(result.uri, did);
   console.log(`Posted (${label}):`, postUrl);
-  console.log(`::notice title=BlueSky: posted::${escapeForWorkflowCommand(`Posted: ${postUrl}`)}`);
-  appendSummary(`## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n> ${post.text.replace(/\n/g, "\n> ")}`);
+  console.log(
+    `::notice title=BlueSky: posted::${escapeForWorkflowCommand(`Posted: ${postUrl}`)}`,
+  );
+  appendSummary(
+    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n> ${post.text.replace(/\n/g, "\n> ")}`,
+  );
 }
 
 main().catch((err) => {
