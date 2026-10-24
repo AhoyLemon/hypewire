@@ -1,48 +1,43 @@
 {
-  "name": "starthere",
+  "name": "hypewire",
   "version": "1.0.0",
-  "description": "A boilerplate for building static websites with Pug, Sass, and TypeScript",
-  "main": "index.js",
+  "description": "AI hype headlines about the end of obscure things.",
+  "private": true,
   "type": "module",
   "scripts": {
-    "setup": "tsx scripts/setup.ts",
-    "build:sass": "sass src/scss/site.scss:css/site.css --no-source-map",
-    "build:pug": "tsx scripts/build-pug.ts",
-    "build:ts": "tsc",
+    "build:sass": "sass src/scss/site.scss:css/site.css --no-source-map --style=compressed",
+    "build:pug": "bun scripts/build-pug.ts",
+    "build:ts": "tsc -p tsconfig.build.json",
+    "build": "bun run build:sass && bun run build:pug && bun run build:ts",
     "watch:sass": "sass src/scss/site.scss:css/site.css --no-source-map --watch",
-    "watch:pug": "tsx scripts/watch-pug.ts",
-    "watch:ts": "tsc --watch",
+    "watch:pug": "bun scripts/watch-pug.ts",
+    "watch:ts": "tsc -p tsconfig.build.json --watch",
     "serve": "browser-sync start --config bs-config.cjs",
-    "test:sass": "sass src/scss/site.scss:css/site.css --no-source-map --style=compressed",
+    "dev": "bun scripts/dev.ts",
+    "sample": "bun scripts/sample.ts",
+    "post:bluesky": "bun scripts/post.ts",
+    "test:sass": "sass src/scss/site.scss --no-source-map --style=compressed > /dev/null",
     "test:ts": "tsc --noEmit",
-    "clean": "rimraf css/*.css js/**/*.js js/**/*.js.map !js/globals !js/partials",
-    "dev": "tsx scripts/dev.ts",
-    "watch": "tsx scripts/dev.ts",
-    "build": "npm run build:sass && npm run build:pug && npm run build:ts",
-    "test": "npm run test:sass && npm run test:ts"
+    "test:unit": "bun test tests",
+    "test": "bun run test:sass && bun run test:ts && bun run test:unit",
+    "clean": "rimraf css js/min"
   },
-  "keywords": [
-    "boilerplate",
-    "pug",
-    "sass",
-    "typescript"
-  ],
   "author": "Lemon",
   "license": "MIT",
   "devDependencies": {
+    "@types/bun": "^1.4.4",
     "@types/node": "^20.10.0",
     "browser-sync": "^3.0.2",
     "chalk": "^5.3.0",
     "chokidar": "^3.5.3",
-    "concurrently": "^8.2.2",
     "ora": "^8.0.1",
     "pug": "^3.0.2",
     "rimraf": "^5.0.5",
     "sass": "^1.69.5",
-    "tsx": "^4.23.13",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vue": "^3.5.44"
   },
   "dependencies": {
-    "prompts": "^2.4.2"
+    "@atproto/api": "^0.29.4"
   }
 }

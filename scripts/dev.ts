@@ -262,9 +262,9 @@ async function startDev() {
     spinner,
   );
 
-  startProcess("Pug", "tsx", ["scripts/watch-pug.ts"], spinner);
+  startProcess("Pug", "bun", ["scripts/watch-pug.ts"], spinner);
 
-  startProcess("TypeScript", "tsc", ["--watch"], spinner);
+  startProcess("TypeScript", "tsc", ["-p", "tsconfig.build.json", "--watch"], spinner);
 
   startProcess(
     "BrowserSync",

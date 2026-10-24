@@ -1,0 +1,90 @@
+@use "../abstracts/variables" as vars;
+
+// Roughly how a text post looks on Bluesky, so the length reads true.
+.post {
+  background: vars.$paper;
+  border: 1px solid vars.$rule;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  font-family: vars.$sans-serif;
+  line-height: 1.5;
+
+  .headline {
+    font-weight: vars.$bold;
+    margin-bottom: 0.75rem;
+  }
+
+  .excerpt {
+    margin: 0;
+  }
+
+  &.compact {
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+
+    .headline {
+      margin-bottom: 0.4rem;
+    }
+  }
+}
+
+.counter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+  font-variant-numeric: tabular-nums;
+
+  label {
+    font-weight: vars.$bold;
+  }
+
+  meter {
+    flex: 1 1 10rem;
+  }
+
+  &.near label {
+    color: vars.$warning;
+  }
+
+  &.over label {
+    color: vars.$danger;
+  }
+}
+
+.debug {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9375rem;
+
+  .row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  dt {
+    font-weight: vars.$bold;
+    min-width: 6rem;
+  }
+}
+
+.full-excerpt {
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+
+  summary {
+    cursor: pointer;
+    font-weight: vars.$bold;
+
+    &:focus-visible {
+      outline: 3px solid vars.$focus-ring;
+      outline-offset: 2px;
+    }
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    color: vars.$muted;
+  }
+}

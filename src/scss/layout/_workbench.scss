@@ -1,0 +1,78 @@
+@use "../abstracts/variables" as vars;
+
+// A newspaper masthead, because the bot is cosplaying as one.
+.masthead {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+  margin: 0 auto 1.5rem;
+  max-width: 48rem;
+  border-bottom: 3px double vars.$copy;
+
+  .kicker {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.8125rem;
+    color: vars.$muted;
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  .dek {
+    margin: 0.25rem 0 0;
+    font-family: vars.$serif;
+    font-style: italic;
+  }
+}
+
+.workbench {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+
+  h2 {
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    margin-bottom: 0.75rem;
+  }
+
+  a {
+    color: vars.$ink-link;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration-thickness: 2px;
+    }
+
+    &:focus-visible {
+      outline: 3px solid vars.$focus-ring;
+      outline-offset: 2px;
+    }
+
+    &:active {
+      color: vars.$copy;
+    }
+  }
+
+  .error {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid vars.$danger;
+    background: vars.$paper;
+    color: vars.$danger;
+  }
+
+  .batch ol {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .batch .meta {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: vars.$muted;
+  }
+}

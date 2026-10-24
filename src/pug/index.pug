@@ -4,15 +4,77 @@ include partials/_mixins
 
 doctype html
 html(lang="en")
-  
+
   include partials/_head.pug
-    
+
   body
     #app(v-cloak)
 
-      main(style="height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem;")
-        .inner
-          h1 {{h1}} 
-          h5 {{h5}}
+      header.masthead
+        p.kicker Workbench
+        h1= siteTitle
+        p.dek AI hype headlines about the end of obscure things. For local testing only.
+
+      main.workbench
+
+        form.controls(@submit.prevent="onSubmit")
+          .fields
+            .field
+              label(for="StructureSelect") Structure
+              select#StructureSelect(v-model="structureId")
+                option(value="") Any (weighted)
+                optgroup(v-for="family in families" :key="family.name" :label="family.name")
+                  option(v-for="structure in family.structures" :key="structure.id" :value="structure.id") {{ structure.label }}
+            .field
+              label(for="SubjectSelect") Subject
+              select#SubjectSelect(v-model="subjectName")
+                option(value="") Any (weighted)
+                option(v-for="subject in compatibleSubjects" :key="subject.name" :value="subject.name") {{ subject.name }}
+            .field
+              label(for="SeedInput") Seed
+              input#SeedInput(type="text" inputmode="numeric" autocomplete="off" v-model.trim="seedInput" placeholder="Random" aria-describedby="SeedHint")
+              p#SeedHint.hint Blank means a new post every time.
+          .actions
+            button.button.primary(type="submit" value="one") Generate
+            button.button(type="submit" value="batch") Generate 20
+
+        p.error(v-if="error" role="alert") {{ error }}
+
+        section.preview(v-if="post" aria-labelledby="PreviewHeading")
+          h2#PreviewHeading Preview
+          article.post
+            p.headline {{ post.headline }}
+            p.excerpt {{ post.excerpt }}
+          .counter(:class="meterState")
+            label(for="GraphemeMeter") {{ post.debug.graphemes }} / {{ limit }} graphemes
+            meter#GraphemeMeter(:value="post.debug.graphemes" min="0" :max="limit")
+          dl.debug
+            .row
+              dt Seed
+              dd
+                a(:href="permalink") {{ post.debug.seed }}
+            .row
+              dt Structure
+              dd {{ post.debug.structureLabel }} ({{ post.debug.family }})
+            .row
+              dt Subject
+              dd {{ post.debug.subject }}
+            .row
+              dt Wrapper
+              dd {{ post.debug.wrapperId || "none" }}
+          details.full-excerpt
+            summary The full excerpt, before the cut
+            p {{ post.debug.fullExcerpt }}
+
+        section.batch(v-if="batch.length" aria-labelledby="BatchHeading")
+          h2#BatchHeading Batch
+          ol
+            li(v-for="item in batch" :key="item.seed")
+              article.post.compact
+                p.headline {{ item.post.headline }}
+                p.excerpt {{ item.post.excerpt }}
+              p.meta
+                a(:href="item.href") Seed {{ item.seed }}
+                |  · {{ item.post.debug.structureLabel }} · {{ item.post.debug.graphemes }}/{{ limit }}
 
     include partials/_javascripts

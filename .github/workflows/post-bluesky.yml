@@ -1,0 +1,56 @@
+name: Post to BlueSky
+
+on:
+  schedule:
+    # BEGIN AUTO-GENERATED SCHEDULE (updated daily by scripts/reschedule-bluesky.ts — do not hand-edit)
+    - cron: "17 19 * * *"
+    # END AUTO-GENERATED SCHEDULE
+  workflow_dispatch:
+
+concurrency:
+  group: post-bluesky
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    # Scheduled runs do nothing until the POSTING_ENABLED repo variable is "true", which doubles as a pause switch. Manual runs always post.
+    if: vars.POSTING_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.WORKFLOW_PAT }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Post to BlueSky
+        run: bun run post:bluesky
+        env:
+          BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+
+      # always() so a failed post doesn't also skip rescheduling, or tomorrow would never get a slot. Manual runs post but never reschedule.
+      - name: Reschedule tomorrow's post
+        if: always() && github.event_name == 'schedule'
+        run: bun scripts/reschedule-bluesky.ts
+
+      - name: Commit and push tomorrow's schedule
+        if: always() && github.event_name == 'schedule'
+        run: |
+          if git diff --quiet; then
+            echo "Schedule unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/post-bluesky.yml
+          git commit -m "Reschedule BlueSky post for tomorrow"
+          git push

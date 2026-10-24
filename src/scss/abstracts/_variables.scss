@@ -14,6 +14,15 @@ $link: $blue;
 $accent: $teal;
 $focus: $yellow;
 
+// WORKBENCH (darker than the template colors so text passes WCAG AA on $paper and $body)
+$paper: #fff;
+$muted: #5a5a5a;
+$rule: #c9c9c9;
+$ink-link: #2f5d50;
+$focus-ring: #1f4f8f;
+$warning: #8a5a00;
+$danger: #b00020;
+
 // BRAND COLORS /////////////////////////////////////////////////////////////////////////
 $color-twitter: #55acee;
 $color-github: #181616;

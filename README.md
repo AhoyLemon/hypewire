@@ -1,58 +1,100 @@
-# There are many boilerplates. This one is mine.
+# Hypewire
 
-I never set out to create a boilerplate, but after making sites dozens of times, I realized there were familiar patterns I was reaching for, and I'd always copy that code out of my last project. The most recent time, I decided to strip everything out into a boilerplate.
+AI hype headlines about the end of obscure things. A bot posts one a day to Bluesky.
 
-## What is this?
+> **Millennials Killed Leaving a Voicemail. AI Could Bring It Back.**
+>
+> For years, leaving a voicemail lay quietly in the ground. Then Lattice of Vibes showed up with a shovel and a Series A. “Leaving a voicemail was dead for a reason,” admits Sandford Blatherwick, VP of Inevitability at Lattice of Vibes…
 
-This is the starting point that I ([Lemon](https://ahoylemon.xyz)) use every time I make a new website. It's built using my own aesthetics.
-
-### And what aesthetics are those?
-
-I want to have reusable components to help me make a static HTML site, and I want to do that as quickly as possible. At the same time, I _don't_ want to have a whole bunch of boilerplate stuff in the shipped code. The idea here is **only when you need it**: Making something that's slim and extendable.
-
-This project uses npm for build tooling, with Pug for HTML templating, Sass for CSS, and TypeScript for JavaScript.
-
-This also assumes you want to write in Vue, Sass & Pug.
-
-### Prerequisites
-
-You'll need [Node.js](https://nodejs.org/) (v18 or higher) and npm installed. If you don't have them, [download Node.js here](https://nodejs.org/) (npm comes with it).
-
-### Alright, how do I get started?
-
-1. Click [Use This Template](https://github.com/AhoyLemon/startHere/generate) to use this repo as a project template.
-2. Clone your new repository locally
-3. Run `npm install` to install dependencies
-4. Run `npm run setup` to configure your project name and details
-5. Run `npm run dev` to start the development server
-6. If you see **It works.** in the middle of the screen, congratulations it's working right.
+It isn't agentic. Like [sextips](https://github.com/AhoyLemon/sextips), it's a hand-written corpus and a weighted dice roll. The project was started from [startHere](https://github.com/AhoyLemon/startHere).
 
 ## Commands
 
-- `npm install` - Install all dependencies
-- `npm run setup` - Initial project setup (prompts for project name, URL, etc.)
-- `npm run dev` - Start development server with live reload
-- `npm run build` - Build all files for production
-- `npm test` - Check for Sass and TypeScript errors
+- `bun install`: install dependencies.
+- `bun run dev`: start the workbench at http://localhost:3000.
+- `bun run sample [count]`: print a batch of posts in the terminal (10 by default).
+- `bun run post:bluesky --dry-run`: generate the post the bot would send, without sending it.
+- `bun run test`: check Sass and TypeScript, then run the unit tests.
+- `bun run build`: build the Sass, Pug and TypeScript.
 
-## Fundamentals
+## How a post gets made
 
-I'll break this down into three sections, Pug, Sass, & TypeScript.
+1. Pick a **structure** by weight (The Death Notice, The Resurrection, The Pull Quote and so on).
+2. Pick the **cast** once, so the headline and excerpt agree: a subject that fits the structure (sometimes dressed in a wrapper like "Big {X}"), a fake expert, a fake startup, a city, a generation, and some numbers.
+3. Resolve the headline and the excerpt, then fill in their `{tokens}` from the cast.
+4. Fit the post to Bluesky's 300 graphemes. The headline is never cut. The excerpt runs until it hits the limit, gets cut at a word boundary, and ends in `…` so it reads like a news summary.
 
-For detailed information about routing configuration, see the [Pug Routing Documentation](_docs/routes.md).
+Every post comes from a seed. The same seed (plus the same forced structure or subject) always gives the same post.
 
-1. [Pug](_docs/pug.md) - HTML templating with routing configuration in `routes/pug.routes.ts`
-2. [Sass](_docs/sass.md) - Modern CSS with @use syntax
-3. [TypeScript](_docs/ts.md) - Type-safe JavaScript
-4. [Development Tools](_docs/tools.md) - Prettier, BrowserSync, and other helpful tools
+## Writing the corpus
 
-## Deploying to GitHub Pages
+Everything you'd edit for jokes lives in `src/ts/corpus/`:
 
-If you want to deploy this project to GitHub Pages, follow these steps:
+| File | What's in it |
+| --- | --- |
+| `structures/_*.ts` | One file per headline structure, with its headline options and (optionally) its own excerpt |
+| `_subjects.ts` | The things AI is about to end, with their grammar |
+| `_wrappers.ts` | "the {X} Economy", "Big {X}" and friends, plus how often they show up |
+| `_castPools.ts` | Fake names, titles, startups, cities, generations, timeframes, groups, products |
+| `_excerpts.ts` | The shared lede, quote, background and kicker pools |
+| `_corpus.ts` | The index that ties it all together |
 
-1. Navigate to the `.github/workflows/` directory.
-2. Rename the `deploy.yml.example` file to `deploy.yml`.
-3. Commit and push the changes to your repository.
-4. GitHub Actions will automatically run the workflow to deploy your site to GitHub Pages.
+### Syntax
 
-Make sure your repository settings are configured to use GitHub Pages, and the branch is set to `github-pages` or the branch specified in the workflow file.
+- A plain string is literal text: `"Is AI Quietly Killing {subject}?"`
+- An array means "pick one": `["Millennials", "Gen Z"]`
+- `w(option, weight)` makes an option more or less likely. Unweighted options count as 1.
+- `seq(a, b, c)` joins its parts in order. Each part can be a string, an array or another `seq`.
+
+### Tokens
+
+| Token | Example |
+| --- | --- |
+| `{subject}` | the Casserole · Napkins |
+| `{subject.bare}` | Casserole (no leading "the") |
+| `{subject.inline}` | the casserole (for mid-sentence use) |
+| `{subject.is}` `{subject.isnt}` `{subject.was}` `{subject.has}` | is / are, isn't / aren't, was / were, has / have |
+| `{subject.it}` `{subject.its}` `{subject.them}` | it / they, it's / they're, it / them |
+| `{subject.s}` | "s" or nothing, for verbs: `Need{subject.s}` |
+| `{subject.activity}` `{subject.activityInline}` | Whittling · whittling (only on subjects that have one) |
+| `{generation}` `{rival}` | Millennials · Gen Z, with the same `.is` / `.was` / `.has` / `.s` grammar |
+| `{expert}` `{expert.first}` `{expert.last}` `{expert.title}` | Brindle Thistlewick, Chief Vibes Officer |
+| `{person}` `{person.first}` `{person.last}` `{person.age}` | a second fake person, for anecdotes |
+| `{relative}` | Estranged Uncle of AI |
+| `{startup}` `{city}` `{money}` `{age}` `{percent}` | Frothr, Duluth, $40M, 19, 61 |
+| `{timeframe}` `{group}` `{product}` | each with an `.inline` form for mid-sentence use |
+
+**Capitalize the token to capitalize the output.** The case of the last part of the token decides it: `{subject.Is}` gives "Is" or "Are", and `{Subject}` gives "The Casserole". Use the capitalized form at the start of a headline or sentence.
+
+### Adding a subject
+
+Add it to `_subjects.ts`. Set `plural: true` for plural nouns, `activity` if it works after "Vibe-", and `inline` when lowercasing the name would mangle a proper noun (for example `"the Minnesota goodbye"`).
+
+### Adding a structure
+
+Create `structures/_yourStructure.ts`, export a `Structure`, and add it to `_corpus.ts`. Use `requires: ["activity"]` if it needs `{subject.activity}`. Leave `excerpt` out to use the shared one, or build your own with `excerptWith(yourLedes, yourQuotes?)`.
+
+### Rules of thumb
+
+- **Put the joke first.** The excerpt almost always gets cut off, so the funny part belongs in the lede and the quote. The background and kicker pools mostly exist to get cut off.
+- **Keep everyone fictional.** No real people, companies, outlets or investors.
+- **Run `bun run test` after editing.** The coverage test renders every structure with every subject and wrapper that fits it, and fails on unfilled tokens, lowercase sentence starts, double spaces, or posts that don't fit.
+
+## The workbench
+
+`bun run dev` serves a local page for testing the corpus. You can force a structure and/or a subject, type a seed, generate a batch of 20, and open the full excerpt from before the cut. The URL (`?seed=…&structure=…&subject=…`) reproduces whatever is on screen, which is handy when a post comes out broken or perfect.
+
+It's only for local use for now. `.github/workflows/deploy.yml.example` is left as an example on purpose, so nothing gets published.
+
+## Posting
+
+`.github/workflows/post-bluesky.yml` posts once a day at a random time between 9am and 9pm Central. After each scheduled run, `scripts/reschedule-bluesky.ts` picks tomorrow's time and commits it back to the workflow.
+
+To turn it on:
+
+1. Create the Bluesky account and an [app password](https://bsky.app/settings/app-passwords).
+2. Add these repository secrets: `BLUESKY_IDENTIFIER`, `BLUESKY_APP_PASSWORD`, and `WORKFLOW_PAT` (a token with `contents` and `workflows` write access, so the schedule commit can edit a workflow file).
+3. Run the workflow by hand from the Actions tab to send a test post. Manual runs always post.
+4. Set the repository variable `POSTING_ENABLED` to `true` to start the daily schedule. Set it to anything else to pause it.
+
+Each run's job summary includes the post's seed, so you can open it in the workbench with `?seed=`.
