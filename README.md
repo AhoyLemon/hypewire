@@ -58,7 +58,9 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 | `{subject.it}` `{subject.its}` `{subject.them}` | it / they, it's / they're, it / them |
 | `{subject.s}` | "s" or nothing, for verbs: `Need{subject.s}` |
 | `{subject.activity}` `{subject.activityInline}` | Whittling · whittling (only on subjects that have one) |
-| `{generation}` `{rival}` | Millennials · Gen Z, with the same `.is` / `.was` / `.has` / `.s` grammar |
+| `{generation}` `{rival}` | Millennials · Gen Z, with the same `.is` / `.was` / `.has` / `.s` grammar. `{rival}` is always the one who's mad |
+| `{generation.venue}` `{generation.insult}` `{generation.catchphrase}` `{generation.grievance}` | Stereotypes from `_castPools.ts` (same keys on `{rival}`): "a Facebook group with 40,000 members", "people who still print their emails" |
+| `{model}` `{model.new}` `{model.old}` | Mindloaf · Mindloaf 5 · Mindloaf 4.9 |
 | `{expert}` `{expert.first}` `{expert.last}` `{expert.title}` | Brindle Thistlewick, Chief Vibes Officer |
 | `{person}` `{person.first}` `{person.last}` `{person.age}` | a second fake person, for anecdotes |
 | `{relative}` | Estranged Uncle of AI |
@@ -76,6 +78,10 @@ Add it to `_subjects.ts`. Set `plural: true` for plural nouns, `activity` if it 
 Create `structures/_yourStructure.ts`, export a `Structure`, and add it to `_corpus.ts`. Use `requires: ["activity"]` if it needs `{subject.activity}`.
 
 Every structure should have its own excerpt, built with `excerptWith({ lede, quote, background, kicker })`. Any part you leave out falls back to the generic pool in `_excerpts.ts`. To mix the generic pool into your own at a lower rate, add it as one weighted option: `lede: ["your line", "another line", w(ledes, 1)]`.
+
+When a structure has several different jokes and each headline needs its own matching excerpt, give it `variants` instead of `headline` and `excerpt`. The Study and the Market Panic work this way. Each variant has an `id`, a `label`, an optional `weight`, a `headline`, and an `excerpt`. The workbench lists each variant under its structure, so you can force one.
+
+Not every structure needs the subject. Use it where it earns its place, and let the structure's own material carry the rest.
 
 ### Rules of thumb
 

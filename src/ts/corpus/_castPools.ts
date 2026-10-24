@@ -131,13 +131,153 @@ export const cast: CastPools = {
     w("$6", 0.4),
     w("$11.50", 0.3),
   ],
+  // Traits: `venue` reads after "in", `insult` is what others call them, `catchphrase` has no end punctuation, `grievance` is what they're always mad about.
   generations: [
-    { name: "Millennials", plural: true, weight: 2 },
-    { name: "Gen Z", plural: false, weight: 2 },
-    { name: "Gen X", plural: false },
-    { name: "Boomers", plural: true, weight: 1.5 },
-    { name: "Gen Alpha", plural: false },
-    { name: "the Greatest Generation", plural: false, weight: 0.3 },
+    {
+      name: "Millennials",
+      plural: true,
+      weight: 2,
+      traits: {
+        venue: [
+          "a 47-post thread",
+          "a group chat that is 90% memes",
+          "a Medium post about why we need to talk about this",
+          "a podcast with a Patreon",
+        ],
+        insult: [
+          "adults who call their dog their child",
+          "people who think brunch is a personality",
+          "renters for life, and they know it",
+        ],
+        catchphrase: [
+          "I'm literally shaking",
+          "I can't even",
+          "We were promised jetpacks",
+        ],
+        grievance: [
+          "the housing market",
+          "student loans",
+          "being blamed for everything",
+        ],
+      },
+    },
+    {
+      name: "Gen Z",
+      plural: false,
+      weight: 2,
+      traits: {
+        venue: [
+          "a TikTok filmed in a parked car",
+          "a 12-second video with 4 million views",
+          "a Discord server",
+          "a comment that was just a skull emoji",
+        ],
+        insult: [
+          "people who can't make a phone call",
+          "kids who think email is formal",
+          "people who film themselves crying",
+        ],
+        catchphrase: [
+          "No cap, this is mid",
+          "It's giving obsolete",
+          "OK, Boomer",
+        ],
+        grievance: ["phone calls", "the job market", "anyone over 25"],
+      },
+    },
+    {
+      name: "Gen X",
+      plural: false,
+      traits: {
+        venue: [
+          "a forum that has been active since 1998",
+          "a letter to the editor nobody printed",
+          "a podcast with eleven listeners",
+        ],
+        insult: [
+          "the generation everyone forgets exists",
+          "latchkey kids who never recovered",
+          "people who peaked in 1994",
+        ],
+        catchphrase: [
+          "Whatever",
+          "Nobody asked us, as usual",
+          "We were ironic about this before it was cool",
+        ],
+        grievance: [
+          "being ignored",
+          "everyone else",
+          "explaining the internet to their parents and their kids",
+        ],
+      },
+    },
+    {
+      name: "Boomers",
+      plural: true,
+      weight: 1.5,
+      traits: {
+        venue: [
+          "a Facebook group with 40,000 members",
+          "a strongly worded letter to the editor",
+          "a comment section, in all caps",
+          "a voicemail that ran eleven minutes",
+        ],
+        insult: [
+          "people who still print their emails",
+          "the reason nobody can afford a house",
+          "people who think the cloud is weather",
+        ],
+        catchphrase: [
+          "Nobody wants to work anymore",
+          "Back in my day, we did it by hand",
+          "Kids today have no respect",
+        ],
+        grievance: [
+          "participation trophies",
+          "the self-checkout",
+          "having to tip at a kiosk",
+        ],
+      },
+    },
+    {
+      name: "Gen Alpha",
+      plural: false,
+      traits: {
+        venue: [
+          "an iPad video, at full volume",
+          "a YouTube Short with 9 million views",
+          "a block game server",
+        ],
+        insult: [
+          "iPad kids",
+          "people who think a book is a broken tablet",
+          "children who have never seen a phone with buttons",
+        ],
+        catchphrase: ["Skibidi", "That's so Ohio", "Six seven"],
+        grievance: ["bedtime", "screen time limits", "slow Wi-Fi"],
+      },
+    },
+    {
+      name: "the Greatest Generation",
+      plural: false,
+      weight: 0.3,
+      traits: {
+        venue: [
+          "a letter, by mail, in cursive",
+          "a phone call at 6 a.m.",
+          "a church newsletter",
+        ],
+        insult: [
+          "people who stormed beaches and will mention it",
+          "the only generation that ever fixed anything",
+        ],
+        catchphrase: [
+          "We didn't storm beaches for this",
+          "In my day, we built computers out of vacuum tubes",
+        ],
+        grievance: ["young people", "the price of a stamp"],
+      },
+    },
   ],
   // Each has to read after "Gives X", "Has ___ Left", and "Automated in ___".
   timeframes: [
@@ -161,6 +301,14 @@ export const cast: CastPools = {
     { name: "Youth Pastors" },
     { name: "Real Estate Agents" },
     { name: "Theater Kids" },
+    { name: "Competitive Eaters" },
+    { name: "Mall Walkers" },
+    { name: "Crossing Guards" },
+    { name: "Regional Managers" },
+    { name: "Cruise Ship Magicians" },
+    { name: "Retired Pharmacists" },
+    { name: "People Who Own a Boat" },
+    { name: "Amateur Beekeepers" },
     { name: "Minnesotans", inline: "Minnesotans", weight: 0.3 },
   ],
   products: [
@@ -172,5 +320,25 @@ export const cast: CastPools = {
     { name: "a Reasoning Model With Feelings" },
     { name: "an AI Agent Named Kevin", inline: "an AI agent named Kevin" },
     { name: "a Very Confident Autocomplete" },
+  ],
+  models: [
+    "Glorp",
+    "Thinkerbell",
+    "Mindloaf",
+    "Cortexa",
+    "Pondr",
+    "Noodle",
+    "OmniBrain",
+    "Hyperthink",
+    "DeepMuse",
+    "Brainstew",
+  ],
+  modelVersions: [
+    { new: "5", old: "4.9" },
+    { new: "4.1 Turbo", old: "4.1" },
+    { new: "Ultra Max", old: "Ultra" },
+    { new: "7 Pro", old: "7" },
+    { new: "X", old: "9" },
+    { new: "2026.10.25", old: "2026.10.24", weight: 0.5 },
   ],
 };

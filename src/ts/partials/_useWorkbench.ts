@@ -13,9 +13,15 @@ declare const Vue: typeof import("vue");
 const BATCH_SIZE = 20;
 const NEAR_LIMIT = 285;
 
+interface StructureOption {
+  /** "structureId", or "structureId:variantId" to force a variant. */
+  value: string;
+  label: string;
+}
+
 interface FamilyGroup {
   name: Family;
-  structures: Structure[];
+  options: StructureOption[];
 }
 
 interface Selection {
@@ -44,14 +50,35 @@ export interface Workbench {
   onSubmit: (event: SubmitEvent) => void;
 }
 
+function optionsFor(structure: Structure): StructureOption[] {
+  const variants = (structure.variants ?? []).map((variant) => ({
+    value: `${structure.id}:${variant.id}`,
+    label: `${structure.label}: ${variant.label}`,
+  }));
+  return [{ value: structure.id, label: structure.label }, ...variants];
+}
+
 function groupByFamily(structures: Structure[]): FamilyGroup[] {
   const groups: FamilyGroup[] = [];
   for (const structure of structures) {
     const group = groups.find((g) => g.name === structure.family);
-    if (group) group.structures.push(structure);
-    else groups.push({ name: structure.family, structures: [structure] });
+    if (group) group.options.push(...optionsFor(structure));
+    else
+      groups.push({ name: structure.family, options: optionsFor(structure) });
   }
   return groups;
+}
+
+/** Splits a "structureId:variantId" select value. Empty strings mean "don't force it". */
+function parseStructureValue(value: string): {
+  structureId?: string;
+  variantId?: string;
+} {
+  const [structureId, variantId] = value.split(":");
+  return {
+    structureId: structureId || undefined,
+    variantId: variantId || undefined,
+  };
 }
 
 /** ?seed=&structure=&subject= is everything needed to reproduce a post. */
@@ -85,7 +112,8 @@ export function useWorkbench(): Workbench {
   });
 
   const compatibleSubjects = computed(() => {
-    const structure = corpus.structures.find((s) => s.id === structureId.value);
+    const forced = parseStructureValue(structureId.value).structureId;
+    const structure = corpus.structures.find((s) => s.id === forced);
     return structure
       ? corpus.subjects.filter((s) => subjectFits(s, structure))
       : corpus.subjects;
@@ -105,7 +133,7 @@ export function useWorkbench(): Workbench {
   function generateWith(seed: number): GeneratedPost {
     return generate(corpus, {
       seed,
-      structureId: structureId.value || undefined,
+      ...parseStructureValue(structureId.value),
       subjectName: subjectName.value || undefined,
     });
   }

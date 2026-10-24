@@ -25,10 +25,19 @@ export interface Person {
   last: string;
 }
 
+/** A generation with its stereotype traits picked down to strings. */
+export interface ResolvedGeneration {
+  name: string;
+  plural: boolean;
+  traits: Record<string, string>;
+}
+
 export interface Cast {
   subject: ResolvedSubject;
-  generation: Generation;
-  rival: Generation;
+  generation: ResolvedGeneration;
+  rival: ResolvedGeneration;
+  /** "Mindloaf" plus a new/old version pair, for "Mindloaf 5" vs "Mindloaf 4.9". */
+  model: { name: string; new: string; old: string };
   expert: Person & { title: string };
   person: Person & { age: number };
   relative: string;
@@ -147,6 +156,19 @@ function pickSubject(
   return applyWrapper(resolved, pickWeighted(fitting, byWeight, rng));
 }
 
+function resolveGeneration(
+  generation: Generation,
+  rng: Rng,
+): ResolvedGeneration {
+  const traits = Object.fromEntries(
+    Object.entries(generation.traits).map(([key, node]) => [
+      key,
+      resolveNode(node, rng),
+    ]),
+  );
+  return { name: generation.name, plural: generation.plural, traits };
+}
+
 /** Picks every shared detail once, so the headline and excerpt agree. */
 export function pickCast(
   corpus: Corpus,
@@ -162,11 +184,14 @@ export function pickCast(
     byWeight,
     rng,
   );
+  const modelName = resolveNode(cast.models, rng);
+  const versions = pickWeighted(cast.modelVersions, byWeight, rng);
 
   return {
     subject,
-    generation,
-    rival,
+    generation: resolveGeneration(generation, rng),
+    rival: resolveGeneration(rival, rng),
+    model: { name: modelName, new: versions.new, old: versions.old },
     expert: {
       first: resolveNode(cast.firstNames, rng),
       last: resolveNode(cast.lastNames, rng),
@@ -221,6 +246,25 @@ function phraseTokens(prefix: string, phrase: Phrase): TokenMap {
   return { [prefix]: phrase.name, [`${prefix}.inline`]: inlineOf(phrase) };
 }
 
+function generationTokens(
+  prefix: string,
+  generation: ResolvedGeneration,
+): TokenMap {
+  const traits = Object.entries(generation.traits).map(([key, value]) => [
+    `${prefix}.${key}`,
+    value,
+  ]);
+  // Verbs agree with the name ("Gen Z Is"), but a generation is still people, so pronouns stay "they".
+  return {
+    [prefix]: generation.name,
+    ...grammarTokens(prefix, generation.plural),
+    [`${prefix}.it`]: PLURAL.it,
+    [`${prefix}.its`]: PLURAL.its,
+    [`${prefix}.them`]: PLURAL.them,
+    ...Object.fromEntries(traits),
+  };
+}
+
 /** Flattens a cast into the {token} names the corpus uses. */
 export function castTokens(cast: Cast): TokenMap {
   const { subject, expert, person } = cast;
@@ -230,10 +274,11 @@ export function castTokens(cast: Cast): TokenMap {
     "subject.inline": subject.inline,
     "subject.bareInline": stripArticle(subject.inline),
     ...grammarTokens("subject", subject.plural),
-    generation: cast.generation.name,
-    ...grammarTokens("generation", cast.generation.plural),
-    rival: cast.rival.name,
-    ...grammarTokens("rival", cast.rival.plural),
+    ...generationTokens("generation", cast.generation),
+    ...generationTokens("rival", cast.rival),
+    model: cast.model.name,
+    "model.new": `${cast.model.name} ${cast.model.new}`,
+    "model.old": `${cast.model.name} ${cast.model.old}`,
     expert: `${expert.first} ${expert.last}`,
     "expert.first": expert.first,
     "expert.last": expert.last,

@@ -5,7 +5,6 @@ import { sharedExcerpt } from "./_excerpts.js";
 import { subjects } from "./_subjects.js";
 import { wrapperChance, wrappers } from "./_wrappers.js";
 
-import { betteridge } from "./structures/_betteridge.js";
 import { contrarian } from "./structures/_contrarian.js";
 import { countdown } from "./structures/_countdown.js";
 import { deathNotice } from "./structures/_deathNotice.js";
@@ -30,7 +29,6 @@ export const corpus: Corpus = {
     reframe,
     trendCoinage,
     // Journalism tropes
-    betteridge,
     stuntPiece,
     study,
     marketPanic,

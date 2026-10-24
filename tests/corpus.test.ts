@@ -7,7 +7,11 @@ import {
   subjectFits,
   wrapperFits,
 } from "../src/ts/engine/_cast";
-import { generate, type GeneratedPost } from "../src/ts/engine/_generate";
+import {
+  generate,
+  variantsOf,
+  type GeneratedPost,
+} from "../src/ts/engine/_generate";
 import { ELLIPSIS, POST_LIMIT } from "../src/ts/engine/_truncate";
 import { graphemeLength } from "../src/ts/lib/graphemes";
 
@@ -29,7 +33,8 @@ function problems(post: GeneratedPost): string[] {
   if (/[”’][.,]/.test(written))
     issues.push("period or comma outside a closing quote");
   if (/^[a-z]/.test(headline)) issues.push("headline starts lowercase");
-  if (/[.!?][”’]?\s+[a-z]/.test(written.replace(/\b[ap]\.m\./g, "am")))
+  // A lowercase word after a quoted question is fine ("doing here?” asks Greg"), so only bare ?/! and periods count.
+  if (/(\.[”’]?|[!?])\s+[a-z]/.test(written.replace(/\b[ap]\.m\./g, "am")))
     issues.push("sentence starts lowercase");
   if (graphemeLength(text) > POST_LIMIT)
     issues.push(`over ${POST_LIMIT} graphemes`);
@@ -64,38 +69,60 @@ describe("corpus coverage", () => {
     expect(orphans.map((s) => s.id)).toEqual([]);
   });
 
-  test("every structure renders cleanly with every subject and wrapper that fits it", () => {
+  test("every structure and variant renders cleanly with every subject and wrapper that fits it", () => {
     const failures: string[] = [];
 
     for (const structure of corpus.structures) {
-      for (const subject of corpus.subjects.filter((s) =>
-        subjectFits(s, structure),
-      )) {
-        const fitting = canWrap(structure)
-          ? corpus.wrappers.filter((wr) =>
-              wrapperFits(wr, resolveSubject(subject)),
-            )
-          : [];
-        const wrapperIds = [null, ...fitting.map((wr) => wr.id)];
+      for (const variant of variantsOf(structure)) {
+        for (const subject of corpus.subjects.filter((s) =>
+          subjectFits(s, structure),
+        )) {
+          const fitting = canWrap(structure)
+            ? corpus.wrappers.filter((wr) =>
+                wrapperFits(wr, resolveSubject(subject)),
+              )
+            : [];
+          const wrapperIds = [null, ...fitting.map((wr) => wr.id)];
 
-        for (const wrapperId of wrapperIds) {
-          for (let seed = 1; seed <= SEEDS_PER_COMBO; seed++) {
-            const label = `${structure.id} × ${subject.name} × ${wrapperId ?? "unwrapped"} × seed ${seed}`;
-            const failure = describeFailure(label, () =>
-              generate(corpus, {
-                seed,
-                structureId: structure.id,
-                subjectName: subject.name,
-                wrapperId,
-              }),
-            );
-            if (failure) failures.push(failure);
+          for (const wrapperId of wrapperIds) {
+            for (let seed = 1; seed <= SEEDS_PER_COMBO; seed++) {
+              const name = variant.id
+                ? `${structure.id}:${variant.id}`
+                : structure.id;
+              const label = `${name} × ${subject.name} × ${wrapperId ?? "unwrapped"} × seed ${seed}`;
+              const failure = describeFailure(label, () =>
+                generate(corpus, {
+                  seed,
+                  structureId: structure.id,
+                  variantId: variant.id ?? undefined,
+                  subjectName: subject.name,
+                  wrapperId,
+                }),
+              );
+              if (failure) failures.push(failure);
+            }
           }
         }
       }
     }
 
     expect(failures).toEqual([]);
+  });
+
+  test("every generation has the same stereotype traits, none named like a grammar token", () => {
+    const grammar = ["is", "isnt", "was", "has", "it", "its", "them", "s"];
+    const keysOf = (traits: Record<string, unknown>) =>
+      Object.keys(traits).sort().join(", ");
+    const expected = keysOf(corpus.cast.generations[0].traits);
+
+    for (const generation of corpus.cast.generations) {
+      expect(`${generation.name}: ${keysOf(generation.traits)}`).toBe(
+        `${generation.name}: ${expected}`,
+      );
+    }
+    expect(expected.split(", ").filter((key) => grammar.includes(key))).toEqual(
+      [],
+    );
   });
 
   test(`${RANDOM_POSTS.toLocaleString()} unforced posts come out clean`, () => {

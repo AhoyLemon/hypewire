@@ -24,7 +24,7 @@ html(lang="en")
               select#StructureSelect(v-model="structureId")
                 option(value="") Any (weighted)
                 optgroup(v-for="family in families" :key="family.name" :label="family.name")
-                  option(v-for="structure in family.structures" :key="structure.id" :value="structure.id") {{ structure.label }}
+                  option(v-for="option in family.options" :key="option.value" :value="option.value") {{ option.label }}
             .field
               label(for="SubjectSelect") Subject
               select#SubjectSelect(v-model="subjectName")
@@ -55,7 +55,7 @@ html(lang="en")
                 a(:href="permalink") {{ post.debug.seed }}
             .row
               dt Structure
-              dd {{ post.debug.structureLabel }} ({{ post.debug.family }})
+              dd {{ post.debug.structureLabel }}{{ post.debug.variantLabel ? ": " + post.debug.variantLabel : "" }} ({{ post.debug.family }})
             .row
               dt Subject
               dd {{ post.debug.subject }}
@@ -75,6 +75,6 @@ html(lang="en")
                 p.excerpt {{ item.post.excerpt }}
               p.meta
                 a(:href="item.href") Seed {{ item.seed }}
-                |  · {{ item.post.debug.structureLabel }} · {{ item.post.debug.graphemes }}/{{ limit }}
+                |  · {{ item.post.debug.structureLabel }}{{ item.post.debug.variantLabel ? ": " + item.post.debug.variantLabel : "" }} · {{ item.post.debug.graphemes }}/{{ limit }}
 
     include partials/_javascripts

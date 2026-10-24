@@ -67,6 +67,15 @@ export interface Generation {
   name: string;
   plural: boolean;
   weight?: number;
+  /** Stereotypes, used as {generation.<key>} and {rival.<key>}. Every generation needs the same keys. Don't reuse grammar names (is, was, has, it, its, them, s). */
+  traits: Record<string, CorpusNode>;
+}
+
+/** A fake AI model release: "Mindloaf 5" making last week's "Mindloaf 4.9" obsolete. */
+export interface ModelVersions {
+  new: string;
+  old: string;
+  weight?: number;
 }
 
 export type Family =
@@ -80,8 +89,19 @@ export interface Structure {
   requires?: SubjectRequirement[];
   /** Defaults to true. Structures that require an activity never get wrappers. */
   allowWrappers?: boolean;
-  headline: CorpusNode;
+  /** Required unless the structure has variants. */
+  headline?: CorpusNode;
   /** Falls back to the corpus' shared excerpt. */
+  excerpt?: CorpusNode;
+  /** For a structure with several jokes, where each headline has to pair with its own excerpt. Replaces `headline` and `excerpt`. */
+  variants?: StructureVariant[];
+}
+
+export interface StructureVariant {
+  id: string;
+  label: string;
+  weight?: number;
+  headline: CorpusNode;
   excerpt?: CorpusNode;
 }
 
@@ -98,6 +118,8 @@ export interface CastPools {
   timeframes: Phrase[];
   groups: Phrase[];
   products: Phrase[];
+  models: CorpusNode;
+  modelVersions: ModelVersions[];
 }
 
 export interface Corpus {
