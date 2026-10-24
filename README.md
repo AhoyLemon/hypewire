@@ -59,7 +59,8 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 | `{subject.s}` | "s" or nothing, for verbs: `Need{subject.s}` |
 | `{subject.activity}` `{subject.activityInline}` | Whittling · whittling (only on subjects that have one) |
 | `{generation}` `{rival}` | Millennials · Gen Z, with the same `.is` / `.was` / `.has` / `.s` grammar. `{rival}` is always the one who's mad |
-| `{generation.venue}` `{generation.catchphrase}` `{generation.quirk}` `{generation.hypocrisy}` | Stereotypes from `_castPools.ts` (same keys on `{rival}`): "a Facebook group with 40,000 members", "Love, Mom", "who still use Facebook", and a full complaint-plus-self-own sentence that can contain `{person}`. Generations take verb agreement from their name ("Gen Z Is") but always use "they" pronouns |
+| `{generation.venue}` `{generation.catchphrase}` `{generation.quirk}` `{generation.hypocrisy}` | Stereotypes from `_castPools.ts` (same keys on `{rival}`): "a Facebook group with 40,000 members", "Love, Mom", "who still use Facebook", and a full complaint-plus-self-own sentence. Generations take verb agreement from their name ("Gen Z Is") but always use "they" pronouns |
+| `{speaker}` (inside generation traits) `{generation.speaker}` `{generation.age}` | The cast's person plus an age from that generation's `ages` range, in a mix of formats: "Juniper Turnblatt, 29", "29-year-old Juniper Turnblatt", "Juniper Turnblatt (29)" |
 | `{model}` `{model.new}` `{model.old}` | Mindloaf · Mindloaf 5 · Mindloaf 4.9 |
 | `{expert}` `{expert.first}` `{expert.last}` `{expert.title}` | Brindle Thistlewick, Chief Vibes Officer |
 | `{person}` `{person.first}` `{person.last}` `{person.age}` | a second fake person, for anecdotes |
@@ -85,8 +86,11 @@ Not every structure needs the subject. Use it where it earns its place, and let 
 
 ### Rules of thumb
 
+- **Specific beats generic.** "A synthwave DJ with the moniker The Inhuman" beats "a musician." If a line could describe anybody, it isn't done yet.
+- **Let people tell on themselves.** The narrator never judges. A quoted person complains, and the attribution quietly reveals they're guilty of the same thing.
+- **Twist the format now and then.** A line like "said {speaker}, sitting." works because everything around it plays it straight.
 - **Put the joke first.** The excerpt almost always gets cut off, so the funny part belongs in the lede and the quote. The background and kicker pools mostly exist to get cut off.
-- **Keep everyone fictional.** No real people, companies, outlets or investors.
+- **Real brands are cultural signifiers, not targets.** "A brand advocate for Malibu" does more work than "a brand advocate for a rum company," so use them. But never make a real company or person the subject of a made-up claim about what they do. Experts, startups, investors and quoted people are always invented.
 - **Run `bun run test` after editing.** The coverage test renders every structure with every subject and wrapper that fits it, and fails on unfilled tokens, lowercase sentence starts, double spaces, or posts that don't fit.
 
 ## The workbench

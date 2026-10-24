@@ -31,7 +31,8 @@ function problems(post: GeneratedPost): string[] {
     issues.push("unfilled {token}");
   if (/undefined|NaN/.test(written)) issues.push("undefined or NaN");
   if (/ {2}/.test(written)) issues.push("double space");
-  if (/\bthey (has|is|was)\b/i.test(written)) issues.push("“they” with a singular verb");
+  if (/\bthey (has|is|was)\b/i.test(written))
+    issues.push("“they” with a singular verb");
   if (/\s[,.!?;:]/.test(written)) issues.push("space before punctuation");
   if (/[”’][.,]/.test(written))
     issues.push("period or comma outside a closing quote");
@@ -173,18 +174,62 @@ describe("determinism", () => {
   });
 });
 
+/**
+ * The first sentence of some text. A ! or ? inside a quote ("Ugh! It's fake!” says…) doesn't end it, but a quote that closes on . ! or ? and is followed by a new sentence does.
+ */
+function firstSentence(text: string): string {
+  let inQuote = false;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === "“") inQuote = true;
+    if (char === "”") inQuote = false;
+    if (!/[.!?]/.test(char)) continue;
+
+    const closesQuote = text[i + 1] === "”";
+    if (inQuote && !closesQuote) continue;
+    const end = closesQuote ? i + 2 : i + 1;
+    const rest = text.slice(end);
+    if (rest === "" || /^\s+[A-Z“]/.test(rest)) return text.slice(0, end);
+  }
+  return text;
+}
+
 describe("punchlines that must survive the cut", () => {
+  test("firstSentence understands quotes", () => {
+    expect(
+      firstSentence("“Ugh! It's fake!” says Greg, 30, at a wedding. Next."),
+    ).toBe("“Ugh! It's fake!” says Greg, 30, at a wedding.");
+    expect(
+      firstSentence(
+        "“What is it? Handouts,” says Greg (74), on the “Nice Face” program. Gen Z",
+      ),
+    ).toBe(
+      "“What is it? Handouts,” says Greg (74), on the “Nice Face” program.",
+    );
+    expect(
+      firstSentence("“Nope,” says Greg, hired for his “handshake.” Gen Z, who"),
+    ).toBe("“Nope,” says Greg, hired for his “handshake.”");
+  });
+
   test("Rage-Bait's hypocrisy line, which opens the excerpt, always fits whole", () => {
     const cut: string[] = [];
     for (let seed = 0; seed < 2_000; seed++) {
       const post = generate(corpus, { seed, structureId: "rageBait" });
-      const opening =
-        post.debug.fullExcerpt.match(/^.*?[.!?][”’]?(?=\s|$)/)?.[0] ?? "";
+      const opening = firstSentence(post.debug.fullExcerpt);
       const room = POST_LIMIT - graphemeLength(post.headline) - 3;
       if (graphemeLength(opening) > room) {
         cut.push(`seed ${seed}: ${post.headline}\n  ${opening}`);
       }
     }
     expect(cut).toEqual([]);
+  });
+});
+
+describe("generations", () => {
+  test("every generation has a sensible age range", () => {
+    for (const { name, ages } of corpus.cast.generations) {
+      const [min, max] = ages;
+      expect(`${name}: ${min <= max && min > 0}`).toBe(`${name}: true`);
+    }
   });
 });

@@ -67,6 +67,8 @@ export interface Generation {
   name: string;
   plural: boolean;
   weight?: number;
+  /** Inclusive age range, for {speaker} inside traits and {generation.age}. */
+  ages: [number, number];
   /** Stereotypes, used as {generation.<key>} and {rival.<key>}. Every generation needs the same keys. Don't reuse grammar names (is, was, has, it, its, them, s). */
   traits: Record<string, CorpusNode>;
 }

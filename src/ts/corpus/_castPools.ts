@@ -1,6 +1,6 @@
 import { w, type CastPools } from "../engine/_types.js";
 
-// Every person, company, and place here is made up. Keep it that way.
+// The people, startups, and investors here are made up. Real brands are welcome as cultural signifiers (a Liquid Death wedding, an H&M dressing room), but never as the subject of a made-up claim about what a real company does.
 export const cast: CastPools = {
   firstNames: [
     "Crunk",
@@ -69,6 +69,10 @@ export const cast: CastPools = {
     "Keynote Speaker (Unpaid)",
     "Former Crypto Guy",
     "Chief Evangelist and Part-Time DJ",
+    "Head of Vibes (Interim)",
+    "Senior Vice President of Saying Yes",
+    "Director of Strategic Optimism",
+    "Founder, CEO, and Only Employee",
     w("Unpaid Intern", 0.5),
   ],
   relatives: [
@@ -81,8 +85,10 @@ export const cast: CastPools = {
     "Divorced Dad of AI",
     "Babysitter of AI",
     "Weird Neighbor of AI",
+    "Disappointing Nephew of AI",
     w("Grandfather of AI", 0.5),
     w("Former Roommate of AI", 0.5),
+    w("Imaginary Friend of AI", 0.5),
   ],
   startups: [
     "Frothr",
@@ -101,7 +107,12 @@ export const cast: CastPools = {
     "Gristle.ai",
     "Lattice of Vibes",
     "Disruptr",
+    "InfiniFeed",
+    "BossWare",
+    "Quietly Listening Labs",
+    "Grindhaus",
   ],
+  // Reads after "in", "Sweeping", and "barred from", so a specific place works as well as a city.
   cities: [
     "Duluth",
     "Boise",
@@ -119,6 +130,9 @@ export const cast: CastPools = {
     "Brooklyn",
     "Austin",
     w("a WeWork in Menlo Park", 0.5),
+    w("a Panera in Scottsdale", 0.5),
+    w("the food court of a dying mall in Omaha", 0.5),
+    w("a Cracker Barrel off I-94", 0.5),
   ],
   money: [
     "$40M",
@@ -135,12 +149,13 @@ export const cast: CastPools = {
   //   venue: reads after "in"
   //   catchphrase: something cute they'd post, no end punctuation
   //   quirk: a harmless identifying habit, reads after "Boomers,"
-  //   hypocrisy: a full sentence where {person} complains about another generation while telling on their own
+  //   hypocrisy: one sentence where {speaker} (name plus an age from `ages`) complains about another generation while telling on their own; no sentence breaks before the end, or the never-cut test can't find it
   generations: [
     {
       name: "Millennials",
       plural: true,
       weight: 2,
+      ages: [30, 45],
       traits: {
         venue: [
           "a 47-post thread",
@@ -155,14 +170,14 @@ export const cast: CastPools = {
           "who apologize to their robot vacuum",
         ],
         hypocrisy: [
-          "“They're destroying the planet,” says {person}, awaiting one burrito from three separate gig workers.",
-          "“Stop spending money on experiences,” says {person}, booking a fourth destination wedding this year.",
-          "“Support local businesses,” says {person}, surrounded by fourteen unopened subscription boxes.",
-          "“They have no boundaries,” says {person}, who turned a breakup into a 26-part newsletter.",
-          "“It's all so fake,” says {person}, whose wedding had a hashtag, a drone, and a brand partnership.",
-          "“They need to slow down and be present,” says {person}, who has monetized every hobby they've ever had.",
-          "“The planet can't take much more,” says {person}, between annual flights to Tulum to reset.",
-          "“They're so materialistic,” says {person}, from a $4,000 standing desk used exclusively as a coat rack.",
+          "“They're just lazy,” says {speaker}, awaiting one burrito to arrive from Postmates.",
+          "“It should be about local community,” says {speaker}, booking a fourth destination wedding this year.",
+          "“Support local businesses,” says {speaker}, opening their weekly shipment of HelloFresh.",
+          "“Sometimes things are personal,” says {speaker}, who turned a breakup into a 26-part newsletter.",
+          "“Ugh! It's all so fake!” says {speaker}, whose wedding last year was sponsored by Liquid Death.",
+          "“They need to slow down and be careful,” says {speaker}, editor of the blog Fast And Reckless.",
+          "“The planet can't take much more of this,” says {speaker}, between annual flights to Catania to reset.",
+          "“They're so materialistic,” says {speaker}, on a Zoom call from a $4,000 standing desk.",
         ],
       },
     },
@@ -170,6 +185,7 @@ export const cast: CastPools = {
       name: "Gen Z",
       plural: false,
       weight: 2,
+      ages: [16, 29],
       traits: {
         venue: [
           "a TikTok filmed in a parked car",
@@ -184,20 +200,21 @@ export const cast: CastPools = {
           "who part their hair in the middle",
         ],
         hypocrisy: [
-          "“They're so performative,” says {person}, whose activism is a story that expires in 24 hours.",
-          "“Some of us actually care about the planet,” says {person}, unboxing a 40-item fast-fashion haul.",
-          "“That's literally manipulation,” says {person}, who used therapy words to dump a friend by text.",
-          "“They have no attention span,” says {person}, watching a show, a TikTok, and a different TikTok at once.",
-          "“Boundaries are important,” says {person}, who has ghosted four employers, a landlord, and their mom.",
-          "“It's giving fake,” says {person}, through a filter that rebuilds their entire skull.",
-          "“Educate yourself,” says {person}, whose entire education on the topic was a 40-second video.",
-          "“They just want attention,” says {person}, who has filmed themselves crying eleven times this month.",
+          "“They're so performative,” says {speaker}, in an angry rant set to Nicki Minaj's “Anaconda.”",
+          "“Some of us actually care about the planet,” says {speaker}, from inside an H&M dressing room.",
+          "“They can't handle difficult situations,” says {speaker}, who has never dumped a boyfriend in person.",
+          "“They have no attention span,” says {speaker}, while watching Love Is Blind on television and a Love Is Blind recap on their phone.",
+          "“They're so manipulative,” says {speaker}, in between texting three separate romantic partners “do u miss me?”",
+          "“It's giving fake,” says {speaker}, through the persona of the V-Tuber x_HawtGurl_x.",
+          "“They're just uneducated,” says {speaker}, an active member of the YouTube community Flat Earth Explained.",
+          "“They just want attention,” says {speaker}, who cried about the event and posted photos to Snapchat.",
         ],
       },
     },
     {
       name: "Gen X",
       plural: false,
+      ages: [46, 61],
       traits: {
         venue: [
           "a forum that has been active since 1998",
@@ -211,13 +228,13 @@ export const cast: CastPools = {
           "who have never once read the instructions",
         ],
         hypocrisy: [
-          "“Kids today can't handle anything,” says {person}, who has not returned a voicemail since 1997.",
-          "“They've completely sold out,” says {person}, a regional vice president at a vape company.",
-          "“Nobody reads anymore,” says {person}, who has been on chapter two of the same novel since 2004.",
-          "“Nobody has principles anymore,” says {person}, who sold their punk band's only song to a minivan commercial.",
-          "“They don't stand for anything,” says {person}, who now manages the mall store they used to picket.",
-          "“They're so entitled,” says {person}, who inherited their parents' house and calls it “earning it.”",
-          "“Get off your phone,” says {person}, who raised them on cable TV and microwave burritos.",
+          "“What they're missing is humanity,” says {speaker}, a synthwave DJ with the moniker The Inhuman.",
+          "“They've completely sold out,” says {speaker}, a regional vice president at a vape company.",
+          "“Nobody reads anymore,” says {speaker}, who promised me personally they're about to start Infinite Jest next week.",
+          "“It's like they don't have principles,” says {speaker}, author of the best-selling book “Get Paid at Any Cost.”",
+          "“They don't stand for anything,” said {speaker}, sitting.",
+          "“Be part of the culture,” says {speaker}, who has never heard an album more recent than the Pixies' “Doolittle.”",
+          "“Problem is: The algorithm is addictive,” says {speaker}, a senior researcher at InfiniFeed, fresh from its annual conference on exploiting addiction.",
         ],
       },
     },
@@ -225,6 +242,7 @@ export const cast: CastPools = {
       name: "Boomers",
       plural: true,
       weight: 1.5,
+      ages: [62, 80],
       traits: {
         venue: [
           "a Facebook group with 40,000 members",
@@ -240,22 +258,23 @@ export const cast: CastPools = {
           "who answer the phone with their full name",
         ],
         hypocrisy: [
-          "“They need to think about future generations,” says {person}, who has voted against the school levy eleven times.",
-          "“They need to learn the value of a dollar,” says {person}, whose first house cost $300 and a firm handshake.",
-          "“Keep the government out of my life,” says {person}, cashing a Social Security check.",
-          "“These kids are so easily offended,” says {person}, who called a manager over a cup that said “Happy Holidays.”",
-          "“They believe anything they read online,” says {person}, forwarding a meme about microchips in the vaccine.",
-          "“Nobody respects the troops anymore,” says {person}, who received five draft deferments.",
-          "“They should pull themselves up by their bootstraps,” says {person}, who inherited the bootstrap factory.",
-          "“Nobody wants to work anymore,” says {person}, who retired at 55 and has watched cable news for 19 hours a day since.",
-          "“They're ruining this country,” says {person}, who owns four houses and rents them to those kids at a markup.",
-          "“It's all handouts now,” says {person}, whose college was free and whose pension is guaranteed.",
+          "“They need to think about future generations,” says {speaker}, who introduced a bill to outlaw school teachers earning a salary.",
+          "“They need to learn the value of a dollar,” says {speaker}, whose first house cost $300 and a hot dog.",
+          "“Keep the government out of my life,” says {speaker}, cashing a Social Security check.",
+          "“These kids are so easily offended,” says {speaker}, who called a manager over a cup that said “Happy Holidays.”",
+          "“They believe anything they read online,” says {speaker}, wearing a “vaccines = mind control” t-shirt.",
+          "“They don't respect the troops,” says {speaker}, who received five draft deferments.",
+          "“They should pull themselves up by their bootstraps,” says {speaker}, who inherited the bootstrap factory.",
+          "“Nobody wants to work anymore,” says {speaker}, who retired at 55 to make time for more Fox News.",
+          "“They just want everything!” says {speaker}, who owns four houses and keeps a divorce attorney on retainer.",
+          "“You know what their problem is? Too many handouts,” says {speaker}, who went to college on the government's short-lived “You Got A Nice Face” program.",
         ],
       },
     },
     {
       name: "Gen Alpha",
       plural: false,
+      ages: [6, 13],
       traits: {
         venue: [
           "an iPad video, at full volume",
@@ -269,13 +288,12 @@ export const cast: CastPools = {
           "who try to swipe on magazines",
         ],
         hypocrisy: [
-          "“They're always on their screens,” says {person}, who is nine and was handed an iPad at eleven months to stop crying at a restaurant.",
-          "“They should go play outside,” says {person}, who is eight and has had more wildfire smoke days than snow days.",
-          "“They never go outside,” says {person}, who is ten and has done more lockdown drills than field trips.",
-          "“They should save their money,” says {person}, who is seven and has already been priced out of every housing market.",
-          "“They're so anxious all the time,” says {person}, who is nine and inherited a planet with a countdown on it.",
-          "“They need to learn to do things themselves,” says {person}, who is eight and whose homework is graded by the same AI that wrote it.",
-          "“They need to be more patient,” says {person}, who has never once waited for a video to buffer.",
+          "“They need to learn to share,” says {speaker}, who has licked every cookie on the plate.",
+          "“They're so vain,” says {speaker}, who has a twelve-step skincare routine.",
+          "“They're so fake online,” says {speaker}, who has a brand manager.",
+          "“They have no attention span,” says {speaker}, who wandered off halfway through saying this.",
+          "“They need to learn to do things themselves,” says {speaker}, whose homework is graded by the same AI that wrote it.",
+          "“They should look on the bright side,” says {speaker}, who will never ever EVER live in a home without a roommate.",
         ],
       },
     },
@@ -283,6 +301,7 @@ export const cast: CastPools = {
       name: "the Greatest Generation",
       plural: false,
       weight: 0.3,
+      ages: [99, 104],
       traits: {
         venue: [
           "a letter, by mail, in cursive",
@@ -296,13 +315,13 @@ export const cast: CastPools = {
           "who keep their savings in a coffee can",
         ],
         hypocrisy: [
-          "“Everybody got a fair shake back then,” says {person}, whose idea of fair came with separate water fountains.",
-          "“We didn't need handouts,” says {person}, who got free college, a cheap mortgage, and a pension, all from the government.",
-          "“We built this country with our own two hands,” says {person}, using a GI Bill mortgage their Black neighbors were denied.",
-          "“We all pulled together back then,” says {person}, who voted to close the town pool rather than integrate it.",
-          "“The neighborhood used to be so nice,” says {person}, lowering their voice for the next part.",
-          "“People knew their place back then,” says {person}, meaning exactly what you think.",
-          "“Kids today don't respect their elders,” says {person}, who once told a Black veteran to use the back door.",
+          "“We never complained,” says {speaker}, who then went on to complain about the price of stamps for an hour.",
+          "“Kids today depend on gadgets for everything,” says {speaker}, who needs their grandson to turn on the TV for them.",
+          "“Kids today have no manners,” says {speaker}, who just twenty minutes ago called me fat.",
+          "“Everybody got a fair shake back then,” says {speaker}, who speaks fondly of how “nice” water fountains were back then.",
+          "“They should get a job,” says {speaker}, a retired factory worker who was originally hired because his boss “liked his handshake.”",
+          "“This country is going to shit,” said {speaker}, shitting.",
+          "“People used to know their place,” whispered {speaker}, meaning exactly what you think.",
         ],
       },
     },
@@ -337,6 +356,11 @@ export const cast: CastPools = {
     { name: "Retired Pharmacists" },
     { name: "People Who Own a Boat" },
     { name: "Amateur Beekeepers" },
+    { name: "Youth Pastors Who Vape" },
+    { name: "Divorced Dads With Boats" },
+    { name: "Guys Who Own a Smoker" },
+    { name: "Former Theater Kids Now in Sales" },
+    { name: "Assistant Regional Managers" },
     { name: "Minnesotans", inline: "Minnesotans", weight: 0.3 },
   ],
   products: [
@@ -348,6 +372,16 @@ export const cast: CastPools = {
     { name: "a Reasoning Model With Feelings" },
     { name: "an AI Agent Named Kevin", inline: "an AI agent named Kevin" },
     { name: "a Very Confident Autocomplete" },
+    {
+      name: "a Chatbot That Only Speaks in LinkedIn Posts",
+      inline: "a chatbot that only speaks in LinkedIn posts",
+    },
+    {
+      name: "a Model Trained Exclusively on Yelp Reviews",
+      inline: "a model trained exclusively on Yelp reviews",
+    },
+    { name: "a Smart Fridge With Opinions" },
+    { name: "an Agent That Schedules Your Feelings" },
   ],
   models: [
     "Glorp",

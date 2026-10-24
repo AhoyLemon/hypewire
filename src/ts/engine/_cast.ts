@@ -29,6 +29,9 @@ export interface Person {
 export interface ResolvedGeneration {
   name: string;
   plural: boolean;
+  age: number;
+  /** The cast's {person} plus this generation's age: "Juniper Turnblatt, 29". */
+  speaker: string;
   traits: Record<string, string>;
 }
 
@@ -156,17 +159,38 @@ function pickSubject(
   return applyWrapper(resolved, pickWeighted(fitting, byWeight, rng));
 }
 
+/** Name plus age, mostly in newswire style. */
+const SPEAKER_FORMATS: Array<{
+  weight: number;
+  format: (name: string, age: number) => string;
+}> = [
+  { weight: 3, format: (name, age) => `${name}, ${age}` },
+  { weight: 1, format: (name, age) => `${age}-year-old ${name}` },
+  { weight: 1, format: (name, age) => `${name} (${age})` },
+];
+
+/** Picks the generation's traits and age. {speaker} inside a trait means this generation's spokesperson, so it's filled here. */
 function resolveGeneration(
   generation: Generation,
+  person: Person,
   rng: Rng,
 ): ResolvedGeneration {
+  const age = randomInt(generation.ages[0], generation.ages[1], rng);
+  const { format } = pickWeighted(SPEAKER_FORMATS, byWeight, rng);
+  const speaker = format(`${person.first} ${person.last}`, age);
   const traits = Object.fromEntries(
     Object.entries(generation.traits).map(([key, node]) => [
       key,
-      resolveNode(node, rng),
+      fillTokens(resolveNode(node, rng), { speaker }),
     ]),
   );
-  return { name: generation.name, plural: generation.plural, traits };
+  return {
+    name: generation.name,
+    plural: generation.plural,
+    age,
+    speaker,
+    traits,
+  };
 }
 
 /** Picks every shared detail once, so the headline and excerpt agree. */
@@ -186,22 +210,23 @@ export function pickCast(
   );
   const modelName = resolveNode(cast.models, rng);
   const versions = pickWeighted(cast.modelVersions, byWeight, rng);
+  const person = {
+    first: resolveNode(cast.firstNames, rng),
+    last: resolveNode(cast.lastNames, rng),
+    age: randomInt(34, 88, rng),
+  };
 
   return {
     subject,
-    generation: resolveGeneration(generation, rng),
-    rival: resolveGeneration(rival, rng),
+    generation: resolveGeneration(generation, person, rng),
+    rival: resolveGeneration(rival, person, rng),
     model: { name: modelName, new: versions.new, old: versions.old },
     expert: {
       first: resolveNode(cast.firstNames, rng),
       last: resolveNode(cast.lastNames, rng),
       title: resolveNode(cast.titles, rng),
     },
-    person: {
-      first: resolveNode(cast.firstNames, rng),
-      last: resolveNode(cast.lastNames, rng),
-      age: randomInt(34, 88, rng),
-    },
+    person,
     relative: resolveNode(cast.relatives, rng),
     startup: resolveNode(cast.startups, rng),
     city: resolveNode(cast.cities, rng),
@@ -261,6 +286,8 @@ function generationTokens(
     [`${prefix}.it`]: PLURAL.it,
     [`${prefix}.its`]: PLURAL.its,
     [`${prefix}.them`]: PLURAL.them,
+    [`${prefix}.age`]: String(generation.age),
+    [`${prefix}.speaker`]: generation.speaker,
     ...Object.fromEntries(traits),
   };
 }
