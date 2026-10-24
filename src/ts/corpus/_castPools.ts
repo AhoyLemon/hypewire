@@ -131,7 +131,11 @@ export const cast: CastPools = {
     w("$6", 0.4),
     w("$11.50", 0.3),
   ],
-  // Traits: `venue` reads after "in", `insult` is what others call them, `catchphrase` has no end punctuation, `grievance` is what they're always mad about, and `sin` is what they did and would rather not discuss (past tense, reads after "a generation that").
+  // Traits:
+  //   venue: reads after "in"
+  //   catchphrase: something cute they'd post, no end punctuation
+  //   quirk: a harmless identifying habit, reads after "Boomers,"
+  //   hypocrisy: a full sentence where {person} complains about another generation while telling on their own
   generations: [
     {
       name: "Millennials",
@@ -144,26 +148,17 @@ export const cast: CastPools = {
           "a Medium post about why we need to talk about this",
           "a podcast with a Patreon",
         ],
-        insult: [
-          "adults who call their dog their child",
-          "people who think brunch is a personality",
-          "renters for life, and they know it",
+        catchphrase: ["I can't even", "Adulting is hard", "This is fine"],
+        quirk: [
+          "who own more houseplants than chairs",
+          "who still use the crying-laughing emoji",
+          "who apologize to their robot vacuum",
         ],
-        catchphrase: [
-          "This is literally violence",
-          "I'm just so tired",
-          "We were promised jetpacks",
-        ],
-        grievance: [
-          "the housing market",
-          "student loans",
-          "being blamed for everything",
-        ],
-        sin: [
-          "profited handsomely from accelerated ecological collapse",
-          "turned every hobby into a side hustle",
-          "invented the influencer",
-          "had a single burrito delivered by three separate gig workers",
+        hypocrisy: [
+          "“They're destroying the planet with all their gadgets,” says {person}, waiting on a single burrito being delivered by three separate gig workers.",
+          "“They need to stop spending money on experiences,” says {person}, while booking a fourth destination wedding this year.",
+          "“They should support local businesses,” says {person}, surrounded by fourteen unopened subscription boxes.",
+          "“They have no boundaries,” says {person}, who turned a breakup into a 26-part newsletter.",
         ],
       },
     },
@@ -178,21 +173,17 @@ export const cast: CastPools = {
           "a Discord server",
           "a comment that was just a skull emoji",
         ],
-        insult: [
-          "people who can't make a phone call",
-          "kids who think email is formal",
-          "people who film themselves crying",
+        catchphrase: ["No cap", "It's giving", "Slay"],
+        quirk: [
+          "who communicate mostly in skull emojis",
+          "who say no cap without irony",
+          "who part their hair in the middle",
         ],
-        catchphrase: [
-          "Respectfully, this is giving obsolete",
-          "No cap, this is mid",
-          "OK, Boomer",
-        ],
-        grievance: ["phone calls", "the job market", "anyone over 25"],
-        sin: [
-          "turned mental health into content",
-          "made fast fashion a personality",
-          "ghosted every job interview they ever landed",
+        hypocrisy: [
+          "“They're so performative,” says {person}, in a 40-minute video about their morning routine.",
+          "“They need to log off,” says {person}, who has not looked up from a phone since 2019.",
+          "“Some of us actually value authenticity,” says {person}, in an outfit bought for one photo and returned the same day.",
+          "“They should just get a real job,” says {person}, who ghosted three interviews this week.",
         ],
       },
     },
@@ -205,24 +196,16 @@ export const cast: CastPools = {
           "a letter to the editor nobody printed",
           "a podcast with eleven listeners",
         ],
-        insult: [
-          "the generation everyone forgets exists",
-          "latchkey kids who never recovered",
-          "people who peaked in 1994",
+        catchphrase: ["Whatever", "As if"],
+        quirk: [
+          "who still own a fax machine",
+          "who still have a landline, somehow",
+          "who have never once read the instructions",
         ],
-        catchphrase: [
-          "Whatever, nobody asked us",
-          "We had to raise ourselves",
-          "This is why we can't have nice things",
-        ],
-        grievance: [
-          "Boomers and Millennials, equally",
-          "being forgotten, which they also prefer",
-        ],
-        sin: [
-          "sold out every ideal they had in 1991 for a mortgage",
-          "raised the iPad generation and then blamed the iPad",
-          "invented cynicism and called it a personality",
+        hypocrisy: [
+          "“Kids today can't handle anything,” says {person}, who has not returned a voicemail since 1997.",
+          "“They've completely sold out,” says {person}, a regional vice president at a vape company.",
+          "“Nobody reads anymore,” says {person}, who has been on chapter two of the same novel since 2004.",
         ],
       },
     },
@@ -237,26 +220,18 @@ export const cast: CastPools = {
           "a comment section, in all caps",
           "a voicemail that ran eleven minutes",
         ],
-        insult: [
-          "people who still print their emails",
-          "the reason nobody can afford a house",
-          "people who think the cloud is weather",
+        catchphrase: ["Love, Mom", "Please call me", "Who is this?"],
+        quirk: [
+          "who still forward chain emails",
+          "who type with one finger",
+          "who still use Facebook",
+          "who answer the phone with their full name",
         ],
-        catchphrase: [
-          "Nobody wants to work anymore",
-          "Back in my day, we earned things",
-          "Kids today have no respect",
-          "I worked hard for everything I have",
-        ],
-        grievance: [
-          "participation trophies",
-          "the self-checkout",
-          "young people being too sensitive",
-        ],
-        sin: [
-          "dismantled the social safety net and then retired on it",
-          "bought four houses on summer-job wages and pulled the ladder up behind them",
-          "voted for every single one of these problems",
+        hypocrisy: [
+          "“They need to learn the value of a dollar,” says {person}, from a four-bedroom house bought in 1979 for $300 and a firm handshake.",
+          "“Nobody wants to work anymore,” says {person}, who retired at 52 and has been mad ever since.",
+          "“They need to think about future generations,” says {person}, who has voted against the school levy eleven times.",
+          "“Kids today expect everything handed to them,” says {person}, whose house was a wedding present.",
         ],
       },
     },
@@ -269,17 +244,16 @@ export const cast: CastPools = {
           "a YouTube Short with 9 million views",
           "a block game server",
         ],
-        insult: [
-          "iPad kids",
-          "people who think a book is a broken tablet",
-          "children who have never seen a phone with buttons",
-        ],
         catchphrase: ["Skibidi", "That's so Ohio", "Six seven"],
-        grievance: ["bedtime", "screen time limits", "slow Wi-Fi"],
-        sin: [
-          "ruined Ohio as a word",
-          "got raised entirely by autoplay",
-          "screamed at a waiter through an iPad",
+        quirk: [
+          "who say skibidi in casual conversation",
+          "who think every screen is a touch screen",
+          "who try to swipe on magazines",
+        ],
+        hypocrisy: [
+          "“That's so rude,” says {person}, while screaming at a waiter through an iPad.",
+          "“They're always on their screens,” says {person}, who is nine and averages eleven hours of screen time a day.",
+          "“They need to be more patient,” says {person}, who has never once waited for a video to buffer.",
         ],
       },
     },
@@ -293,19 +267,16 @@ export const cast: CastPools = {
           "a phone call at 6 a.m.",
           "a church newsletter",
         ],
-        insult: [
-          "people who stormed beaches and will mention it",
-          "the only generation that ever fixed anything",
+        catchphrase: ["Hello, this is Grandpa", "Who is this?"],
+        quirk: [
+          "who still write checks at the grocery store",
+          "who still dress up to fly",
+          "who keep their savings in a coffee can",
         ],
-        catchphrase: [
-          "We didn't complain, we just suffered quietly",
-          "Young people don't know what hardship is",
-        ],
-        grievance: ["young people", "the price of a stamp"],
-        sin: [
-          "built the suburbs and then segregated them",
-          "institutionalized segregation and called it tradition",
-          "invented the nuclear family and the nuclear bomb in the same decade",
+        hypocrisy: [
+          "“Back in my day, people respected the neighborhood,” says {person}, from a suburb that was segregated on purpose.",
+          "“Young people need to learn to share,” says {person}, whose house came with a covenant about who couldn't buy next door.",
+          "“Everybody got a fair shake back then,” says {person}, who got a fair shake, specifically.",
         ],
       },
     },

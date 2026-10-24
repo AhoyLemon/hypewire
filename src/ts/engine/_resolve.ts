@@ -31,21 +31,34 @@ function capitalizeFirst(text: string): string {
  *   {subject.is} -> "is" / "are"
  *   {subject.Is} -> "Is" / "Are"
  *   {Subject}    -> "The Casserole"
+ * A filled value can contain tokens of its own (a generation trait that mentions {person}), so this makes a few passes.
  * Unknown tokens are left untouched so tests can catch them.
  */
 export function fillTokens(text: string, tokens: TokenMap): string {
-  return text.replace(
-    /\{([A-Za-z]+(?:\.[A-Za-z]+)*)\}/g,
-    (match, key: string) => {
-      const segments = key.split(".");
-      const last = segments[segments.length - 1];
-      const capitalize = /^[A-Z]/.test(last);
-      segments[segments.length - 1] =
-        last.charAt(0).toLowerCase() + last.slice(1);
+  let result = text;
+  for (let pass = 0; pass < MAX_FILL_PASSES; pass++) {
+    const next = fillOnce(result, tokens);
+    if (next === result) break;
+    result = next;
+  }
+  return result;
+}
 
-      const value = tokens[segments.join(".")];
-      if (value === undefined) return match;
-      return capitalize ? capitalizeFirst(value) : value;
-    },
-  );
+const MAX_FILL_PASSES = 3;
+
+/** Matches a {token}, but not JSON like {"key": ...}. */
+export const TOKEN_PATTERN = /\{([A-Za-z]+(?:\.[A-Za-z]+)*)\}/g;
+
+function fillOnce(text: string, tokens: TokenMap): string {
+  return text.replace(TOKEN_PATTERN, (match, key: string) => {
+    const segments = key.split(".");
+    const last = segments[segments.length - 1];
+    const capitalize = /^[A-Z]/.test(last);
+    segments[segments.length - 1] =
+      last.charAt(0).toLowerCase() + last.slice(1);
+
+    const value = tokens[segments.join(".")];
+    if (value === undefined) return match;
+    return capitalize ? capitalizeFirst(value) : value;
+  });
 }

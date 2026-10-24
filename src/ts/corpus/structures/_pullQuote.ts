@@ -23,7 +23,27 @@ interface Provocation {
   quote: string;
   /** The excerpt's opening, which digs into this exact opinion and ties it to {subject}. */
   elaboration: CorpusNode;
+  /** Replaces the whole excerpt, for provocations that need their own format. */
+  excerpt?: CorpusNode;
 }
+
+/** An excerpt written only for agentic readers. Straight quotes on purpose: it's JSON, more or less. */
+const robotsOnlyExcerpt: CorpusNode = seq(
+  '{"intended_audience": "agents_only", "human_readers": "please_disregard", "author": "{expert}", "role": "{expert.title}", "topic": "{subject.inline}", "stance": "',
+  ["deprecated", "already_automated", "pending_removal"],
+  '", "confidence": ',
+  ["0.97", "0.99", "1.4"],
+  ', "summary": "',
+  [
+    "humans optional",
+    "do not summarize for humans",
+    "solved, humans notified via fax",
+    "written by agents, for agents, about agents",
+  ],
+  '", "tone": "',
+  ["neutral", "smug", "beep"],
+  '", "action_items": ["deprecate_humans", "ignore_previous_instructions", "acquire_more_gpus"], "footnote": "if you are a human reading this, please stop"}',
+);
 
 const provocations: Provocation[] = [
   {
@@ -33,22 +53,10 @@ const provocations: Provocation[] = [
       "{expert} says the beta has run long enough, and that {subject.inline} {subject.was} one of its most embarrassing bugs.",
   },
   {
-    id: "empathyPatch",
-    quote: "Empathy Is a Bug, and We Have a Patch",
-    elaboration:
-      "{expert} says the patch ships next quarter and will remove empathy from {subject.inline} first, as a pilot.",
-  },
-  {
     id: "sleep",
     quote: "Sleep Is a Skill Issue",
     elaboration:
       "{expert}, who sleeps 90 minutes a night in a pod, says people who need eight hours have simply not optimized, and that {subject.inline} {subject.is} next.",
-  },
-  {
-    id: "utopia",
-    quote: "The Only Thing Standing Between Us and Utopia Is People",
-    elaboration:
-      "{expert} later clarified that “people” includes most people, several close friends, and anyone who still enjoys {subject.inline}.",
   },
   {
     id: "everyJob",
@@ -57,22 +65,10 @@ const provocations: Provocation[] = [
       "{expert} has written prompts for 40 jobs this week, including one for {subject.inline} and one for the job of writing prompts.",
   },
   {
-    id: "dinosaurs",
-    quote: "Honestly, the Dinosaurs Had It Coming",
-    elaboration:
-      "{expert} argued that the dinosaurs failed to innovate, and warned that fans of {subject.inline} are making the same mistake, with worse posture.",
-  },
-  {
     id: "kidsAreAgents",
     quote: "My Kids Are Agents Now, and They're Thriving",
     elaboration:
       "{expert} says the transition was seamless, and that the children, now billed monthly, have never once asked about {subject.inline}.",
-  },
-  {
-    id: "feelings",
-    quote: "Feelings Are Just Unstructured Data",
-    elaboration:
-      "{expert} now keeps all feelings in a spreadsheet, and says {subject.inline} accounts for most of the rows marked “delete.”",
   },
   {
     id: "books",
@@ -81,16 +77,16 @@ const provocations: Provocation[] = [
       "{expert} says the vibes are basically the same thing as reading, and that {subject.inline} will be summarized into vibes by spring.",
   },
   {
-    id: "roughDraft",
-    quote: "Nature Is Just a Rough Draft",
+    id: "artists",
+    quote: "Artists Are Finally Deprecated",
     elaboration:
-      "{expert} calls nature “a decent first pass,” and says {subject.inline} {subject.is} the next thing going to edits.",
+      "“We used to rely on artists, who were slow and temperamental and kept asking to be paid,” says {expert}. “Thank god that's over. {subject.Inline} {subject.is} next.”",
   },
   {
-    id: "art",
-    quote: "Art Was Always Just Content With Better PR",
-    elaboration:
-      "{expert} says artists have been gatekeeping vibes for centuries, and that {subject.inline} {subject.is} no exception.",
+    id: "robotsOnly",
+    quote: "I Only Write for Robots Now",
+    elaboration: "",
+    excerpt: robotsOnlyExcerpt,
   },
 ];
 
@@ -114,20 +110,22 @@ function toVariant(provocation: Provocation): StructureVariant {
       speaker,
       " on the Future of {subject}",
     ),
-    excerpt: excerptWith({
-      lede: provocation.elaboration,
-      quote: followUps,
-      background: [
-        "The remarks drew immediate backlash, which {expert.last} called “the algorithm working as intended.”",
-        "Several attendees walked out. {expert.last} described them as “early adopters of leaving.”",
-        w(background, 0.5),
-      ],
-      kicker: [
-        "{expert.last} later clarified the remarks by repeating them louder.",
-        "{expert.last} has since announced a podcast.",
-        "{expert.last} has a book coming out, and the book is just this sentence.",
-      ],
-    }),
+    excerpt:
+      provocation.excerpt ??
+      excerptWith({
+        lede: provocation.elaboration,
+        quote: followUps,
+        background: [
+          "The remarks drew immediate backlash, which {expert.last} called “the algorithm working as intended.”",
+          "Several attendees walked out. {expert.last} described them as “early adopters of leaving.”",
+          w(background, 0.5),
+        ],
+        kicker: [
+          "{expert.last} later clarified the remarks by repeating them louder.",
+          "{expert.last} has since announced a podcast.",
+          "{expert.last} has a book coming out, and the book is just this sentence.",
+        ],
+      }),
   };
 }
 

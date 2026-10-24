@@ -66,6 +66,22 @@ describe("fillTokens", () => {
       "{nope} and {subject.nope}",
     );
   });
+
+  test("fills tokens that appear inside a filled value", () => {
+    const nested = {
+      person: "Dag Mulch",
+      "rival.hypocrisy": "“Nobody works,” says {person}, who retired at 52.",
+    };
+    expect(fillTokens("{rival.hypocrisy}", nested)).toBe(
+      "“Nobody works,” says Dag Mulch, who retired at 52.",
+    );
+  });
+
+  test("ignores JSON braces", () => {
+    expect(fillTokens('{"author": "{subject}"}', tokens)).toBe(
+      '{"author": "the Casserole"}',
+    );
+  });
 });
 
 describe("seededRng", () => {

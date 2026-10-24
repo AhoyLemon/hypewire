@@ -131,7 +131,7 @@ export const study: Structure = {
           "The AI was given a three-week head start, which the authors call standard practice in the field they invented.",
           "Efficiency was measured in vibes per second, a unit the researchers invented that morning to make sure the numbers came out right.",
           "The benchmark measured how quickly a chatbot and a human could type the word “{subject.bareInline}.” For fairness, the human used a rotary phone.",
-          "In a rigorous double-blind setup, the human was blindfolded and the AI was not.",
+          "It was a blind study. The human was blindfolded, which was the AI's idea.",
         ],
         quote: [
           "“Was the test fair? Define fair,” says lead researcher {expert}, {expert.title} at {startup}.",

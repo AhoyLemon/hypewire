@@ -12,6 +12,7 @@ import {
   variantsOf,
   type GeneratedPost,
 } from "../src/ts/engine/_generate";
+import { TOKEN_PATTERN } from "../src/ts/engine/_resolve";
 import { ELLIPSIS, POST_LIMIT } from "../src/ts/engine/_truncate";
 import { graphemeLength } from "../src/ts/lib/graphemes";
 
@@ -26,7 +27,8 @@ function problems(post: GeneratedPost): string[] {
   const written = `${headline}\n${post.debug.fullExcerpt}`;
   const issues: string[] = [];
 
-  if (/[{}]/.test(written)) issues.push("unfilled {token}");
+  if (new RegExp(TOKEN_PATTERN.source).test(written))
+    issues.push("unfilled {token}");
   if (/undefined|NaN/.test(written)) issues.push("undefined or NaN");
   if (/ {2}/.test(written)) issues.push("double space");
   if (/\s[,.!?;:]/.test(written)) issues.push("space before punctuation");

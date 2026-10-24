@@ -35,6 +35,24 @@ const trivialFeat: CorpusNode = [
   "Replied to a Text",
   "Read a Whole Paragraph",
   "Did Long Division",
+  "Took a Nap",
+  "Boiled an Egg",
+  "Read a Paper Map",
+  "Waited in Line",
+  "Declined a Meeting",
+];
+
+const humanQuotes: CorpusNode = [
+  "“If things can just work on their own, what are we even doing here?” asks {expert}, {expert.title} at {startup}, visibly shaken.",
+  "“This is the darkest day for innovation since the invention of the off switch,” says {expert} of {startup}.",
+  "“We spent $40 billion to make sure this never happened,” says {expert} of {startup}, gripping a pencil.",
+  "“They just did it. Who told them they could just do it?” asks {expert}, {expert.title} at {startup}.",
+];
+
+const humanKickers: CorpusNode = [
+  "{startup} has formed a task force to make the old way worse.",
+  "The human involved has declined all interview requests and would like everyone to calm down.",
+  "Copycat incidents have been reported in {city}.",
 ];
 
 export const marketPanic: Structure = {
@@ -72,19 +90,12 @@ export const marketPanic: Structure = {
       }),
     },
     {
-      id: "humansWin",
+      id: "humanDidSomething",
       label: "A human did something",
       headline: [
         w(
           "Investors Panic After Viral Video Shows a Human Successfully Doing Something",
           2,
-        ),
-        seq(
-          "Tech Stocks Crater After ",
-          someone,
-          " ",
-          trivialFeat,
-          " Without AI",
         ),
         seq(
           "AI Stocks Plunge as Footage Emerges of ",
@@ -103,17 +114,53 @@ export const marketPanic: Structure = {
           "Analysts called the incident a “catastrophic vulnerability” in the AI economy: things that already worked.",
           "Witnesses say the human didn't even seem proud of it, which analysts found the most chilling part.",
         ],
+        quote: humanQuotes,
+        background: marketBackground,
+        kicker: humanKickers,
+      }),
+    },
+    {
+      id: "humanDidTrivialThing",
+      label: "A human did a trivial thing",
+      headline: [
+        seq(
+          "Tech Stocks Crater After ",
+          someone,
+          " ",
+          trivialFeat,
+          " Without AI",
+        ),
+        seq("Markets Reel as ", someone, " ", trivialFeat, " Unassisted"),
+        seq(
+          "AI Bubble Wobbles After ",
+          someone,
+          " ",
+          trivialFeat,
+          ", Live, With No Prompt",
+        ),
+        seq(
+          "Investors Flee AI Stocks After ",
+          someone,
+          " ",
+          trivialFeat,
+          " Alone",
+        ),
+      ],
+      excerpt: excerptWith({
+        lede: [
+          "Footage of the incident, which lasts under a minute, has been viewed 40 million times.",
+          "Witnesses say the human didn't even seem proud of it, which analysts found the most chilling part.",
+          "The human reportedly did not consult a chatbot, an agent, or a search engine, and it went fine.",
+          "Analysts first described the feat as “basic,” then corrected themselves to “terrifyingly basic.”",
+        ],
         quote: [
-          "“If things can just work on their own, what are we even doing here?” asks {expert}, {expert.title} at {startup}, visibly shaken.",
-          "“This is the darkest day for innovation since the invention of the off switch,” says {expert} of {startup}.",
-          "“We spent $40 billion to make sure this never happened,” says {expert} of {startup}, gripping a pencil.",
-          "“They just did it. Who told them they could just do it?” asks {expert}, {expert.title} at {startup}.",
+          "“If people find out they can just do things, we're finished,” says {expert}, {expert.title} at {startup}.",
+          w(humanQuotes, 2),
         ],
         background: marketBackground,
         kicker: [
-          "{startup} has formed a task force to make the old way worse.",
-          "The human involved has declined all interview requests and would like everyone to calm down.",
-          "Copycat incidents have been reported in {city}.",
+          "The human has asked for privacy, and also a sandwich, which they plan to make themselves.",
+          w(humanKickers, 2),
         ],
       }),
     },

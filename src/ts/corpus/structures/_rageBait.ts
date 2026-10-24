@@ -1,12 +1,13 @@
 import { w, type Structure } from "../../engine/_types.js";
-import { excerptWith, kickers } from "../_excerpts.js";
+import { excerptWith } from "../_excerpts.js";
 
-// {rival} is always the one who's mad at {generation}. Both carry stereotype traits from _castPools.ts. The joke is hypocrisy: whoever is complaining is dodging their own `sin`.
+// {generation} is using AI and gets a harmless `quirk`. {rival} is furious, and its spokesperson's `hypocrisy` line tells on itself. The narrator never judges anyone.
 export const rageBait: Structure = {
   id: "rageBait",
   label: "Generational Rage-Bait",
   family: "Rage and takes",
   weight: 2,
+  allowWrappers: false,
   headline: [
     w(
       "{Generation} {generation.Is} Using AI to Replace {subject}, and {rival} {rival.Is} Furious",
@@ -19,29 +20,22 @@ export const rageBait: Structure = {
   ],
   excerpt: excerptWith({
     lede: [
-      "It started in {rival.venue}, as these things do.",
-      "{Rival} first found out in {rival.venue} and {rival.has} not calmed down since.",
-      "{Rival}, already furious about {rival.grievance}, {rival.has} found something new to be furious about.",
-      "{Generation}, a generation that {generation.sin}, insist{generation.s} this is different.",
+      "{Generation}, {generation.quirk}, {generation.has} started using AI for {subject.inline}.",
+      "It started when {generation}, {generation.quirk}, asked a chatbot to handle {subject.inline}.",
+      "The trouble began in {generation.venue}, where {generation}, {generation.quirk}, announced a plan to let AI handle {subject.inline}.",
     ],
     quote: [
-      w(
-        "“{rival.Catchphrase},” says {person}, speaking for {rival}, a generation that {rival.sin}.",
-        3,
-      ),
-      "“{rival.Catchphrase}. Also, {subject.inline} {subject.was} better when {subject.it} {subject.was} hard,” says {person}, who speaks for {rival} whether {rival} likes it or not.",
+      w("{rival.hypocrisy}", 4),
       "“I'm not mad. I'm disappointed. Also, I'm mad,” says {person}, speaking for {rival}, who did not ask.",
     ],
     background: [
-      "{Generation} fired back in {generation.venue}, calling {rival} “{rival.insult}.”",
-      "{Rival} responded by calling {generation} “{generation.insult}” and changing the subject.",
+      "{Generation} responded in {generation.venue}, which {rival} could not figure out how to open.",
       "Experts say the two generations have not agreed on anything since the invention of the microwave.",
     ],
     kicker: [
       "Thanksgiving is expected to be tense.",
       "{Generation} could not be reached for comment, but did post “{generation.catchphrase}” in {generation.venue}.",
       "Neither generation has apologized for anything, ever.",
-      w(kickers, 0.5),
     ],
   }),
 };
