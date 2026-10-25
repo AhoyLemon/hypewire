@@ -14,7 +14,7 @@ It isn't agentic. Like [sextips](https://github.com/AhoyLemon/sextips), it's a h
 - `bun run dev`: start the workbench at http://localhost:3000.
 - `bun run sample [count]`: print a batch of posts in the terminal (10 by default).
 - `bun run card [count]`: render headline images and a page that mocks them up as Bluesky posts, at http://localhost:3000/out/cards/ while `bun run dev` is running. It renders one post per structure, `count` random ones (6 by default), and the longest Pull Quote headline it can find.
-- `bun run post:bluesky --dry-run`: generate the post the bot would send, without sending it.
+- `bun run post:bluesky --dry-run`: generate the post the bot would send, without sending it. It prints the text and saves the image to `out/post-<seed>.png`.
 - `bun run test`: check Sass and TypeScript, then run the unit tests.
 - `bun run build`: build the Sass, Pug and TypeScript.
 
@@ -23,7 +23,8 @@ It isn't agentic. Like [sextips](https://github.com/AhoyLemon/sextips), it's a h
 1. Pick a **structure** by weight (The Death Notice, The Resurrection, The Pull Quote and so on).
 2. Pick the **cast** once, so the headline and excerpt agree: a subject that fits the structure (sometimes dressed in a wrapper like "Big {X}"), a fake expert, a fake startup, a city, a generation, and some numbers.
 3. Resolve the headline and the excerpt, then fill in their `{tokens}` from the cast.
-4. Fit the excerpt to Bluesky's 300 graphemes. It's the whole post text, since the headline goes in an image (`src/ts/card/_headlineCard.ts`). The excerpt runs until it hits the limit, gets cut at a word boundary, and ends in `…` so it reads like a news summary. The headline is never cut. Its font size steps down as it gets longer.
+4. Fit the excerpt to Bluesky's 300 graphemes. It's the whole post text, since the headline goes in an image. The excerpt runs until it hits the limit, gets cut at a word boundary, and ends in `…` so it reads like a news summary.
+5. Set the headline in a 1200×630 news-style image: the masthead and date, the structure's section, and the headline, whose font size steps down as it gets longer. The headline is never cut, and it doubles as the image's alt text.
 
 Every post comes from a seed. The same seed (plus the same forced structure or subject) always gives the same post.
 
@@ -87,7 +88,7 @@ Add it to `_subjects.ts`. Set `plural: true` for plural nouns, `activity` if it 
 
 ### Adding a structure
 
-Create `structures/_yourStructure.ts`, export a `Structure`, and add it to `_corpus.ts`. Use `requires: ["activity"]` if it needs `{subject.activity}`.
+Create `structures/_yourStructure.ts`, export a `Structure`, and add it to `_corpus.ts`. Use `requires: ["activity"]` if it needs `{subject.activity}`. Give it a newspaper section for the headline image in `SECTIONS` in `src/ts/card/_headlineCard.ts`.
 
 A structure brings its own excerpt with `excerptWith({ lede, quote, background, kicker })`. Any part you leave out falls back to the generic pool in `_excerpts.ts`. To mix the generic pool into your own at a lower rate, add it as one weighted option: `lede: ["your line", "another line", w(ledes, 1)]`.
 
@@ -101,15 +102,20 @@ When a structure has several different jokes and each headline needs its own mat
 - **Tokens.** Every `{token}` has to resolve, and a capitalized token has to start each headline and sentence.
 - **Pronouns.** A batch of posts has to render cleanly with everyone as "he", then as "she", then as "they", so a verb that ignores singular "they" ("they has") fails. A pronoun token followed by a plain-text verb ("{person.he} has", "{person.he} plans") fails too, whether or not a post happens to pick it. Every `lock()` has to be an option in an array, name someone who's in the cast there, and leave an option for each set of pronouns.
 - **Real brands.** They're fine as background detail, but don't make up claims about what a real company or person does. Quoted people, experts, startups and investors are invented.
+- **The headline image.** Every structure needs a section in `SECTIONS`, and the longest headline at each font size has to fit inside the image's padding. `tests/card.test.ts` lays out the worst ones and reports any text that spills.
 - **Run `bun run test` after editing.** The coverage test renders every structure and variant with every subject and wrapper that fits it, and it prints the exact post when something breaks.
 
 ## The workbench
 
 `bun run dev` serves a local page for testing the corpus. You can force a structure and/or a subject, type a seed, generate a batch of 20, and open the full excerpt from before the cut. The URL (`?seed=…&structure=…&subject=…`) reproduces whatever is on screen, which is handy when a post comes out broken or perfect.
 
+Each post shows the way it'll look on Bluesky: the excerpt, then the headline image. The workbench renders the image with the same card code the post script uses, through satori and the card fonts loaded from jsDelivr. The import map that points to them is built from the installed versions (`scripts/_pugLocals.ts`), so the preview can't drift from what posts. If the CDN can't be reached, the headline shows as plain text and the page says why.
+
 It's also published at https://ahoylemon.github.io/hypewire/. `.github/workflows/deploy.yml` builds the site and deploys it to GitHub Pages on every push to `main`, which needs the repo's Pages source set to GitHub Actions.
 
 ## Posting
+
+Each post is the excerpt as text, with the headline image attached and the headline as its alt text.
 
 `.github/workflows/post-bluesky.yml` posts once a day at a random time between 9am and 9pm Central. After each scheduled run, `scripts/reschedule-bluesky.ts` picks tomorrow's time and commits it back to the workflow.
 

@@ -1,12 +1,13 @@
 import { readFile } from "node:fs/promises";
 
 import { Resvg } from "@resvg/resvg-js";
-import satori, { type Font } from "satori";
+import satori, { type Font, type SatoriNode } from "satori";
 
 import {
   CARD_FONTS,
   CARD_HEIGHT,
   CARD_WIDTH,
+  fontPath,
   headlineCard,
   type HeadlineCardInput,
 } from "../src/ts/card/_headlineCard.js";
@@ -14,18 +15,9 @@ import {
 /** Bluesky's per-image blob limit, in bytes. */
 export const IMAGE_LIMIT = 1_000_000;
 
-/** The Fontsource file for a card font, named from its family and weight so the two can't drift apart. */
-const fontFile = ({ name, weight }: { name: string; weight: number }): URL => {
-  const pkg = name.toLowerCase();
-  return new URL(
-    `../node_modules/@fontsource/${pkg}/files/${pkg}-latin-${weight}-normal.woff`,
-    import.meta.url,
-  );
-};
-
 const FONT_FILES = Object.values(CARD_FONTS).map((font) => ({
   ...font,
-  url: fontFile(font),
+  url: new URL(`../node_modules/${fontPath(font)}`, import.meta.url),
 }));
 
 let fonts: Promise<Font[]> | null = null;
@@ -43,13 +35,22 @@ function loadFonts(): Promise<Font[]> {
   return fonts;
 }
 
-/** Renders the headline card to a PNG, and throws if it's too big for Bluesky. */
-export async function renderCard(input: HeadlineCardInput): Promise<Buffer> {
-  const svg = await satori(headlineCard(input), {
+/** Lays the card out as SVG. `onNodeDetected` reports each element's box, which the tests use to check the headline fits. */
+export async function cardSvg(
+  input: HeadlineCardInput,
+  onNodeDetected?: (node: SatoriNode) => void,
+): Promise<string> {
+  return satori(headlineCard(input), {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
     fonts: await loadFonts(),
+    onNodeDetected,
   });
+}
+
+/** Renders the headline card to a PNG, and throws if it's too big for Bluesky. */
+export async function renderCard(input: HeadlineCardInput): Promise<Buffer> {
+  const svg = await cardSvg(input);
   const png = new Resvg(svg, { fitTo: { mode: "width", value: CARD_WIDTH } })
     .render()
     .asPng();

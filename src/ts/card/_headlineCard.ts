@@ -4,6 +4,7 @@ import { graphemeLength } from "../lib/graphemes.js";
 
 export const CARD_WIDTH = 1200;
 export const CARD_HEIGHT = 630;
+export const CARD_PADDING = { top: 52, right: 72, bottom: 60, left: 72 };
 
 /** Font family names the renderer has to register, so the card and its fonts can't drift apart. */
 export const CARD_FONTS = {
@@ -11,6 +12,14 @@ export const CARD_FONTS = {
   label: { name: "Inter", weight: 800 },
   meta: { name: "Inter", weight: 500 },
 } as const;
+
+export type CardFont = (typeof CARD_FONTS)[keyof typeof CARD_FONTS];
+
+/** A card font's Fontsource file as a package path. Bun reads it from node_modules, and the workbench resolves it through the import map. */
+export function fontPath({ name, weight }: CardFont): string {
+  const pkg = name.toLowerCase();
+  return `@fontsource/${pkg}/files/${pkg}-latin-${weight}-normal.woff`;
+}
 
 const INK = "#161616";
 /** Softer than the masthead, so the image doesn't outshout the post text above it. */
@@ -168,10 +177,10 @@ export function headlineCard({
       boxSizing: "border-box",
       display: "flex",
       flexDirection: "column",
-      paddingTop: 52,
-      paddingRight: 72,
-      paddingBottom: 60,
-      paddingLeft: 72,
+      paddingTop: CARD_PADDING.top,
+      paddingRight: CARD_PADDING.right,
+      paddingBottom: CARD_PADDING.bottom,
+      paddingLeft: CARD_PADDING.left,
       background: PAPER,
       color: INK,
     },

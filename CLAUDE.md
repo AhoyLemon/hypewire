@@ -11,6 +11,7 @@ A Bluesky bot that posts fake AI-hype headlines and excerpts, built from a hand-
 - Use the capitalized token form (`{Subject}`, `{subject.Is}`) at the start of a headline or sentence.
 - After any corpus change, run `bun run test`. `tests/corpus.test.ts` is the safety net for grammar and length bugs, so extend its `problems()` checks when a new kind of mistake shows up.
 - Vue comes from a CDN `<script>` tag (`src/pug/partials/_javascripts.pug`), typed with `declare const Vue: typeof import("vue")`. Don't add a bundler for it.
+- The headline image is one layout (`src/ts/card/_headlineCard.ts`, pure TypeScript) rendered two ways: the post script uses the installed satori and resvg (`scripts/_renderCard.ts`), and the workbench imports satori and the fonts from jsDelivr through an import map built from the installed versions (`scripts/_pugLocals.ts`). Change the look in the card file, never in one renderer.
 
 ## Writing corpus jokes
 
