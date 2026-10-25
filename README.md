@@ -117,10 +117,10 @@ It's also published at https://ahoylemon.github.io/hypewire/. `.github/workflows
 
 | Where | What's in it |
 | --- | --- |
-| `src/img/brand/` | The logo kit: the "upward revision" balloon chart as a symbol, wordmark and avatar, each in color, one-color and reverse, plus the Bluesky banner |
+| `src/img/brand/` | The logo kit: the "upward revision" balloon chart as a symbol, wordmark and avatar, each in color, one-color and reverse |
 | `src/img/favicon/` | The favicon set and webmanifest, with relative paths so they work under `/hypewire/` |
 | `src/img/og-wide.png` | The site's OpenGraph image |
-| `_NFW/` | Design sources that never ship: the OpenGraph template and the approved headline-card mock |
+| `_NFW/` | Design sources that never ship with the site: the OpenGraph template, the approved headline-card mock, the Bluesky profile banner (`bluesky-banner.png`), and the GitHub repo's social preview (`OpenGraph-GitHubRepo.png`), which GitHub only takes as a manual upload in Settings |
 
 The palette is paper `#f6f3ea`, ink `#161616`, red `#b3121f` and rule `#d6d0c2`. The headline card keeps its own copy in `src/ts/card/_headlineCard.ts`, and the workbench's lives in `src/scss/abstracts/_variables.scss`.
 
