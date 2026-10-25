@@ -4,7 +4,7 @@ Each post is the excerpt as text, with the headline image attached and the headl
 
 ## The schedule
 
-`.github/workflows/post-bluesky.yml` posts four times a day, around the clock: at 3am, 9am, 3pm and 9pm Central, each run waiting a random 0 to 59 minutes first so posts don't land at the same minute every day. The cron's `timezone` key keeps the slots on Central time through daylight saving, and skipping the 2am hour means a slot is never dropped or doubled. A run GitHub drops costs that one post and nothing else.
+`.github/workflows/post-bluesky.yml` posts four times a day, around the clock. Runs start at 3:23am, 9:23am, 3:23pm and 9:23pm Central (off the hour, when GitHub's scheduler is less busy), and each waits a random 0 to 59 minutes first, so a post lands somewhere in the hour after its slot and never at the same minute two days running. The cron's `timezone` key keeps the slots on Central time through daylight saving, and skipping the 2am hour means a slot is never dropped or doubled. A run GitHub drops costs that one post and nothing else.
 
 ## No repeat structures
 
@@ -14,7 +14,7 @@ The bot never posts the same structure twice in a row. After each post it saves 
 
 1. Create an [app password](https://bsky.app/settings/app-passwords) for the bot's account.
 2. Add the repository secrets `BLUESKY_IDENTIFIER` (`hype-wire.bsky.social`) and `BLUESKY_APP_PASSWORD`. The identifier has to be the handle, not the account's email: an email logs in fine, but the no-repeat check can't read the account with it.
-3. Run the workflow by hand from the Actions tab to send a test post. Manual runs always post, right away.
+3. Run the workflow by hand from the Actions tab to send a test post. Manual runs always post and skip the random wait, but one started while a scheduled run is still waiting queues behind it, since only one run posts at a time.
 4. Set the repository variable `POSTING_ENABLED` to `true` to start the schedule. Set it to anything else to pause it.
 
 Each run's job summary includes the post's seed, so you can open it in the workbench with `?seed=`.
