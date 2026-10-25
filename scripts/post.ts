@@ -1,5 +1,6 @@
 import { appendFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 import { Agent, CredentialSession } from "@atproto/api";
 
@@ -31,11 +32,23 @@ function escapeForWorkflowCommand(message: string): string {
     .replace(/\n/g, "%0A");
 }
 
-/** Retries with a fresh seed if generating ever throws. Returns null once MAX_ATTEMPTS is spent. */
-function generatePost(): GeneratedPost | null {
+interface ReadyPost {
+  post: GeneratedPost;
+  /** The headline image as a PNG. */
+  card: Buffer;
+}
+
+/** Retries with a fresh seed if generating or rendering the image ever throws. Returns null once MAX_ATTEMPTS is spent. */
+async function generatePost(): Promise<ReadyPost | null> {
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
-      return generate(corpus);
+      const post = generate(corpus);
+      const card = await renderCard({
+        headline: post.headline,
+        structureId: post.debug.structureId,
+        date: printDate(new Date()),
+      });
+      return { post, card };
     } catch (err) {
       console.warn(
         `Attempt ${attempt} failed:`,
@@ -47,8 +60,8 @@ function generatePost(): GeneratedPost | null {
 }
 
 async function main(): Promise<void> {
-  const post = generatePost();
-  if (!post) {
+  const ready = await generatePost();
+  if (!ready) {
     const message = `Could not generate a post within ${MAX_ATTEMPTS} attempts; skipping this run.`;
     console.warn(message);
     console.log(
@@ -58,12 +71,8 @@ async function main(): Promise<void> {
     return;
   }
 
+  const { post, card } = ready;
   const label = `seed ${post.debug.seed} · ${post.debug.structureLabel} · ${post.debug.graphemes} graphemes`;
-  const card = await renderCard({
-    headline: post.headline,
-    structureId: post.debug.structureId,
-    date: printDate(new Date()),
-  });
 
   if (dryRun) {
     const out = new URL("../out/", import.meta.url);
@@ -71,7 +80,7 @@ async function main(): Promise<void> {
     await mkdir(out, { recursive: true });
     await writeFile(cardFile, card);
     console.log(
-      `${label}\n\n${post.headline}\n\n${post.excerpt}\n\nImage: ${cardFile.pathname}`,
+      `${label}\n\n${post.headline}\n\n${post.excerpt}\n\nImage: ${fileURLToPath(cardFile)}`,
     );
     return;
   }
@@ -113,7 +122,7 @@ async function main(): Promise<void> {
     `::notice title=BlueSky: posted::${escapeForWorkflowCommand(`Posted: ${postUrl}`)}`,
   );
   appendSummary(
-    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n> **${post.headline}**\n>\n> ${post.excerpt}`,
+    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n> **${post.headline}**\n>\n> ${post.excerpt.replace(/\n/g, "\n> ")}`,
   );
 }
 
