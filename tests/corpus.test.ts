@@ -18,12 +18,13 @@ import {
   type GeneratedPost,
 } from "../src/ts/engine/_generate";
 import { fillTokens, isLocked, TOKEN_PATTERN } from "../src/ts/engine/_resolve";
-import type {
-  Corpus,
-  CorpusNode,
-  Generation,
-  Locked,
-  Pronouns,
+import {
+  lock,
+  type Corpus,
+  type CorpusNode,
+  type Generation,
+  type Locked,
+  type Pronouns,
 } from "../src/ts/engine/_types";
 import { ELLIPSIS, POST_LIMIT } from "../src/ts/engine/_truncate";
 import { graphemeLength } from "../src/ts/lib/graphemes";
@@ -47,6 +48,7 @@ function problems(post: GeneratedPost): string[] {
   if (/ {2}/.test(written)) issues.push("double space");
   if (/\bthey (has|is|was|isn't|wasn't|doesn't)\b/i.test(written))
     issues.push("“they” with a singular verb");
+  // Correct subjunctives ("if he were") and questions ("does she have") trip this too, so reword those rather than switching to {x.was}.
   if (/\b(he|she) (have|are|were|aren't|weren't)\b/i.test(written))
     issues.push("“he” or “she” with a plural verb");
   if (/\s[,.!?;:]/.test(written)) issues.push("space before punctuation");
@@ -307,7 +309,7 @@ function everyoneUses(pronouns: Pronouns): Corpus {
 const CAST_WHO = ["expert", "person", "generation.speaker", "rival.speaker"];
 
 /** Every place the corpus gets resolved, and who a lock() there can name. */
-function lockRoots(): Array<{
+function corpusRoots(): Array<{
   label: string;
   node: CorpusNode;
   who: string[];
@@ -341,6 +343,25 @@ function isPick(node: CorpusNode): node is readonly CorpusNode[] {
   return Array.isArray(node);
 }
 
+/** Every literal string in a node, through seq(), w() and lock(). */
+function strings(node: CorpusNode): string[] {
+  if (typeof node === "string") return [node];
+  if (isPick(node)) return node.flatMap(strings);
+  if ("seq" in node) return node.seq.flatMap(strings);
+  return strings(node.node);
+}
+
+/** Every way to give these people pronouns: 3ⁿ combinations for n people. */
+function pronounCombos(names: string[]): Array<Record<string, Pronouns>> {
+  return names.reduce<Array<Record<string, Pronouns>>>(
+    (combos, name) =>
+      combos.flatMap((combo) =>
+        PRONOUN_SETS.map((pronouns) => ({ ...combo, [name]: pronouns })),
+      ),
+    [{}],
+  );
+}
+
 /** The lock() calls wrapped around one option, looking through any w(). */
 function locksOn(option: CorpusNode): Locked[] {
   if (typeof option === "string" || isPick(option)) return [];
@@ -357,18 +378,19 @@ function lockProblems(
   if (typeof node === "string") return [];
   if (isPick(node)) {
     const found = node.flatMap((option) => lockProblems(option, who, true));
-    const locked = new Set(node.flatMap(locksOn).map((l) => l.who));
-    for (const name of locked) {
-      for (const pronouns of PRONOUN_SETS) {
-        const open = node.some((option) =>
-          locksOn(option).every(
-            (l) => l.who !== name || l.pronouns === pronouns,
-          ),
+    // An array can lock more than one person, so check every mix of their pronouns, not each person alone.
+    const locked = [...new Set(node.flatMap(locksOn).map((l) => l.who))];
+    for (const combo of pronounCombos(locked)) {
+      const open = node.some((option) =>
+        locksOn(option).every((l) => combo[l.who] === l.pronouns),
+      );
+      if (!open) {
+        const cast = Object.entries(combo)
+          .map(([name, pronouns]) => `${name} as “${pronouns}”`)
+          .join(", ");
+        found.push(
+          `nothing left for ${cast} in ${JSON.stringify(node).slice(0, 80)}`,
         );
-        if (!open)
-          found.push(
-            `nothing left for ${name} as “${pronouns}” in ${JSON.stringify(node).slice(0, 80)}`,
-          );
       }
     }
     return found;
@@ -389,10 +411,63 @@ function lockProblems(
 
 describe("pronouns", () => {
   test("every lock() is an option in an array, names someone who's there, and leaves an option for he, she and they", () => {
-    const found = lockRoots().flatMap(({ label, node, who }) =>
+    const found = corpusRoots().flatMap(({ label, node, who }) =>
       lockProblems(node, who, false).map((problem) => `${label}: ${problem}`),
     );
     expect(found).toEqual([]);
+  });
+
+  test("the lock check catches an array that two people's locks can empty together", () => {
+    const corner = [lock("expert", "he", "A"), lock("person", "she", "B")];
+    expect(lockProblems(corner, CAST_WHO, false)).toEqual([
+      expect.stringContaining("expert as “she”, person as “he”"),
+      expect.stringContaining("expert as “she”, person as “they”"),
+      expect.stringContaining("expert as “they”, person as “he”"),
+      expect.stringContaining("expert as “they”, person as “they”"),
+    ]);
+  });
+
+  test("a pronoun token is never followed by a plain-text verb that only agrees with some pronouns", () => {
+    // "{person.he} has" renders "they has", and "{person.he}'s" renders "they's". The verb needs {x.has}, {x.is} or {x.s}.
+    const agreeing =
+      /^(is|are|was|were|has|have|do|does|isn't|aren't|wasn't|weren't|hasn't|haven't|don't|doesn't)$/;
+    const notVerbs = ["always", "sometimes", "perhaps"];
+    const pronounThenWord =
+      /\{[A-Za-z.]+\.[hH]e\}(?: ([A-Za-z']+)(?![A-Za-z'{])|')/g;
+    const found: string[] = [];
+
+    for (const { label, node } of corpusRoots()) {
+      for (const text of strings(node)) {
+        for (const [match, word] of text.matchAll(pronounThenWord)) {
+          const verb = word?.toLowerCase();
+          const wrong =
+            verb === undefined ||
+            agreeing.test(verb) ||
+            (verb.endsWith("s") && !notVerbs.includes(verb));
+          if (wrong) found.push(`${label}: “${match}” in “${text}”`);
+        }
+      }
+    }
+    expect(found).toEqual([]);
+  });
+
+  test("speaker pronouns work two dots deep, under a generation or rival", () => {
+    const [generation, rival] = corpus.cast.generations;
+    const tokens = castTokens({
+      ...blankCast,
+      subject: resolveSubject(corpus.subjects[0]),
+      generation: { ...asResolved(generation), speakerPronouns: "she" },
+      rival: { ...asResolved(rival), speakerPronouns: "they" },
+    });
+    const line = (prefix: string) =>
+      `{${prefix}.He} {${prefix}.isnt} sure, {${prefix}.was} never sure, and {${prefix}.has} {${prefix}.his} doubts.`;
+
+    expect(fillTokens(line("generation.speaker"), tokens)).toBe(
+      "She isn't sure, was never sure, and has her doubts.",
+    );
+    expect(fillTokens(line("rival.speaker"), tokens)).toBe(
+      "They aren't sure, were never sure, and have their doubts.",
+    );
   });
 
   test("gendered words are named like tokens and don't shadow a pronoun, verb, or name", () => {

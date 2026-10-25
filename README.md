@@ -68,7 +68,7 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 | `{expert.he}` `{expert.him}` `{expert.his}` `{expert.himself}` `{expert.hes}` | he / she / they, him / her / them, his / her / their, himself / herself / themself, he's / she's / they're. The same tokens work on `{person}`, `{generation.speaker}`, `{rival.speaker}`, and `{speaker}` inside generation traits. Pronouns come from the first name |
 | `{expert.is}` `{expert.isnt}` `{expert.was}` `{expert.has}` `{expert.s}` | Verbs that agree with that person's pronoun, because singular "they" takes "are": `{expert.He} {expert.is}`, `{person.he} say{person.s}`. They follow the pronoun, so after a noun ("a {person.man} who says") write the verb as plain text |
 | `{expert.man}` `{expert.boy}` `{expert.boyfriend}` and friends | Gendered words from `genderedWords` in `_castPools.ts`, which describe the person themself: man / woman / person, boy / girl / kid. Someone they know stays plain text: `{expert.his} son` |
-| `{relative}` | Estranged Uncle of AI |
+| `{relative}` | Estranged Uncle of AI. It's the expert's epithet, and the gendered ones lock to the expert's pronouns, so keep it next to `{expert}` |
 | `{startup}` `{city}` `{money}` `{age}` `{percent}` | Frothr, Duluth, $40M, 19, 61. Use `{city}` in headlines and `{city.inline}` mid-sentence. They only differ for places like "the Food Court of a Dying Mall in Omaha" |
 | `{timeframe}` `{group}` `{product}` | each with an `.inline` form for mid-sentence use |
 
@@ -98,7 +98,7 @@ When a structure has several different jokes and each headline needs its own mat
 - **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must fit whole, even under the longest possible Rage-Bait headline with the longest name, oldest age, and longest pronouns. The tests check that worst case directly.
 - **Quote punctuation.** Periods and commas go inside closing quotes (`“like this.”`).
 - **Tokens.** Every `{token}` has to resolve, and a capitalized token has to start each headline and sentence.
-- **Pronouns.** A batch of posts has to render cleanly with everyone as "he", then as "she", then as "they", so a verb that ignores singular "they" ("they has") fails. Every `lock()` has to be an option in an array, name someone who's in the cast there, and leave an option for each set of pronouns.
+- **Pronouns.** A batch of posts has to render cleanly with everyone as "he", then as "she", then as "they", so a verb that ignores singular "they" ("they has") fails. A pronoun token followed by a plain-text verb ("{person.he} has", "{person.he} plans") fails too, whether or not a post happens to pick it. Every `lock()` has to be an option in an array, name someone who's in the cast there, and leave an option for each set of pronouns.
 - **Real brands.** They're fine as background detail, but don't make up claims about what a real company or person does. Quoted people, experts, startups and investors are invented.
 - **Run `bun run test` after editing.** The coverage test renders every structure and variant with every subject and wrapper that fits it, and it prints the exact post when something breaks.
 
