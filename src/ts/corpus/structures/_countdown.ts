@@ -20,7 +20,8 @@ export const countdown: Structure = {
           "“who?”",
           "“oh no, not this one again.”",
           "“please stop emailing us.”",
-          "a defendant.",
+          "“the defendant.”",
+          "“THAT fuckin' {expert.guy}.”",
         ],
       ),
       seq(

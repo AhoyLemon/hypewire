@@ -52,6 +52,9 @@ function problems(post: GeneratedPost): string[] {
   if (/\b(he|she) (have|are|were|aren't|weren't)\b/i.test(written))
     issues.push("“he” or “she” with a plural verb");
   if (/\s[,.!?;:]/.test(written)) issues.push("space before punctuation");
+  // An option that ends in its own period runs into the one after it ("mom..", "gold.,”"). "a.m.," is fine.
+  if (/[.!?][.,]/.test(written.replace(/\b([ap])\.m\.,/g, "$1m,")))
+    issues.push("doubled punctuation");
   if (/[”’][.,]/.test(written))
     issues.push("period or comma outside a closing quote");
   if (/^[a-z]/.test(headline)) issues.push("headline starts lowercase");

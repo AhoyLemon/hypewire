@@ -188,7 +188,7 @@ export const marketPanic: Structure = {
             "It's the AI. Or the moon. Something is off",
             "Nobody panics as well as I do, and I am panicking",
             "I don't need a reason. Reasons are for people who aren't already selling",
-            "Buy gold. No, sell gold. Buy a boat. Sell the boat",
+            "Buy gold. No, sell gold. Buy a boat. Sell the boat and buy gold",
           ],
           ",” says {expert.last}, ",
           punditTails,

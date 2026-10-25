@@ -55,7 +55,7 @@ export const cast: CastPools = {
   // [he, she, they]. Each describes the cast member themself: {person.boyfriend} is boyfriend, girlfriend, or partner. Someone they know is plain text: "{person.his} son".
   genderedWords: [
     ["man", "woman", "person"],
-    ["guy", "gal", "person"],
+    ["guy", "lady", "person"],
     ["boy", "girl", "kid"],
     ["boyfriend", "girlfriend", "partner"],
     ["husband", "wife", "spouse"],
@@ -330,7 +330,7 @@ export const cast: CastPools = {
       traits: {
         venue: [
           "a letter, by mail, in cursive",
-          "a phone call at 6 a.m.",
+          "a 6 a.m. phone call",
           "a church newsletter",
         ],
         catchphrase: ["Hello, this is Grandpa", "Who is this?"],

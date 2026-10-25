@@ -5,7 +5,6 @@ import type { Subject } from "../engine/_types.js";
 const hobbies: Subject[] = [
   { name: "Barbershop Quartets", plural: true, activity: "Harmonizing" },
   { name: "Competitive Yodeling", activity: "Yodeling" },
-  { name: "Ham Radio" },
   { name: "Ventriloquism", activity: "Ventriloquism" },
   { name: "Bowling Leagues", plural: true, activity: "Bowling" },
   { name: "Pen Pals", plural: true },

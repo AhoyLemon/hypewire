@@ -9,12 +9,7 @@ export const prodigy: Structure = {
   headline: [
     seq(
       "Meet the {age}-Year-Old ",
-      [
-        "Dropout",
-        "Prodigy",
-        "Founder",
-        "Visionary Who Can't Legally Rent a Car",
-      ],
+      ["Dropout", "Prodigy", "Founder", "Visionary"],
       " Using AI Agents to Reinvent {subject}",
     ),
     seq(
@@ -52,6 +47,7 @@ export const prodigy: Structure = {
           "community college",
           "a coding bootcamp",
           "the fourth grade",
+          "society",
           "a very prestigious summer camp",
           "driver's ed",
         ],
@@ -63,7 +59,9 @@ export const prodigy: Structure = {
           "with AI",
           "with AI and a subscription",
           "agentic",
+          "much worse",
           "on the blockchain, and also AI",
+          "without people",
         ],
         "?",
       ),
@@ -83,12 +81,25 @@ export const prodigy: Structure = {
       "“My parents think it's a phase,” says {person.last}, whose company is now valued at {money}.",
       "“Honestly, I've never actually tried {subject.inline},” {person.last} admits. “That's what makes me dangerous.”",
       seq(
+        "{person.last}, who was bullied in school for very good reasons, says {subject.inline} {subject.is} “",
+        [
+          "antiquated",
+          "something that used to be for The Olds",
+          "ripe for disruption",
+          "kinda my turn-on right now",
+          "just a means to an end",
+        ],
+        ",” no matter how many times I asked {person.him} not to.",
+      ),
+      seq(
         "“I'm not here to disrupt {subject.inline},” says {person.last}. “I'm here to ",
         [
-          "make {subject.them} agentic",
+          "revolutionize society",
           "ship",
+          "meet KPIs",
+          "make the world a better place",
           "be on a podcast about {subject.them}",
-          "turn 25, eventually",
+          "buy a Lambo",
         ],
         ".”",
       ),

@@ -59,11 +59,10 @@ export const deathNotice: Structure = {
       seq(
         "In lieu of flowers, the family asks that you ",
         [
-          "subscribe to the newsletter",
+          "like, comment, and subscribe",
           "rate {startup} five stars",
-          "stop asking the chatbot about it",
           "send GPUs",
-          "like and share",
+          "just remember to call your mom",
         ],
         ".",
       ),

@@ -1,5 +1,5 @@
 import { seq, w, type Structure } from "../../engine/_types.js";
-import { background, excerptWith } from "../_excerpts.js";
+import { excerptWith } from "../_excerpts.js";
 
 // A first-person "change my mind" column by someone who will say anything for engagement and is desperate for the internet to yell at them.
 export const contrarian: Structure = {
@@ -36,7 +36,7 @@ export const contrarian: Structure = {
         ", and so did most of you.",
       ),
       "Look, someone had to say it, and that someone was always going to be me.",
-      "I want to be clear that I'm not trying to start a fight. I'm trying to finish one I started in 2019.",
+      "I want to be clear that I'm not trying to start a fight. I'm trying to get retweets.",
       "My therapist told me to stop writing columns like this. My therapist is wrong, and is also now a chatbot.",
       "People keep telling me I'm “the problem.” I prefer “early.”",
     ],
@@ -54,19 +54,37 @@ export const contrarian: Structure = {
         ["hundreds of", "dozens of", "four"],
         " people this week, which I choose to read as engagement.",
       ),
-      "Empathy is just latency, and I have optimized mine to zero.",
-      "Your feelings about {subject.inline} are valid, in the sense that they exist.",
-      "Nostalgia is just grief for people who refuse to upgrade.",
-      "Art was always just content with better PR.",
-      "I don't hate people. I just think they've had enough turns.",
-      "Every time someone says “human touch,” I hear “bottleneck.”",
+      seq(
+        "Now some of you aren't ",
+        [
+          "ready to hear this",
+          "capable of understanding this",
+          "smart enough to get me",
+        ],
+        ", and that's something you need to work on. Meanwhile, I'll be ",
+        [
+          "posting my ass off.",
+          "100% so for real.",
+          "over here, unafraid of true thought leadership.",
+        ],
+      ),
+      seq("I don't hate people. ", [
+        "This is what I call “tough love.”",
+        "My mother disagrees, but she also never understood me.",
+        "But everyone seems to hate me for reasons I don't understand.",
+      ]),
     ],
     background: [
-      "The human brain runs on 20 watts and still can't remember where it put the keys. I rest my case.",
-      "If you disagree, that's fine. You're wrong, but it's fine.",
       "Do I have kids? No. Do I have opinions about how you raise yours? Absolutely.",
-      "My grandmother would have hated this column, which is why I waited.",
-      w(background, 0.5),
+      seq(
+        "People sometimes tell me that my opinions are ",
+        [
+          "“childish and stupid,”",
+          "“the best argument against free speech,”",
+          "“unhinged and moronic,”",
+        ],
+        " and I love that. It means I'm getting my point across.",
+      ),
     ],
     kicker: [
       "Change my mind. (You can't. I've blocked you.)",
