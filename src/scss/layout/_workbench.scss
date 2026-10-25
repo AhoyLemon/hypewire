@@ -1,13 +1,27 @@
 @use "../abstracts/variables" as vars;
 @use "../abstracts/z-index" as z;
 
+// Roughly the pinned controls' height plus their inset.
+$controls-clearance: 20rem;
+// Wide enough for the column and the controls side by side.
+$beside-controls: 76rem;
+$column-and-controls: vars.$column-width + vars.$controls-width +
+  vars.$controls-inset;
+
+// Below that width the controls sit over the column, so anything that takes keyboard focus scrolls clear of them (WCAG technique C43).
+@media (width < $beside-controls) {
+  html {
+    scroll-padding-bottom: $controls-clearance;
+  }
+}
+
 .workbench {
   display: grid;
   gap: 1.5rem;
   max-width: vars.$column-width;
   margin: 0 auto;
   // The bottom padding lets the last post scroll clear of the pinned controls.
-  padding: 2rem 1rem 20rem;
+  padding: 2rem 1rem $controls-clearance;
 
   h2 {
     font-size: clamp(1.25rem, 3vw, 1.5rem);
@@ -67,10 +81,7 @@
 }
 
 // Wide enough for both, so the column centers in the space left of the controls instead of running under them.
-$column-and-controls: vars.$column-width + vars.$controls-width +
-  vars.$controls-inset;
-
-@media (min-width: 76rem) {
+@media (width >= $beside-controls) {
   .workbench {
     margin-left: calc((100% - #{$column-and-controls}) / 2);
     padding-bottom: 3rem;
