@@ -8,4 +8,7 @@
     script.
       const testing = false;
 
+  //- Satori and the card fonts, pinned to the installed versions by scripts/_pugLocals.ts. It has to come before any module script.
+  script(type="importmap")!= importMap
+
   script(type="module" src="js/min/site.js?updated="+lastUpdated)

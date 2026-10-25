@@ -6,6 +6,7 @@ import { generate, type GeneratedPost } from "../engine/_generate.js";
 import { randomSeed } from "../engine/_rng.js";
 import { POST_LIMIT } from "../engine/_truncate.js";
 import type { Family, Structure, Subject } from "../engine/_types.js";
+import { useCards, type Cards } from "./_useCards.js";
 
 // Vue is loaded from a CDN <script> in _javascripts.pug, not bundled.
 declare const Vue: typeof import("vue");
@@ -35,7 +36,7 @@ interface BatchItem {
   href: string;
 }
 
-export interface Workbench {
+export interface Workbench extends Omit<Cards, "renderCards"> {
   limit: number;
   families: FamilyGroup[];
   compatibleSubjects: ComputedRef<Subject[]>;
@@ -105,6 +106,7 @@ export function useWorkbench(): Workbench {
   const permalink = ref("");
   const batch = ref<BatchItem[]>([]);
   const error = ref("");
+  const { cards, cardError, cardKey, renderCards } = useCards();
 
   const selection = (): Selection => ({
     structureId: structureId.value,
@@ -140,10 +142,12 @@ export function useWorkbench(): Workbench {
 
   function show(seed: number): void {
     try {
-      post.value = generateWith(seed);
+      const shown = generateWith(seed);
+      post.value = shown;
       permalink.value = buildHref(seed, selection());
       error.value = "";
       window.history.replaceState(null, "", permalink.value);
+      void renderCards("preview", [shown]);
     } catch (err) {
       post.value = null;
       error.value = err instanceof Error ? err.message : String(err);
@@ -165,6 +169,10 @@ export function useWorkbench(): Workbench {
       }
     }
     batch.value = items;
+    void renderCards(
+      "batch",
+      items.map((item) => item.post),
+    );
   }
 
   function onSubmit(event: SubmitEvent): void {
@@ -191,5 +199,8 @@ export function useWorkbench(): Workbench {
     error,
     meterState,
     onSubmit,
+    cards,
+    cardError,
+    cardKey,
   };
 }

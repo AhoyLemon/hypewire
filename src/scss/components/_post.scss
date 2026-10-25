@@ -1,6 +1,6 @@
 @use "../abstracts/variables" as vars;
 
-// Roughly how a text post looks on Bluesky, so the length reads true.
+// Roughly how a post looks on Bluesky (text, then the headline card), so the length reads true.
 .post {
   background: vars.$paper;
   border: 1px solid vars.$rule;
@@ -9,21 +9,35 @@
   font-family: vars.$sans-serif;
   line-height: 1.5;
 
-  .headline {
-    font-weight: vars.$bold;
-    margin-bottom: 0.75rem;
-  }
-
   .excerpt {
     margin: 0;
+  }
+
+  // The card, or the headline as text while the card renders.
+  .card,
+  .headline {
+    margin: 0.75rem 0 0;
+  }
+
+  .card {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid vars.$rule;
+    border-radius: 12px;
+  }
+
+  .headline {
+    font-weight: vars.$bold;
   }
 
   &.compact {
     padding: 0.75rem 1rem;
     font-size: 0.9375rem;
 
+    .card,
     .headline {
-      margin-bottom: 0.4rem;
+      margin-top: 0.5rem;
     }
   }
 }

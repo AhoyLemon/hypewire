@@ -42,9 +42,12 @@ html(lang="en")
 
         section.preview(v-if="post" aria-labelledby="PreviewHeading")
           h2#PreviewHeading Preview
+          //- Laid out like the Bluesky post: the excerpt as text, then the headline card. The headline shows as text until its card renders.
           article.post
-            p.headline {{ post.headline }}
             p.excerpt {{ post.excerpt }}
+            img.card(v-if="cards[cardKey(post)]" :src="cards[cardKey(post)]" :alt="post.headline" width="1200" height="630")
+            p.headline(v-else) {{ post.headline }}
+          p.error(v-if="cardError" role="status") {{ cardError }}
           .counter(:class="meterState")
             label(for="GraphemeMeter") {{ post.debug.graphemes }} / {{ limit }} graphemes
             meter#GraphemeMeter(:value="post.debug.graphemes" min="0" :max="limit")
@@ -71,8 +74,9 @@ html(lang="en")
           ol
             li(v-for="item in batch" :key="item.seed")
               article.post.compact
-                p.headline {{ item.post.headline }}
                 p.excerpt {{ item.post.excerpt }}
+                img.card(v-if="cards[cardKey(item.post)]" :src="cards[cardKey(item.post)]" :alt="item.post.headline" width="1200" height="630" loading="lazy")
+                p.headline(v-else) {{ item.post.headline }}
               p.meta
                 a(:href="item.href") Seed {{ item.seed }}
                 |  · {{ item.post.debug.structureLabel }}{{ item.post.debug.variantLabel ? ": " + item.post.debug.variantLabel : "" }} · {{ item.post.debug.graphemes }}/{{ limit }}

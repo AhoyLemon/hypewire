@@ -11,12 +11,13 @@ A Bluesky bot that posts fake AI-hype headlines and excerpts, built from a hand-
 - Use the capitalized token form (`{Subject}`, `{subject.Is}`) at the start of a headline or sentence.
 - After any corpus change, run `bun run test`. `tests/corpus.test.ts` is the safety net for grammar and length bugs, so extend its `problems()` checks when a new kind of mistake shows up.
 - Vue comes from a CDN `<script>` tag (`src/pug/partials/_javascripts.pug`), typed with `declare const Vue: typeof import("vue")`. Don't add a bundler for it.
+- The headline image is one layout (`src/ts/card/_headlineCard.ts`, pure TypeScript) rendered two ways: the post script uses the installed satori and resvg (`scripts/_renderCard.ts`), and the workbench imports satori and the fonts from jsDelivr through an import map built from the installed versions (`scripts/_pugLocals.ts`). Change the look in the card file, never in one renderer.
 
 ## Writing corpus jokes
 
 Lemon's general comedy preferences (go too far, specific beats generic, people tell on themselves, twist the format now and then) live in their writing preferences and apply here. On top of those, for this project:
 
-- Put the joke in the lede and the quote. The cut usually drops the background and kicker.
+- Put the joke in the lede and the quote. The cut usually drops the kicker and some of the background.
 - The subject has to earn its place. A structure doesn't need to mention it, and the Study and the Market Panic deliberately skip the subject-heavy generic pools.
 - Don't write around a cast member's gender. Use a pronoun token or a gendered word ({speaker.his} grandson, a Local {person.Man}). Save `lock()` for gendered words with no neutral twin, like Godfather, draft deferments, or a Guy Named Greg.
 - The narrator never judges. In Rage-Bait, the angry generation's spokesperson gives themselves away through their own attribution (`hypocrisy`), and the generation using AI just gets a harmless `quirk`.

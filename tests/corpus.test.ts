@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { MAX_HEADLINE, missingGlyphs } from "../src/ts/card/_headlineCard";
 import { corpus } from "../src/ts/corpus/_corpus";
 import {
   canWrap,
@@ -33,12 +34,12 @@ const SEEDS_PER_COMBO = 3;
 const RANDOM_POSTS = 5_000;
 const POSTS_PER_PRONOUN = 2_000;
 const PRONOUN_SETS: Pronouns[] = ["he", "she", "they"];
-/** Below this, the excerpt is too squeezed by a long headline to read as a summary. */
+/** Below this, the post text is too thin to read as a summary. */
 const MIN_EXCERPT = 60;
 
 /** Everything that can go wrong with a rendered post. An empty list means it's clean. */
 function problems(post: GeneratedPost): string[] {
-  const { text, headline, excerpt } = post;
+  const { headline, excerpt } = post;
   const written = `${headline}\n${post.debug.fullExcerpt}`;
   const issues: string[] = [];
 
@@ -61,12 +62,19 @@ function problems(post: GeneratedPost): string[] {
   // A lowercase word after a quoted question is fine ("doing here?” asks Greg"), so only bare ?/! and periods count.
   if (/(\.[”’]?|[!?])\s+[a-z]/.test(written.replace(/\b[ap]\.m\./g, "am")))
     issues.push("sentence starts lowercase");
-  if (graphemeLength(text) > POST_LIMIT)
+  if (graphemeLength(excerpt) > POST_LIMIT)
     issues.push(`over ${POST_LIMIT} graphemes`);
-  if (!text.startsWith(`${headline}\n\n`)) issues.push("headline was cut");
-  if (!text.endsWith(ELLIPSIS)) issues.push("no ellipsis");
+  if (!excerpt.endsWith(ELLIPSIS)) issues.push("no ellipsis");
   if (graphemeLength(excerpt) < MIN_EXCERPT)
     issues.push(`excerpt under ${MIN_EXCERPT} graphemes`);
+  // The headline image is the only place these show, and nobody sees it before it posts.
+  if (graphemeLength(headline) > MAX_HEADLINE)
+    issues.push(`headline over ${MAX_HEADLINE} graphemes`);
+  const missing = missingGlyphs(headline);
+  if (missing.length)
+    issues.push(
+      `headline has characters the image can't draw: ${missing.join(" ")}`,
+    );
 
   return issues;
 }
@@ -180,8 +188,8 @@ describe("corpus coverage", () => {
 
 describe("determinism", () => {
   test("the same seed gives the same post", () => {
-    expect(generate(corpus, { seed: 42 }).text).toBe(
-      generate(corpus, { seed: 42 }).text,
+    expect(generate(corpus, { seed: 42 })).toEqual(
+      generate(corpus, { seed: 42 }),
     );
   });
 
@@ -191,7 +199,7 @@ describe("determinism", () => {
       structureId: "resurrection",
       subjectName: "Napkins",
     };
-    expect(generate(corpus, options).text).toBe(generate(corpus, options).text);
+    expect(generate(corpus, options)).toEqual(generate(corpus, options));
   });
 });
 
@@ -240,12 +248,10 @@ const blankCast: Omit<Cast, "subject" | "generation" | "rival"> = {
 };
 
 describe("punchlines that must survive the cut", () => {
-  test("Rage-Bait's hypocrisy line fits whole even under the longest possible headline", () => {
-    const rageBait = corpus.structures.find((s) => s.id === "rageBait");
-    if (!rageBait?.headline) throw new Error("Rage-Bait has no headline");
-    const templates = leaves(rageBait.headline);
+  test("Rage-Bait's hypocrisy line fits whole in the post", () => {
     const pools = corpus.cast;
     const name = `${longest(pools.firstNames.map((n) => n.name))} ${longest(leaves(pools.lastNames))}`;
+    const room = POST_LIMIT - graphemeLength(ELLIPSIS);
     const cut: string[] = [];
 
     for (const rival of pools.generations) {
@@ -266,26 +272,9 @@ describe("punchlines that must survive the cut", () => {
         ),
       );
 
-      // The longest headline this rival can appear under: every template, partner generation, and subject.
-      const headlines: string[] = [];
-      for (const generation of pools.generations) {
-        if (generation.name === rival.name) continue;
-        for (const subject of corpus.subjects) {
-          const tokens = castTokens({
-            ...blankCast,
-            subject: resolveSubject(subject),
-            generation: asResolved(generation),
-            rival: asResolved(rival),
-          });
-          headlines.push(...templates.map((t) => fillTokens(t, tokens)));
-        }
-      }
-      const headline = longest(headlines);
-
-      const room = POST_LIMIT - graphemeLength(headline) - 3;
       if (graphemeLength(opening) > room) {
         cut.push(
-          `${rival.name}: ${graphemeLength(opening)} graphemes, room for ${room}\n  ${headline}\n  ${opening}`,
+          `${rival.name}: ${graphemeLength(opening)} graphemes, room for ${room}\n  ${opening}`,
         );
       }
     }
