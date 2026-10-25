@@ -9,7 +9,7 @@ const projectRoot = path.resolve(
   "..",
 );
 
-/** The version bun installed, so the CDN serves the workbench exactly what the post script runs. */
+/** The version bun installed, so the workbench loads the same satori and fonts the post script uses. */
 function installedVersion(pkg: string): string {
   const manifest = path.resolve(
     projectRoot,
