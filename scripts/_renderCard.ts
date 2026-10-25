@@ -5,7 +5,8 @@ import satori, { type Font } from "satori";
 
 import {
   CARD_FONTS,
-  CARD_FORMATS,
+  CARD_HEIGHT,
+  CARD_WIDTH,
   headlineCard,
   type HeadlineCardInput,
 } from "../src/ts/card/_headlineCard.js";
@@ -13,20 +14,19 @@ import {
 /** Bluesky's per-image blob limit, in bytes. */
 export const IMAGE_LIMIT = 1_000_000;
 
-const fontFile = (pkg: string, file: string): URL =>
-  new URL(`../node_modules/@fontsource/${pkg}/files/${file}`, import.meta.url);
+/** The Fontsource file for a card font, named from its family and weight so the two can't drift apart. */
+const fontFile = ({ name, weight }: { name: string; weight: number }): URL => {
+  const pkg = name.toLowerCase();
+  return new URL(
+    `../node_modules/@fontsource/${pkg}/files/${pkg}-latin-${weight}-normal.woff`,
+    import.meta.url,
+  );
+};
 
-const FONT_FILES = [
-  {
-    ...CARD_FONTS.headline,
-    url: fontFile("newsreader", "newsreader-latin-700-normal.woff"),
-  },
-  {
-    ...CARD_FONTS.label,
-    url: fontFile("inter", "inter-latin-800-normal.woff"),
-  },
-  { ...CARD_FONTS.meta, url: fontFile("inter", "inter-latin-500-normal.woff") },
-];
+const FONT_FILES = Object.values(CARD_FONTS).map((font) => ({
+  ...font,
+  url: fontFile(font),
+}));
 
 let fonts: Promise<Font[]> | null = null;
 
@@ -45,13 +45,12 @@ function loadFonts(): Promise<Font[]> {
 
 /** Renders the headline card to a PNG, and throws if it's too big for Bluesky. */
 export async function renderCard(input: HeadlineCardInput): Promise<Buffer> {
-  const { width, height } = CARD_FORMATS[input.format ?? "wide"];
   const svg = await satori(headlineCard(input), {
-    width,
-    height,
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
     fonts: await loadFonts(),
   });
-  const png = new Resvg(svg, { fitTo: { mode: "width", value: width } })
+  const png = new Resvg(svg, { fitTo: { mode: "width", value: CARD_WIDTH } })
     .render()
     .asPng();
 

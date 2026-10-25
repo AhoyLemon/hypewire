@@ -4,11 +4,11 @@ import chalk from "chalk";
 import ora from "ora";
 
 import {
-  CARD_FORMATS,
+  CARD_HEIGHT,
+  CARD_WIDTH,
   headlineSize,
   printDate,
   SECTIONS,
-  type CardFormat,
 } from "../src/ts/card/_headlineCard.js";
 import { corpus } from "../src/ts/corpus/_corpus.js";
 import { generate, type GeneratedPost } from "../src/ts/engine/_generate.js";
@@ -21,7 +21,6 @@ const requested = Number.parseInt(process.argv[2] ?? "", 10);
 const count = Number.isFinite(requested) && requested > 0 ? requested : 6;
 
 const OUT = new URL("../out/cards/", import.meta.url);
-const FORMATS = Object.keys(CARD_FORMATS) as CardFormat[];
 const WORST_CASE_SEEDS = 5_000;
 
 interface MockPost {
@@ -63,17 +62,12 @@ const escapeHtml = (text: string): string =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const fileName = (index: number, format: CardFormat): string =>
-  `${String(index + 1).padStart(2, "0")}-${format}.png`;
+const fileName = (index: number): string =>
+  `${String(index + 1).padStart(2, "0")}.png`;
 
 function postHtml({ post, note }: MockPost, index: number): string {
   const { seed, structureId, structureLabel, variantLabel, graphemes } =
     post.debug;
-  const alt = escapeHtml(post.headline);
-  const images = FORMATS.map(
-    (format) =>
-      `<img class="card ${format}" src="${fileName(index, format)}" alt="${alt}" width="${CARD_FORMATS[format].width}" height="${CARD_FORMATS[format].height}">`,
-  ).join("\n          ");
   const variant = variantLabel ? `: ${escapeHtml(variantLabel)}` : "";
   const section = SECTIONS[structureId] ?? "News";
   const headlineLength = graphemeLength(post.headline);
@@ -85,7 +79,7 @@ function postHtml({ post, note }: MockPost, index: number): string {
         <div class="body">
           <p class="byline"><strong>Hypewire</strong> <span>@hypewire.bsky.social · 2h</span></p>
           <p class="text">${escapeHtml(post.excerpt)}</p>
-          ${images}
+          <img class="card" src="${fileName(index)}" alt="${escapeHtml(post.headline)}" width="${CARD_WIDTH}" height="${CARD_HEIGHT}">
           <p class="actions" aria-hidden="true"><span>💬 12</span><span>🔁 48</span><span>♡ 310</span></p>
         </div>
       </article>
@@ -122,7 +116,6 @@ function pageHtml(posts: MockPost[]): string {
     .card { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 12px; }
     .actions { display: flex; gap: 48px; margin: 10px 0 0; color: var(--muted); font-size: 13px; }
     .meta { max-width: 600px; margin: 6px 0 0; color: var(--muted); font-size: 12px; }
-    body:has(#Wide:checked) .card.square, body:has(#Square:checked) .card.wide { display: none; }
     body:has(#Phone:checked) ol, body:has(#Phone:checked) header { max-width: 390px; }
   </style>
 </head>
@@ -131,11 +124,6 @@ function pageHtml(posts: MockPost[]): string {
     <h1>Hypewire card mockups</h1>
     <p>${posts.length} posts, rendered ${escapeHtml(printDate(new Date()))}. Excerpt as the post text, headline in the image.</p>
     <form>
-      <fieldset>
-        <legend>Image</legend>
-        <label><input type="radio" name="format" id="Wide" checked> Wide (1.91:1)</label>
-        <label><input type="radio" name="format" id="Square"> Square</label>
-      </fieldset>
       <fieldset>
         <legend>Width</legend>
         <label><input type="radio" name="width" id="Phone" checked> Phone</label>
@@ -152,7 +140,7 @@ function pageHtml(posts: MockPost[]): string {
 
 async function main(): Promise<void> {
   const posts = pickPosts();
-  const total = posts.length * FORMATS.length;
+  const total = posts.length;
   const spinner = ora(`Rendering 0/${total} cards`).start();
   const date = printDate(new Date());
 
@@ -162,17 +150,14 @@ async function main(): Promise<void> {
   let done = 0;
   let largest = 0;
   for (const [index, { post }] of posts.entries()) {
-    for (const format of FORMATS) {
-      const png = await renderCard({
-        headline: post.headline,
-        structureId: post.debug.structureId,
-        date,
-        format,
-      });
-      largest = Math.max(largest, png.byteLength);
-      await writeFile(new URL(fileName(index, format), OUT), png);
-      spinner.text = `Rendering ${++done}/${total} cards`;
-    }
+    const png = await renderCard({
+      headline: post.headline,
+      structureId: post.debug.structureId,
+      date,
+    });
+    largest = Math.max(largest, png.byteLength);
+    await writeFile(new URL(fileName(index), OUT), png);
+    spinner.text = `Rendering ${++done}/${total} cards`;
   }
   await writeFile(new URL("index.html", OUT), pageHtml(posts));
 
