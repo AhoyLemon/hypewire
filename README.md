@@ -1,6 +1,6 @@
 [![Hypewire](src/img/og-wide.png)](https://bsky.app/profile/hype-wire.bsky.social)
 
-[![Bluesky](https://img.shields.io/badge/Bluesky-%40hype--wire.bsky.social-0285FF?style=for-the-badge&logo=bluesky&logoColor=white)](https://bsky.app/profile/hype-wire.bsky.social)
+[![Bluesky](https://img.shields.io/badge/Bluesky-%40hype--wire-0285FF?style=for-the-badge&logo=bluesky&logoColor=white)](https://bsky.app/profile/hype-wire.bsky.social)
 [![Workbench](https://img.shields.io/badge/Workbench-Live-b3121f?style=for-the-badge)](https://ahoylemon.github.io/hypewire/)
 [![Last Deploy](https://img.shields.io/github/last-commit/AhoyLemon/hypewire/main?label=Last%20Deploy&style=for-the-badge&color=green)](https://github.com/AhoyLemon/hypewire/actions)
 [![Structures](https://img.shields.io/badge/structures-12-161616?style=for-the-badge)](src/ts/corpus/structures)
@@ -14,7 +14,7 @@
 [![Pug](https://img.shields.io/badge/Pug-000?style=for-the-badge&labelColor=A86454&logo=pug&logoColor=white&color=222)](https://pugjs.org/)
 [![Sass](https://img.shields.io/badge/Sass-000?style=for-the-badge&labelColor=CC6699&logo=sass&logoColor=white&color=222)](https://sass-lang.com/)
 [![Satori](https://img.shields.io/badge/Satori-000?style=for-the-badge&labelColor=000&logo=vercel&logoColor=white&color=222)](https://github.com/vercel/satori)
-[![AT Protocol](https://img.shields.io/badge/AT%20Protocol-000?style=for-the-badge&labelColor=0285FF&logo=bluesky&logoColor=white&color=222)](https://atproto.com/)
+[![AT Protocol](https://img.shields.io/badge/AT%20Protocol-000?style=for-the-badge&labelColor=000&logo=json&logoColor=white&color=222)](https://atproto.com/)
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-000?style=for-the-badge&labelColor=2088FF&logo=githubactions&logoColor=white&color=222)](https://github.com/features/actions)
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-white?style=for-the-badge&logoColor=white&logo=creativecommons)](LICENSE)
@@ -31,15 +31,19 @@ A Bluesky bot that posts breathless AI hype about the casserole, eye contact, co
 
 ## Is it AI?
 
-No. It's a hand-written corpus and a weighted dice roll, the same trick as [sextips](https://github.com/AhoyLemon/sextips). A human typed every word of this, which makes it the least efficient AI slop on the internet.
+No. It's a hand-written corpus and a weighted dice roll, the same trick as [sextips](https://github.com/AhoyLemon/sextips). A human wrote every joke fragment by hand, which makes it the least efficient AI slop on the internet.
 
 ## Is any of it real?
 
-Nope. Every expert, startup, study and quote is made up. Real brands show up as scenery (a Liquid Death wedding, an H&M dressing room), but never as the subject of a claim.
+I mean, is it real in the sense that it's reflective of our current internet? Sure. Like, it was hard to make the parodies of Business Insider less ridiculous than Business Insider. But no, every story is fabricated by a simple [random number generator](src/ts/engine/_rng.ts).
+
+## But you used AI to build this, right?
+
+Well, sure. You think I wrote 50+ typescript files for my own pleasure?
 
 ## Should I be worried about AI?
 
-Depends. Are you a casserole?
+P
 
 ## Can I play with it?
 
@@ -60,11 +64,15 @@ That serves the workbench at http://localhost:3000. Everything else is in [the c
 
 Talk to me first. I love that you want to, but jokes are personal, and I might veto yours.
 
-Ideas, on the other hand, I want all of. [Open an issue](https://github.com/AhoyLemon/hypewire/issues/new) with a thing AI should ruin, a new kind of headline, or a fake startup name too good to waste. If we land on a joke together, [the corpus guide](docs/corpus.md) covers the syntax.
+Ideas, on the other hand, I want all of. [Open an issue](https://github.com/AhoyLemon/hypewire/issues/new) with a thing AI should ruin, a new kind of story, or a fake startup name too good to waste. If we land on a joke together, [the corpus guide](docs/corpus.md) covers the syntax.
+
+## Bluesky only, huh?
+
+Yeah, I'd be fine with finding other places for this to post, but that's what I built this for. And before you ask: No, I do not personally engage with X The Everything App, and I won't be starting now.
 
 ## How does it post?
 
-GitHub Actions wakes up four times a day, rolls the dice, and never runs the same kind of story twice in a row. [Posting](docs/posting.md) has the schedule, the secrets, and the pause switch. The logo kit and colors live in [brand](docs/brand.md).
+GitHub Actions wakes up four times a day, rolls the dice, and never runs the same kind of story twice in a row. [Posting](docs/posting.md) has the schedule, the secrets, and the pause switch. The logo kit and colors live in [brand](docs/brand.md). And those were _totally_ AI-generated, for brand consistency.
 
 ---
 
