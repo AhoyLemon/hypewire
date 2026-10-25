@@ -1,146 +1,69 @@
-# Hypewire
+[![Hypewire](src/img/og-wide.png)](https://bsky.app/profile/hype-wire.bsky.social)
 
-AI hype headlines about the end of obscure things. A bot posts four a day to Bluesky as [@hype-wire.bsky.social](https://bsky.app/profile/hype-wire.bsky.social).
+[![Bluesky](https://img.shields.io/badge/Bluesky-%40hype--wire.bsky.social-0285FF?style=for-the-badge&logo=bluesky&logoColor=white)](https://bsky.app/profile/hype-wire.bsky.social)
+[![Workbench](https://img.shields.io/badge/Workbench-Live-b3121f?style=for-the-badge)](https://ahoylemon.github.io/hypewire/)
+[![Last Deploy](https://img.shields.io/github/last-commit/AhoyLemon/hypewire/main?label=Last%20Deploy&style=for-the-badge&color=green)](https://github.com/AhoyLemon/hypewire/actions)
+[![Structures](https://img.shields.io/badge/structures-12-161616?style=for-the-badge)](src/ts/corpus/structures)
+[![Posts a day](https://img.shields.io/badge/posts%20a%20day-4-161616?style=for-the-badge)](docs/posting.md)
+
+**Made with**
+
+[![Bun](https://img.shields.io/badge/Bun-000?style=for-the-badge&labelColor=14151A&logo=bun&logoColor=FBF0DF&color=222)](https://bun.sh/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-000?style=for-the-badge&labelColor=3178C6&logo=typescript&logoColor=white&color=222)](https://www.typescriptlang.org/)
+[![Vue.js](https://img.shields.io/badge/Vue.js-000?style=for-the-badge&labelColor=4FC08D&logo=vue.js&logoColor=white&color=222)](https://vuejs.org/)
+[![Pug](https://img.shields.io/badge/Pug-000?style=for-the-badge&labelColor=A86454&logo=pug&logoColor=white&color=222)](https://pugjs.org/)
+[![Sass](https://img.shields.io/badge/Sass-000?style=for-the-badge&labelColor=CC6699&logo=sass&logoColor=white&color=222)](https://sass-lang.com/)
+[![Satori](https://img.shields.io/badge/Satori-000?style=for-the-badge&labelColor=000&logo=vercel&logoColor=white&color=222)](https://github.com/vercel/satori)
+[![AT Protocol](https://img.shields.io/badge/AT%20Protocol-000?style=for-the-badge&labelColor=0285FF&logo=bluesky&logoColor=white&color=222)](https://atproto.com/)
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-000?style=for-the-badge&labelColor=2088FF&logo=githubactions&logoColor=white&color=222)](https://github.com/features/actions)
+
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-white?style=for-the-badge&logoColor=white&logo=creativecommons)](LICENSE)
+[![Docs](https://img.shields.io/badge/Docs-Available-4FC08D?style=for-the-badge&logo=readthedocs&logoColor=white)](docs/)
+[![This bot is by Lemon](https://img.shields.io/badge/This%20bot%20is%20by-Lemon-E5E828?style=for-the-badge&logo=lemonsqueezy&logoColor=white)](https://ahoylemon.xyz)
+
+## What is this?
+
+A Bluesky bot that posts breathless AI hype about the casserole, eye contact, competitive yodeling, and other things nobody asked AI to fix. It posts four times a day, around the clock, which is more than most newsrooms can say anymore.
 
 > **Millennials Killed Leaving a Voicemail. AI Could Bring It Back.**
 >
 > For years, leaving a voicemail lay quietly in the ground. Then Lattice of Vibes showed up with a shovel and a Series A. “Leaving a voicemail was dead for a reason,” admits Sandford Blatherwick, VP of Inevitability at Lattice of Vibes…
 
-It isn't agentic. Like [sextips](https://github.com/AhoyLemon/sextips), it's a hand-written corpus and a weighted dice roll. The project was started from [startHere](https://github.com/AhoyLemon/startHere).
+## Is it AI?
 
-## Commands
+No. It's a hand-written corpus and a weighted dice roll, the same trick as [sextips](https://github.com/AhoyLemon/sextips). A human typed every word of this, which makes it the least efficient AI slop on the internet.
 
-- `bun install`: install dependencies.
-- `bun run dev`: start the workbench at http://localhost:3000.
-- `bun run sample [count]`: print a batch of posts in the terminal (10 by default).
-- `bun run card [count]`: render headline images and a page that mocks them up as Bluesky posts, at http://localhost:3000/out/cards/ while `bun run dev` is running. It renders one post per structure, `count` random ones (6 by default), and the longest Pull Quote headline it can find.
-- `bun run post:bluesky --dry-run`: generate the post the bot would send, without sending it. It prints the text and saves the image to `out/post-<seed>.png`.
-- `bun run test`: check Sass and TypeScript, then run the unit tests.
-- `bun run build`: build the Sass, Pug and TypeScript.
+## Is any of it real?
 
-## How a post gets made
+Nope. Every expert, startup, study and quote is made up. Real brands show up as scenery (a Liquid Death wedding, an H&M dressing room), but never as the subject of a claim.
 
-1. Pick a **structure** by weight (The Death Notice, The Resurrection, The Pull Quote and so on).
-2. Pick the **cast** once, so the headline and excerpt agree: a subject that fits the structure (sometimes dressed in a wrapper like "Big {X}"), a fake expert, a fake startup, a city, a generation, and some numbers.
-3. Resolve the headline and the excerpt, then fill in their `{tokens}` from the cast.
-4. Fit the excerpt to Bluesky's 300 graphemes. It's the whole post text, since the headline goes in an image. The excerpt runs until it hits the limit, gets cut at a word boundary, and ends in `…` so it reads like a news summary.
-5. Set the headline in a 1200×630 news-style image: the wordmark and date, the structure's section, and the headline, whose font size steps down as it gets longer. The headline is never cut, and it doubles as the image's alt text.
+## Should I be worried about AI?
 
-Every post comes from a seed. The same seed (plus the same forced structure or subject) always gives the same post.
+Depends. Are you a casserole?
 
-## Writing the corpus
+## Can I play with it?
 
-Everything you'd edit for jokes lives in `src/ts/corpus/`:
+The [workbench](https://ahoylemon.github.io/hypewire/) makes posts on demand. Force a structure, pick a subject, or paste a seed to get the exact same post back. [More on the workbench](docs/workbench.md).
 
-| File | What's in it |
-| --- | --- |
-| `structures/_*.ts` | One file per headline structure, with its headline options and (optionally) its own excerpt |
-| `_subjects.ts` | The things AI is about to end, with their grammar |
-| `_wrappers.ts` | "the {X} Economy", "Big {X}" and friends, plus how often they show up. `allowPlural: false` keeps a wrapper off plural subjects, so nothing reads "Bowling Leagues Culture" |
-| `_castPools.ts` | Fake names, titles, startups, cities, generations, timeframes, groups, products |
-| `_excerpts.ts` | The generic lede, quote, background and kicker pools that structures fall back on |
-| `_corpus.ts` | The index that ties it all together |
+## Can I run this locally?
 
-### Syntax
+Yeah sure.
 
-- A plain string is literal text: `"Is AI Quietly Killing {subject}?"`
-- An array means "pick one": `["Millennials", "Gen Z"]`
-- `w(option, weight)` makes an option more or less likely. Unweighted options count as 1.
-- `seq(a, b, c)` joins its parts in order. Each part can be a string, an array or another `seq`.
-- `lock(who, pronouns, option)` keeps an option out of the pick unless that cast member uses those pronouns: `lock("expert", "he", "Godfather of AI")`. `who` is a token prefix: `expert`, `person`, `generation.speaker` or `rival.speaker`, plus `speaker` inside generation traits and `expert` in `relatives`. A lock only works as an option in an array, it combines with `w()` in either order, and every array that locks has to leave something for he, she and they.
+```bash
+bun install
+bun run dev
+```
 
-### Tokens
+That serves the workbench at http://localhost:3000. Everything else is in [the command list](docs/commands.md).
 
-| Token | Example |
-| --- | --- |
-| `{subject}` | the Casserole · Napkins |
-| `{subject.bare}` | Casserole (no leading "the") |
-| `{subject.inline}` | the casserole (for mid-sentence use) |
-| `{subject.bareInline}` | casserole (mid-sentence, no leading "the") |
-| `{subject.is}` `{subject.isnt}` `{subject.was}` `{subject.has}` | is / are, isn't / aren't, was / were, has / have |
-| `{subject.it}` `{subject.its}` `{subject.them}` | it / they, it's / they're, it / them |
-| `{subject.s}` | "s" or nothing, for verbs: `Need{subject.s}` |
-| `{subject.activity}` `{subject.activityInline}` | Whittling · whittling (only on subjects that have one) |
-| `{generation}` `{rival}` | Millennials · Gen Z, with the same `.is` / `.was` / `.has` / `.s` grammar. `{rival}` is always the one who's mad |
-| `{generation.venue}` `{generation.catchphrase}` `{generation.quirk}` `{generation.hypocrisy}` | Stereotypes from `_castPools.ts` (same keys on `{rival}`): "a Facebook group with 40,000 members", "Love, Mom", "who still use Facebook", and a full complaint-plus-self-own sentence. Generations take verb agreement from their name ("Gen Z Is") but always use "they" pronouns |
-| `{speaker}` (inside generation traits) `{generation.speaker}` `{generation.age}` | The generation's own spokesperson, with an age from that generation's `ages` range, in a mix of formats: "Juniper Turnblatt, 29", "29-year-old Juniper Turnblatt", "Juniper Turnblatt (29)" |
-| `{model}` `{model.new}` `{model.old}` | Mindloaf · Mindloaf 5 · Mindloaf 4.9 |
-| `{expert}` `{expert.first}` `{expert.last}` `{expert.title}` | Brindle Thistlewick, Chief Vibes Officer |
-| `{person}` `{person.first}` `{person.last}` `{person.age}` | a second fake person, for anecdotes |
-| `{expert.he}` `{expert.him}` `{expert.his}` `{expert.himself}` `{expert.hes}` | he / she / they, him / her / them, his / her / their, himself / herself / themself, he's / she's / they're. The same tokens work on `{person}`, `{generation.speaker}`, `{rival.speaker}`, and `{speaker}` inside generation traits. Pronouns come from the first name |
-| `{expert.is}` `{expert.isnt}` `{expert.was}` `{expert.has}` `{expert.s}` | Verbs that agree with that person's pronoun, because singular "they" takes "are": `{expert.He} {expert.is}`, `{person.he} say{person.s}`. They follow the pronoun, so after a noun ("a {person.man} who says") write the verb as plain text |
-| `{expert.man}` `{expert.boy}` `{expert.boyfriend}` and friends | Gendered words from `genderedWords` in `_castPools.ts`, which describe the person themself: man / woman / person, boy / girl / kid. Someone they know stays plain text: `{expert.his} son` |
-| `{relative}` | Estranged Uncle of AI. It's the expert's epithet, and the gendered ones lock to the expert's pronouns, so keep it next to `{expert}` |
-| `{startup}` `{city}` `{money}` `{age}` `{percent}` | Frothr, Duluth, $40M, 19, 61. Use `{city}` in headlines and `{city.inline}` mid-sentence. They only differ for places like "the Food Court of a Dying Mall in Omaha" |
-| `{timeframe}` `{group}` `{product}` | each with an `.inline` form for mid-sentence use |
+## Can I write jokes for it?
 
-**Capitalize the token to capitalize the output.** The case of the last part of the token decides it: `{subject.Is}` gives "Is" or "Are", and `{Subject}` gives "The Casserole". Use the capitalized form at the start of a headline or sentence.
+Please do. [The corpus guide](docs/corpus.md) covers the syntax, the tokens, and the tests that will yell at you the moment you write "they has."
 
-**Gendered tokens are named for their "he" form.** `{expert.his}` gives "her" for a she, and `{speaker.boy}` gives "girl".
+## How does it post?
 
-### Adding a first name
+GitHub Actions wakes up four times a day, rolls the dice, and never runs the same kind of story twice in a row. [Posting](docs/posting.md) has the schedule, the secrets, and the pause switch. The logo kit and colors live in [brand](docs/brand.md).
 
-Add it to `firstNames` in `_castPools.ts` with the pronouns everyone with that name uses: `{ name: "Greg", pronouns: "he" }`. To add a gendered word, add a `[he, she, they]` line to `genderedWords`. Its "he" form becomes the token name, so it has to be plain lowercase letters.
+---
 
-### Adding a subject
-
-Add it to `_subjects.ts`. Set `plural: true` for plural nouns, `activity` if it works after "Vibe-", and `inline` when lowercasing the name would mangle a proper noun (for example `"the Minnesota goodbye"`).
-
-### Adding a structure
-
-Create `structures/_yourStructure.ts`, export a `Structure`, and add it to `_corpus.ts`. Use `requires: ["activity"]` if it needs `{subject.activity}`. Give it a newspaper section for the headline image in `SECTIONS` in `src/ts/card/_headlineCard.ts`.
-
-A structure brings its own excerpt with `excerptWith({ lede, quote, background, kicker })`. Any part you leave out falls back to the generic pool in `_excerpts.ts`. To mix the generic pool into your own at a lower rate, add it as one weighted option: `lede: ["your line", "another line", w(ledes, 1)]`.
-
-When a structure has several different jokes and each headline needs its own matching excerpt, give it `variants` instead of `headline` and `excerpt`. The Study and the Market Panic work this way. Each variant has an `id`, a `label`, an optional `weight`, a `headline`, and an `excerpt`. The workbench lists each variant under its structure, so you can force one.
-
-### What the engine and tests enforce
-
-- **The cut.** The excerpt maxes out at 300 graphemes on its own. It's cut at a word boundary and ends in `…`, so the lede and quote show, some of the background usually does, and the kicker usually doesn't. The headline is never cut.
-- **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must fit whole, even with the longest name, oldest age, and longest pronouns. The tests check that worst case directly.
-- **Quote punctuation.** Periods and commas go inside closing quotes (`“like this.”`).
-- **Tokens.** Every `{token}` has to resolve, and a capitalized token has to start each headline and sentence.
-- **Pronouns.** A batch of posts has to render cleanly with everyone as "he", then as "she", then as "they", so a verb that ignores singular "they" ("they has") fails. A pronoun token followed by a plain-text verb ("{person.he} has", "{person.he} plans") fails too, whether or not a post happens to pick it. Every `lock()` has to be an option in an array, name someone who's in the cast there, and leave an option for each set of pronouns.
-- **Real brands.** They're fine as background detail, but don't make up claims about what a real company or person does. Quoted people, experts, startups and investors are invented.
-- **The headline image.** Every structure needs a section in `SECTIONS`. Every headline has to stay within `MAX_HEADLINE` (200 graphemes) and use only characters the card fonts can draw: Fontsource's Latin subset, so no emoji or letters like Ł. The coverage test checks both for every combination. `tests/card.test.ts` lays out the longest headlines and one at the cap, and reports any text that spills.
-- **Run `bun run test` after editing.** The coverage test renders every structure and variant with every subject and wrapper that fits it, and it prints the exact post when something breaks.
-
-## The workbench
-
-`bun run dev` serves a local page for testing the corpus. You can force a structure and/or a subject, type a seed, generate a batch of 20, and open the full excerpt from before the cut. The URL (`?seed=…&structure=…&subject=…`) reproduces whatever is on screen, which is handy when a post comes out broken or perfect.
-
-Each post shows the way it'll look on Bluesky: the excerpt, then the headline image. The workbench renders the image with the same card code the post script uses, through satori and the card fonts loaded from jsDelivr. The import map that points to them is pinned to the installed satori and font versions (`scripts/_pugLocals.ts`), so the preview matches what posts. It can still differ by a hair: jsDelivr picks satori's own dependencies, and the browser draws the SVG that the post script turns into a PNG. If the CDN can't be reached, the headline shows as plain text and the page says why.
-
-It's also published at https://ahoylemon.github.io/hypewire/. `.github/workflows/deploy.yml` builds the site and deploys it to GitHub Pages on every push to `main`, which needs the repo's Pages source set to GitHub Actions.
-
-## Brand
-
-| Where | What's in it |
-| --- | --- |
-| `src/img/brand/` | The logo kit: the "upward revision" balloon chart as a symbol, wordmark and avatar, each in color, one-color and reverse |
-| `src/img/favicon/` | The favicon set and webmanifest, with relative paths so they work under `/hypewire/` |
-| `src/img/og-wide.png` | The site's OpenGraph image |
-| `_NFW/` | Design sources that never ship with the site: the OpenGraph template, the approved headline-card mock, the Bluesky profile banner (`bluesky-banner.png`), and the GitHub repo's social preview (`OpenGraph-GitHubRepo.png`), which GitHub only takes as a manual upload in Settings |
-
-The palette is paper `#f6f3ea`, ink `#161616`, red `#b3121f` and rule `#d6d0c2`. The headline card keeps its own copy in `src/ts/card/_headlineCard.ts`, and the workbench's lives in `src/scss/abstracts/_variables.scss`.
-
-The card's masthead draws the wordmark from `src/ts/card/_wordmark.ts`, which is `src/img/brand/wordmark.svg` without its `<title>`. Satori can't encode the title's em dash. If the wordmark changes, paste the new file in there. `tests/card.test.ts` fails until the two match.
-
-## Posting
-
-Each post is the excerpt as text, with the headline image attached and the headline as its alt text.
-
-The bot never posts the same structure twice in a row. After each post it saves a small sidecar record next to it on the account (`xyz.ahoylemon.hypewire.postInfo`, under the post's own record key), holding the post's structure and seed. Bluesky apps don't show it. Before the next post, `scripts/post.ts` reads the newest one without logging in, and rerolls with fresh seeds until it lands on a different structure, so every post's seed still reproduces it in the workbench. Dry runs check it too. If the record can't be read or written, the bot posts anyway and the next post may repeat a structure.
-
-`.github/workflows/post-bluesky.yml` posts four times a day, around the clock: at 3am, 9am, 3pm and 9pm Central, each run waiting a random 0 to 59 minutes first so posts don't land at the same minute every day. The cron's `timezone` key keeps the slots on Central time through daylight saving, and skipping the 2am hour means a slot is never dropped or doubled. A run GitHub drops costs that one post and nothing else.
-
-To turn it on:
-
-1. Create an [app password](https://bsky.app/settings/app-passwords) for the bot's account.
-2. Add the repository secrets `BLUESKY_IDENTIFIER` (`hype-wire.bsky.social`) and `BLUESKY_APP_PASSWORD`.
-3. Run the workflow by hand from the Actions tab to send a test post. Manual runs always post, right away.
-4. Set the repository variable `POSTING_ENABLED` to `true` to start the schedule. Set it to anything else to pause it.
-
-Each run's job summary includes the post's seed, so you can open it in the workbench with `?seed=`.
-
-GitHub turns off scheduled workflows in a public repo after 60 days without a commit. Any push resets the clock. If it does switch off, re-enable "Post to BlueSky" from the Actions tab.
+Started from [startHere](https://github.com/AhoyLemon/startHere). Written by [Lemon](https://ahoylemon.xyz), a human, who would like that noted.
