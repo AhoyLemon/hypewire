@@ -2,7 +2,7 @@ import { graphemeLength } from "../lib/graphemes.js";
 import { castPronouns, castTokens, pickCast } from "./_cast.js";
 import { fillTokens, resolveNode } from "./_resolve.js";
 import { pickWeighted, randomSeed, seededRng, type Rng } from "./_rng.js";
-import { fitPost } from "./_truncate.js";
+import { fitExcerpt } from "./_truncate.js";
 import type { Corpus, Family, Structure, StructureVariant } from "./_types.js";
 
 export interface GenerateOptions {
@@ -29,12 +29,14 @@ export interface PostDebug {
   wrapperId: string | null;
   /** The excerpt before it was cut to fit. */
   fullExcerpt: string;
+  /** The length of the post text. */
   graphemes: number;
 }
 
 export interface GeneratedPost {
-  text: string;
+  /** Never cut. It goes in the image. */
   headline: string;
+  /** The post text: the excerpt cut to fit, ending in an ellipsis. */
   excerpt: string;
   debug: PostDebug;
 }
@@ -81,7 +83,7 @@ function pickVariant(
   return found;
 }
 
-/** Picks a structure (and variant), picks a cast, resolves the headline and excerpt, and cuts the excerpt to fit. */
+/** Picks a structure (and variant), picks a cast, resolves the headline and excerpt, and cuts the excerpt to fit the post. */
 export function generate(
   corpus: Corpus,
   options: GenerateOptions = {},
@@ -109,10 +111,9 @@ export function generate(
     resolveNode(variant.excerpt ?? corpus.sharedExcerpt, rng, pronouns),
     tokens,
   ).trim();
-  const { text, excerpt } = fitPost(headline, fullExcerpt);
+  const excerpt = fitExcerpt(fullExcerpt);
 
   return {
-    text,
     headline,
     excerpt,
     debug: {
@@ -125,7 +126,7 @@ export function generate(
       subject: cast.subject.name,
       wrapperId: cast.subject.wrapperId,
       fullExcerpt,
-      graphemes: graphemeLength(text),
+      graphemes: graphemeLength(excerpt),
     },
   };
 }

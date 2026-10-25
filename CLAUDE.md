@@ -16,7 +16,7 @@ A Bluesky bot that posts fake AI-hype headlines and excerpts, built from a hand-
 
 Lemon's general comedy preferences (go too far, specific beats generic, people tell on themselves, twist the format now and then) live in their writing preferences and apply here. On top of those, for this project:
 
-- Put the joke in the lede and the quote. The cut usually drops the background and kicker.
+- Put the joke in the lede and the quote. The cut usually drops the kicker and some of the background.
 - The subject has to earn its place. A structure doesn't need to mention it, and the Study and the Market Panic deliberately skip the subject-heavy generic pools.
 - Don't write around a cast member's gender. Use a pronoun token or a gendered word ({speaker.his} grandson, a Local {person.Man}). Save `lock()` for gendered words with no neutral twin, like Godfather, draft deferments, or a Guy Named Greg.
 - The narrator never judges. In Rage-Bait, the angry generation's spokesperson gives themselves away through their own attribution (`hypocrisy`), and the generation using AI just gets a harmless `quirk`.

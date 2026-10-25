@@ -13,6 +13,7 @@ It isn't agentic. Like [sextips](https://github.com/AhoyLemon/sextips), it's a h
 - `bun install`: install dependencies.
 - `bun run dev`: start the workbench at http://localhost:3000.
 - `bun run sample [count]`: print a batch of posts in the terminal (10 by default).
+- `bun run card [count]`: render headline images and a page that mocks them up as Bluesky posts, at http://localhost:3000/out/cards/ while `bun run dev` is running. It renders one post per structure, `count` random ones (6 by default), and the longest Pull Quote headline it can find.
 - `bun run post:bluesky --dry-run`: generate the post the bot would send, without sending it.
 - `bun run test`: check Sass and TypeScript, then run the unit tests.
 - `bun run build`: build the Sass, Pug and TypeScript.
@@ -22,7 +23,7 @@ It isn't agentic. Like [sextips](https://github.com/AhoyLemon/sextips), it's a h
 1. Pick a **structure** by weight (The Death Notice, The Resurrection, The Pull Quote and so on).
 2. Pick the **cast** once, so the headline and excerpt agree: a subject that fits the structure (sometimes dressed in a wrapper like "Big {X}"), a fake expert, a fake startup, a city, a generation, and some numbers.
 3. Resolve the headline and the excerpt, then fill in their `{tokens}` from the cast.
-4. Fit the post to Bluesky's 300 graphemes. The headline is never cut. The excerpt runs until it hits the limit, gets cut at a word boundary, and ends in `…` so it reads like a news summary.
+4. Fit the excerpt to Bluesky's 300 graphemes. It's the whole post text, since the headline goes in an image (`src/ts/card/_headlineCard.ts`). The excerpt runs until it hits the limit, gets cut at a word boundary, and ends in `…` so it reads like a news summary. The headline is never cut. Its font size steps down as it gets longer.
 
 Every post comes from a seed. The same seed (plus the same forced structure or subject) always gives the same post.
 
@@ -94,8 +95,8 @@ When a structure has several different jokes and each headline needs its own mat
 
 ### What the engine and tests enforce
 
-- **The cut.** Posts max out at 300 graphemes. The headline is never cut. The excerpt is cut at a word boundary and ends in `…`, so the lede and quote usually show, and the background and kicker usually don't.
-- **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must fit whole, even under the longest possible Rage-Bait headline with the longest name, oldest age, and longest pronouns. The tests check that worst case directly.
+- **The cut.** The excerpt maxes out at 300 graphemes on its own. It's cut at a word boundary and ends in `…`, so the lede and quote show, some of the background usually does, and the kicker usually doesn't. The headline is never cut.
+- **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must fit whole, even with the longest name, oldest age, and longest pronouns. The tests check that worst case directly.
 - **Quote punctuation.** Periods and commas go inside closing quotes (`“like this.”`).
 - **Tokens.** Every `{token}` has to resolve, and a capitalized token has to start each headline and sentence.
 - **Pronouns.** A batch of posts has to render cleanly with everyone as "he", then as "she", then as "they", so a verb that ignores singular "they" ("they has") fails. A pronoun token followed by a plain-text verb ("{person.he} has", "{person.he} plans") fails too, whether or not a post happens to pick it. Every `lock()` has to be an option in an array, name someone who's in the cast there, and leave an option for each set of pronouns.

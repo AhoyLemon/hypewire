@@ -15,6 +15,7 @@
     "serve": "browser-sync start --config bs-config.cjs",
     "dev": "bun scripts/dev.ts",
     "sample": "bun scripts/sample.ts",
+    "card": "bun scripts/card.ts",
     "post:bluesky": "bun scripts/post.ts",
     "test:sass": "sass src/scss/site.scss --no-source-map --style=compressed > /dev/null",
     "test:ts": "tsc --noEmit",
@@ -38,6 +39,10 @@
     "vue": "^3.5.44"
   },
   "dependencies": {
-    "@atproto/api": "^0.29.4"
+    "@atproto/api": "^0.29.4",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/newsreader": "^5.3.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "satori": "^0.63.2"
   }
 }

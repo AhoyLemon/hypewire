@@ -54,7 +54,7 @@ async function main(): Promise<void> {
   const label = `seed ${post.debug.seed} · ${post.debug.structureLabel} · ${post.debug.graphemes} graphemes`;
 
   if (dryRun) {
-    console.log(`${label}\n\n${post.text}`);
+    console.log(`${label}\n\n${post.headline}\n\n${post.excerpt}`);
     return;
   }
 
@@ -73,14 +73,14 @@ async function main(): Promise<void> {
   const did = session.did;
   if (!did) throw new Error("Login succeeded but no session DID was returned.");
 
-  const result = await agent.post({ text: post.text });
+  const result = await agent.post({ text: post.excerpt });
   const postUrl = postUrlFromAtUri(result.uri, did);
   console.log(`Posted (${label}):`, postUrl);
   console.log(
     `::notice title=BlueSky: posted::${escapeForWorkflowCommand(`Posted: ${postUrl}`)}`,
   );
   appendSummary(
-    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n> ${post.text.replace(/\n/g, "\n> ")}`,
+    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n> ${post.excerpt}`,
   );
 }
 
