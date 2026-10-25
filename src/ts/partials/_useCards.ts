@@ -15,12 +15,16 @@ import type { GeneratedPost } from "../engine/_generate.js";
 // Vue is loaded from a CDN <script> in _javascripts.pug, not bundled.
 declare const Vue: typeof import("vue");
 
+/** Where cards show: the single preview, or the batch of 20. */
+export type CardSlot = "preview" | "batch";
+
 export interface Cards {
   /** Rendered cards as image URLs, by `cardKey`. */
   cards: Ref<Record<string, string>>;
   cardError: Ref<string>;
   cardKey: (post: GeneratedPost) => string;
-  renderCards: (posts: GeneratedPost[]) => Promise<void>;
+  /** Renders a slot's cards, replacing whatever that slot showed before. */
+  renderCards: (slot: CardSlot, posts: GeneratedPost[]) => Promise<void>;
 }
 
 /** The structure and headline are the only parts of a post that change its card. */
@@ -70,13 +74,32 @@ export function useCards(): Cards {
   const cards = ref<Record<string, string>>({});
   const cardError = ref("");
   const date = printDate(new Date());
+  const runs: Record<CardSlot, number> = { preview: 0, batch: 0 };
+  const shown: Record<CardSlot, Set<string>> = {
+    preview: new Set(),
+    batch: new Set(),
+  };
 
-  async function renderCards(posts: GeneratedPost[]): Promise<void> {
+  async function renderCards(
+    slot: CardSlot,
+    posts: GeneratedPost[],
+  ): Promise<void> {
+    const run = ++runs[slot];
+    // A newer call for the same slot takes over, so a stale batch stops tying up the main thread.
+    const superseded = (): boolean => run !== runs[slot];
+
+    shown[slot] = new Set(posts.map(cardKey));
+    for (const key of Object.keys(cards.value))
+      if (!shown.preview.has(key) && !shown.batch.has(key))
+        delete cards.value[key];
+
     for (const post of posts) {
+      if (superseded()) return;
       const key = cardKey(post);
       if (cards.value[key]) continue;
       try {
         const svg = await renderSvg(post, date);
+        if (superseded()) return;
         cards.value[key] =
           `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
         cardError.value = "";

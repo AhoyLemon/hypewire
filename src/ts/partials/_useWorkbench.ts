@@ -147,7 +147,7 @@ export function useWorkbench(): Workbench {
       permalink.value = buildHref(seed, selection());
       error.value = "";
       window.history.replaceState(null, "", permalink.value);
-      void renderCards([shown]);
+      void renderCards("preview", [shown]);
     } catch (err) {
       post.value = null;
       error.value = err instanceof Error ? err.message : String(err);
@@ -169,7 +169,10 @@ export function useWorkbench(): Workbench {
       }
     }
     batch.value = items;
-    void renderCards(items.map((item) => item.post));
+    void renderCards(
+      "batch",
+      items.map((item) => item.post),
+    );
   }
 
   function onSubmit(event: SubmitEvent): void {
