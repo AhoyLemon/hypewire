@@ -13,4 +13,4 @@ The palette is paper `#f6f3ea`, ink `#161616`, red `#b3121f` and rule `#d6d0c2`.
 
 ## The wordmark on the card
 
-The card's masthead draws the wordmark from `src/ts/card/_wordmark.ts`, which is `src/img/brand/wordmark.svg` without its `<title>`. Satori can't encode the title's em dash. If the wordmark changes, paste the new file in there. `tests/card.test.ts` fails until the two match.
+The card's masthead draws the wordmark from `src/ts/card/_wordmark.ts`, which is `src/img/brand/wordmark.svg` without its `<title>` (or the `role` and `aria-labelledby` that point at it). Satori can't encode the title's em dash. If the wordmark changes, paste the new file in there. `tests/card.test.ts` fails until the two match.

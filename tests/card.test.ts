@@ -95,7 +95,10 @@ describe("headline card", () => {
       "utf8",
     );
     expect(WORDMARK_SVG).toBe(
-      brand.trim().replace(/<title[^>]*>[\s\S]*?<\/title>/, ""),
+      brand
+        .trim()
+        .replace(/<title[^>]*>[\s\S]*?<\/title>/, "")
+        .replace(' role="img" aria-labelledby="Title"', ""),
     );
     expect(WORDMARK_SVG).toContain(
       `viewBox="0 0 ${WORDMARK_SIZE.width} ${WORDMARK_SIZE.height}"`,
