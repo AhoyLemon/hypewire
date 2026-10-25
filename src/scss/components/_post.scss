@@ -3,6 +3,7 @@
 // Roughly how a post looks on Bluesky (text, then the headline card), so the length reads true.
 .post {
   background: vars.$paper;
+  color: vars.$copy;
   border: 1px solid vars.$rule;
   border-radius: 12px;
   padding: 1rem 1.25rem;
@@ -59,11 +60,11 @@
   }
 
   &.near label {
-    color: vars.$warning;
+    color: vars.$page-warning;
   }
 
   &.over label {
-    color: vars.$danger;
+    color: vars.$page-danger;
   }
 }
 
@@ -92,13 +93,13 @@
     font-weight: vars.$bold;
 
     &:focus-visible {
-      outline: 3px solid vars.$focus-ring;
+      outline: 3px solid vars.$page-focus;
       outline-offset: 2px;
     }
   }
 
   p {
     margin: 0.5rem 0 0;
-    color: vars.$muted;
+    color: vars.$page-muted;
   }
 }

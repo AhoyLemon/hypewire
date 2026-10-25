@@ -14,8 +14,17 @@ $brand-red: #b3121f;
 $brand-red-dark: #8a0e18;
 $brand-rule: #d6d0c2;
 
+// WORKBENCH PAGE (dark, so the paper-colored headline cards don't blend into it. Text colors all pass WCAG AA on $page.)
+$page: #1b1a18;
+$page-dot: rgba(246, 243, 234, 0.07);
+$page-text: $brand-paper;
+$page-muted: #b5ad9c;
+$page-focus: #9cc2ff;
+$page-warning: #e6a23c;
+$page-danger: #ff7b7b;
+
 // COLOR UTILITIES
-$body: $brand-paper;
+$body: $page;
 $copy: $brand-ink;
 $link: $blue;
 $accent: $brand-red;
@@ -50,3 +59,6 @@ $headline: $serif;
 $mobile-max: 767px;
 $desktop-min: 768px;
 $max-width: 1200px;
+$column-width: 48rem;
+$controls-width: 22rem;
+$controls-inset: 1rem;

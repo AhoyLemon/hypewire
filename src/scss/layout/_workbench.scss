@@ -1,45 +1,13 @@
 @use "../abstracts/variables" as vars;
-
-// A newspaper masthead, because the bot is cosplaying as one.
-.masthead {
-  text-align: center;
-  padding: 2rem 1rem 1rem;
-  margin: 0 auto 1.5rem;
-  max-width: 48rem;
-  border-bottom: 3px double vars.$copy;
-
-  .kicker {
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    font-size: 0.8125rem;
-    color: vars.$muted;
-  }
-
-  h1 {
-    margin: 0.5rem 0;
-
-    img {
-      display: block;
-      width: min(100%, 24rem);
-      height: auto;
-      margin: 0 auto;
-    }
-  }
-
-  .dek {
-    margin: 0.25rem 0 0;
-    font-family: vars.$serif;
-    font-style: italic;
-  }
-}
+@use "../abstracts/z-index" as z;
 
 .workbench {
   display: grid;
   gap: 1.5rem;
-  max-width: 48rem;
+  max-width: vars.$column-width;
   margin: 0 auto;
-  padding: 0 1rem 3rem;
+  // The bottom padding lets the last post scroll clear of the pinned controls.
+  padding: 2rem 1rem 20rem;
 
   h2 {
     font-size: clamp(1.25rem, 3vw, 1.5rem);
@@ -47,7 +15,7 @@
   }
 
   a {
-    color: vars.$ink-link;
+    color: vars.$page-text;
 
     &:hover,
     &:focus-visible {
@@ -55,12 +23,12 @@
     }
 
     &:focus-visible {
-      outline: 3px solid vars.$focus-ring;
+      outline: 3px solid vars.$page-focus;
       outline-offset: 2px;
     }
 
     &:active {
-      color: vars.$copy;
+      color: vars.$page-muted;
     }
   }
 
@@ -72,6 +40,20 @@
     color: vars.$danger;
   }
 
+  // Pinned to the bottom-right corner, so the controls stay in reach while you scroll a batch.
+  .controls {
+    position: fixed;
+    right: vars.$controls-inset;
+    bottom: vars.$controls-inset;
+    z-index: z.$z-controls;
+    width: min(
+      #{vars.$controls-width},
+      calc(100% - #{vars.$controls-inset * 2})
+    );
+    max-height: calc(100dvh - #{vars.$controls-inset * 2});
+    overflow-y: auto;
+  }
+
   .batch ol {
     display: grid;
     gap: 1rem;
@@ -80,6 +62,17 @@
   .batch .meta {
     margin: 0.25rem 0 0;
     font-size: 0.875rem;
-    color: vars.$muted;
+    color: vars.$page-muted;
+  }
+}
+
+// Wide enough for both, so the column centers in the space left of the controls instead of running under them.
+$column-and-controls: vars.$column-width + vars.$controls-width +
+  vars.$controls-inset;
+
+@media (min-width: 76rem) {
+  .workbench {
+    margin-left: calc((100% - #{$column-and-controls}) / 2);
+    padding-bottom: 3rem;
   }
 }
