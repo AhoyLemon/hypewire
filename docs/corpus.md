@@ -1,5 +1,7 @@
 # Writing the corpus
 
+Not Lemon? [Open an issue](https://github.com/AhoyLemon/hypewire/issues/new) before writing any jokes. Ideas are always welcome, but new jokes get talked through first.
+
 Everything you'd edit for jokes lives in `src/ts/corpus/`. Run `bun run test` after every change, because it renders every structure with every subject that fits it and prints the exact post when something breaks.
 
 ## How a post gets made

@@ -58,7 +58,9 @@ That serves the workbench at http://localhost:3000. Everything else is in [the c
 
 ## Can I write jokes for it?
 
-Please do. [The corpus guide](docs/corpus.md) covers the syntax, the tokens, and the tests that will yell at you the moment you write "they has."
+Talk to me first. I love that you want to, but jokes are personal, and I might veto yours.
+
+Ideas, on the other hand, I want all of. [Open an issue](https://github.com/AhoyLemon/hypewire/issues/new) with a thing AI should ruin, a new kind of headline, or a fake startup name too good to waste. If we land on a joke together, [the corpus guide](docs/corpus.md) covers the syntax, the tokens, and the tests that will yell at you the moment you write "they has."
 
 ## How does it post?
 
