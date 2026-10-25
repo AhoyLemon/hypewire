@@ -108,7 +108,10 @@ describe("headline card", () => {
       structureId: "study",
       date: "October 25, 2026",
     });
-    expect(svg).toContain('href="data:image/svg+xml;base64,');
+    const images = [
+      ...svg.matchAll(/href="data:image\/svg\+xml;base64,([^"]+)"/g),
+    ].map(([, base64]) => atob(base64));
+    expect(images).toEqual([WORDMARK_SVG]);
   });
 
   test("every card font has a Fontsource file installed", () => {
