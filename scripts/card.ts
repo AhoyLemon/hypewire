@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 
 import chalk from "chalk";
@@ -22,6 +23,14 @@ const count = Number.isFinite(requested) && requested > 0 ? requested : 6;
 
 const OUT = new URL("../out/cards/", import.meta.url);
 const WORST_CASE_SEEDS = 5_000;
+
+/** The profile as Bluesky shows it, so the mockups read like the real feed. */
+const DISPLAY_NAME = "HYPEWIRE";
+const HANDLE = "hype-wire.bsky.social";
+const AVATAR = readFileSync(
+  new URL("../src/img/brand/avatar.svg", import.meta.url),
+  "utf8",
+);
 
 interface MockPost {
   post: GeneratedPost;
@@ -75,9 +84,9 @@ function postHtml({ post, note }: MockPost, index: number): string {
   return `
     <li>
       <article class="post">
-        <div class="avatar" aria-hidden="true">H</div>
+        <img class="avatar" src="data:image/svg+xml,${encodeURIComponent(AVATAR)}" alt="" role="presentation" width="42" height="42">
         <div class="body">
-          <p class="byline"><strong>Hypewire</strong> <span>@hypewire.bsky.social · 2h</span></p>
+          <p class="byline"><strong>${DISPLAY_NAME}</strong> <span>@${HANDLE} · 2h</span></p>
           <p class="text">${escapeHtml(post.excerpt)}</p>
           <img class="card" src="${fileName(index)}" alt="${escapeHtml(post.headline)}" width="${CARD_WIDTH}" height="${CARD_HEIGHT}">
           <p class="actions" aria-hidden="true"><span>💬 12</span><span>🔁 48</span><span>♡ 310</span></p>
@@ -108,7 +117,7 @@ function pageHtml(posts: MockPost[]): string {
     ol { list-style: none; margin: 0 auto; padding: 0; max-width: 600px; }
     li { margin-bottom: 24px; }
     .post { display: grid; grid-template-columns: 42px 1fr; gap: 10px; padding: 12px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; }
-    .avatar { width: 42px; height: 42px; border-radius: 50%; background: #161616; color: #f6f3ea; display: grid; place-items: center; font-weight: 800; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; }
     .body { min-width: 0; }
     .byline { margin: 0 0 2px; }
     .byline span { color: var(--muted); }

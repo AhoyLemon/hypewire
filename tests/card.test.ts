@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 import { cardSvg } from "../scripts/_renderCard";
 import {
@@ -13,6 +13,7 @@ import {
   missingGlyphs,
   SECTIONS,
 } from "../src/ts/card/_headlineCard";
+import { WORDMARK_SIZE, WORDMARK_SVG } from "../src/ts/card/_wordmark";
 import { corpus } from "../src/ts/corpus/_corpus";
 import { generate } from "../src/ts/engine/_generate";
 import { graphemeLength } from "../src/ts/lib/graphemes";
@@ -86,6 +87,28 @@ describe("headline card", () => {
     expect(Object.keys(SECTIONS).sort()).toEqual(
       corpus.structures.map((s) => s.id).sort(),
     );
+  });
+
+  test("the masthead wordmark matches the brand file, minus its title", () => {
+    const brand = readFileSync(
+      new URL("../src/img/brand/wordmark.svg", import.meta.url),
+      "utf8",
+    );
+    expect(WORDMARK_SVG).toBe(
+      brand.trim().replace(/<title[^>]*>[\s\S]*?<\/title>/, ""),
+    );
+    expect(WORDMARK_SVG).toContain(
+      `viewBox="0 0 ${WORDMARK_SIZE.width} ${WORDMARK_SIZE.height}"`,
+    );
+  });
+
+  test("the card draws the wordmark", async () => {
+    const svg = await cardSvg({
+      headline: "Study: 77% of Pigeons Are Actually AI",
+      structureId: "study",
+      date: "October 25, 2026",
+    });
+    expect(svg).toContain('href="data:image/svg+xml;base64,');
   });
 
   test("every card font has a Fontsource file installed", () => {
