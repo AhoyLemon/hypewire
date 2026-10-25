@@ -1,6 +1,6 @@
 # Hypewire
 
-AI hype headlines about the end of obscure things. A bot posts one a day to Bluesky.
+AI hype headlines about the end of obscure things. A bot posts four a day to Bluesky as [@hype-wire.bsky.social](https://bsky.app/profile/hype-wire.bsky.social).
 
 > **Millennials Killed Leaving a Voicemail. AI Could Bring It Back.**
 >
@@ -24,7 +24,7 @@ It isn't agentic. Like [sextips](https://github.com/AhoyLemon/sextips), it's a h
 2. Pick the **cast** once, so the headline and excerpt agree: a subject that fits the structure (sometimes dressed in a wrapper like "Big {X}"), a fake expert, a fake startup, a city, a generation, and some numbers.
 3. Resolve the headline and the excerpt, then fill in their `{tokens}` from the cast.
 4. Fit the excerpt to Bluesky's 300 graphemes. It's the whole post text, since the headline goes in an image. The excerpt runs until it hits the limit, gets cut at a word boundary, and ends in `…` so it reads like a news summary.
-5. Set the headline in a 1200×630 news-style image: the masthead and date, the structure's section, and the headline, whose font size steps down as it gets longer. The headline is never cut, and it doubles as the image's alt text.
+5. Set the headline in a 1200×630 news-style image: the wordmark and date, the structure's section, and the headline, whose font size steps down as it gets longer. The headline is never cut, and it doubles as the image's alt text.
 
 Every post comes from a seed. The same seed (plus the same forced structure or subject) always gives the same post.
 
@@ -113,17 +113,32 @@ Each post shows the way it'll look on Bluesky: the excerpt, then the headline im
 
 It's also published at https://ahoylemon.github.io/hypewire/. `.github/workflows/deploy.yml` builds the site and deploys it to GitHub Pages on every push to `main`, which needs the repo's Pages source set to GitHub Actions.
 
+## Brand
+
+| Where | What's in it |
+| --- | --- |
+| `src/img/brand/` | The logo kit: the "upward revision" balloon chart as a symbol, wordmark and avatar, each in color, one-color and reverse, plus the Bluesky banner |
+| `src/img/favicon/` | The favicon set and webmanifest, with relative paths so they work under `/hypewire/` |
+| `src/img/og-wide.png` | The site's OpenGraph image |
+| `_NFW/` | Design sources that never ship: the OpenGraph template and the approved headline-card mock |
+
+The palette is paper `#f6f3ea`, ink `#161616`, red `#b3121f` and rule `#d6d0c2`. The headline card keeps its own copy in `src/ts/card/_headlineCard.ts`, and the workbench's lives in `src/scss/abstracts/_variables.scss`.
+
+The card's masthead draws the wordmark from `src/ts/card/_wordmark.ts`, which is `src/img/brand/wordmark.svg` without its `<title>`. Satori can't encode the title's em dash. If the wordmark changes, paste the new file in there. `tests/card.test.ts` fails until the two match.
+
 ## Posting
 
 Each post is the excerpt as text, with the headline image attached and the headline as its alt text.
 
-`.github/workflows/post-bluesky.yml` posts once a day at a random time between 9am and 9pm Central. After each scheduled run, `scripts/reschedule-bluesky.ts` picks tomorrow's time and commits it back to the workflow.
+`.github/workflows/post-bluesky.yml` posts four times a day, around the clock: at 3am, 9am, 3pm and 9pm Central, each run waiting a random 0 to 59 minutes first so posts don't land at the same minute every day. The cron's `timezone` key keeps the slots on Central time through daylight saving, and skipping the 2am hour means a slot is never dropped or doubled. A run GitHub drops costs that one post and nothing else.
 
 To turn it on:
 
-1. Create the Bluesky account and an [app password](https://bsky.app/settings/app-passwords).
-2. Add these repository secrets: `BLUESKY_IDENTIFIER`, `BLUESKY_APP_PASSWORD`, and `WORKFLOW_PAT` (a token with `contents` and `workflows` write access, so the schedule commit can edit a workflow file).
-3. Run the workflow by hand from the Actions tab to send a test post. Manual runs always post.
-4. Set the repository variable `POSTING_ENABLED` to `true` to start the daily schedule. Set it to anything else to pause it.
+1. Create an [app password](https://bsky.app/settings/app-passwords) for the bot's account.
+2. Add the repository secrets `BLUESKY_IDENTIFIER` (`hype-wire.bsky.social`) and `BLUESKY_APP_PASSWORD`.
+3. Run the workflow by hand from the Actions tab to send a test post. Manual runs always post, right away.
+4. Set the repository variable `POSTING_ENABLED` to `true` to start the schedule. Set it to anything else to pause it.
 
 Each run's job summary includes the post's seed, so you can open it in the workbench with `?seed=`.
+
+GitHub turns off scheduled workflows in a public repo after 60 days without a commit. Any push resets the clock. If it does switch off, re-enable "Post to BlueSky" from the Actions tab.
