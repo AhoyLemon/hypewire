@@ -130,6 +130,8 @@ The card's masthead draws the wordmark from `src/ts/card/_wordmark.ts`, which is
 
 Each post is the excerpt as text, with the headline image attached and the headline as its alt text.
 
+The bot never posts the same structure twice in a row. After each post it saves a small sidecar record next to it on the account (`xyz.ahoylemon.hypewire.postInfo`, under the post's own record key), holding the post's structure and seed. Bluesky apps don't show it. Before the next post, `scripts/post.ts` reads the newest one without logging in, and rerolls with fresh seeds until it lands on a different structure, so every post's seed still reproduces it in the workbench. Dry runs check it too. If the record can't be read or written, the bot posts anyway and the next post may repeat a structure.
+
 `.github/workflows/post-bluesky.yml` posts four times a day, around the clock: at 3am, 9am, 3pm and 9pm Central, each run waiting a random 0 to 59 minutes first so posts don't land at the same minute every day. The cron's `timezone` key keeps the slots on Central time through daylight saving, and skipping the 2am hour means a slot is never dropped or doubled. A run GitHub drops costs that one post and nothing else.
 
 To turn it on:
