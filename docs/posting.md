@@ -13,7 +13,7 @@ The bot never posts the same structure twice in a row. After each post it saves 
 ## Turning it on
 
 1. Create an [app password](https://bsky.app/settings/app-passwords) for the bot's account.
-2. Add the repository secrets `BLUESKY_IDENTIFIER` (`hype-wire.bsky.social`) and `BLUESKY_APP_PASSWORD`.
+2. Add the repository secrets `BLUESKY_IDENTIFIER` (`hype-wire.bsky.social`) and `BLUESKY_APP_PASSWORD`. The identifier has to be the handle, not the account's email: an email logs in fine, but the no-repeat check can't read the account with it.
 3. Run the workflow by hand from the Actions tab to send a test post. Manual runs always post, right away.
 4. Set the repository variable `POSTING_ENABLED` to `true` to start the schedule. Set it to anything else to pause it.
 

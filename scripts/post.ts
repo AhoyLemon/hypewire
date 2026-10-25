@@ -25,19 +25,41 @@ const errorMessage = (err: unknown): string =>
 const structureLabel = (id: string): string =>
   corpus.structures.find((s) => s.id === id)?.label ?? id;
 
-/** The last post's structure, read from the account without logging in, so dry runs check it too. Null when there's no identifier or the read fails, which only means no structure sits out. */
-async function previousStructure(
-  identifier: string | undefined,
-): Promise<string | null> {
-  if (!identifier) return null;
+interface LastPost {
+  /** The structure to skip this time, or null when there's nothing to skip. */
+  structure: string | null;
+  /** What happened, for the log and the job summary. */
+  note: string;
+}
+
+/** The last post's structure, read from the account without logging in, so dry runs check it too. A failed read warns in Actions, because otherwise it looks exactly like an empty history. */
+async function lastPost(identifier: string | undefined): Promise<LastPost> {
+  if (!identifier)
+    return {
+      structure: null,
+      note: "No BLUESKY_IDENTIFIER, so the last post's structure wasn't checked.",
+    };
   try {
-    return await lastStructureId(new Agent({ service: SERVICE }), identifier);
-  } catch (err) {
-    console.warn(
-      "Couldn't read the last post's structure, so any structure can come up:",
-      errorMessage(err),
+    const structure = await lastStructureId(
+      new Agent({ service: SERVICE }),
+      identifier,
     );
-    return null;
+    return structure
+      ? {
+          structure,
+          note: `The last post was ${structureLabel(structure)}, so it sat this one out.`,
+        }
+      : {
+          structure: null,
+          note: "No structure on record for the last post, so any could come up.",
+        };
+  } catch (err) {
+    const note = `Couldn't read the last post's structure, so any could come up: ${errorMessage(err)}`;
+    console.warn(note);
+    console.log(
+      `::warning title=BlueSky: no post history::${escapeForWorkflowCommand(note)}`,
+    );
+    return { structure: null, note };
   }
 }
 
@@ -85,8 +107,8 @@ async function generatePost(avoid: string | null): Promise<ReadyPost | null> {
 
 async function main(): Promise<void> {
   const identifier = process.env.BLUESKY_IDENTIFIER;
-  const avoid = await previousStructure(identifier);
-  const ready = await generatePost(avoid);
+  const history = await lastPost(identifier);
+  const ready = await generatePost(history.structure);
   if (!ready) {
     const message = `Could not generate a post within ${MAX_ATTEMPTS} attempts; skipping this run.`;
     console.warn(message);
@@ -99,17 +121,13 @@ async function main(): Promise<void> {
 
   const { post, card } = ready;
   const label = `seed ${post.debug.seed} · ${post.debug.structureLabel} · ${post.debug.graphemes} graphemes`;
-  const lastPost = avoid
-    ? `The last post was ${structureLabel(avoid)}, so it sat this one out.`
-    : "No structure on record for the last post, so any could come up.";
-
   if (dryRun) {
     const out = new URL("../out/", import.meta.url);
     const cardFile = new URL(`post-${post.debug.seed}.png`, out);
     await mkdir(out, { recursive: true });
     await writeFile(cardFile, card);
     console.log(
-      `${label}\n${lastPost}\n\n${post.headline}\n\n${post.excerpt}\n\nImage: ${fileURLToPath(cardFile)}`,
+      `${label}\n${history.note}\n\n${post.headline}\n\n${post.excerpt}\n\nImage: ${fileURLToPath(cardFile)}`,
     );
     return;
   }
@@ -146,12 +164,12 @@ async function main(): Promise<void> {
   });
   const postUrl = postUrlFromAtUri(result.uri, did);
   console.log(`Posted (${label}):`, postUrl);
-  console.log(lastPost);
+  console.log(history.note);
   console.log(
     `::notice title=BlueSky: posted::${escapeForWorkflowCommand(`Posted: ${postUrl}`)}`,
   );
   appendSummary(
-    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n${lastPost}\n\n> **${post.headline}**\n>\n> ${post.excerpt.replace(/\n/g, "\n> ")}`,
+    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n${history.note}\n\n> **${post.headline}**\n>\n> ${post.excerpt.replace(/\n/g, "\n> ")}`,
   );
 
   // The post is already up, so a failure here only warns. The next post just won't know to skip this structure.
