@@ -7,18 +7,34 @@ $green: #17680f;
 $yellow: #e9eab9;
 $teal: #4e7f71;
 
+// HYPEWIRE BRAND (the logo kit in src/img/brand and the headline card share these)
+$brand-paper: #f6f3ea;
+$brand-ink: #161616;
+$brand-red: #b3121f;
+$brand-red-dark: #8a0e18;
+$brand-rule: #d6d0c2;
+
+// WORKBENCH PAGE (dark, so the paper-colored headline cards don't blend into it. Text colors all pass WCAG AA on $page.)
+$page: #1b1a18;
+$page-dot: rgba(246, 243, 234, 0.07);
+$page-text: $brand-paper;
+$page-muted: #b5ad9c;
+$page-focus: #9cc2ff;
+$page-warning: #e6a23c;
+$page-danger: #ff7b7b;
+
 // COLOR UTILITIES
-$body: $white;
-$copy: $black;
+$body: $page;
+$copy: $brand-ink;
 $link: $blue;
-$accent: $teal;
+$accent: $brand-red;
 $focus: $yellow;
 
 // WORKBENCH (darker than the template colors so text passes WCAG AA on $paper and $body)
 $paper: #fff;
 $muted: #5a5a5a;
-$rule: #c9c9c9;
-$ink-link: #2f5d50;
+$rule: $brand-rule;
+$ink-link: $brand-red-dark;
 $focus-ring: #1f4f8f;
 $warning: #8a5a00;
 $danger: #b00020;
@@ -43,3 +59,6 @@ $headline: $serif;
 $mobile-max: 767px;
 $desktop-min: 768px;
 $max-width: 1200px;
+$column-width: 48rem;
+$controls-width: 22rem;
+$controls-inset: 1rem;

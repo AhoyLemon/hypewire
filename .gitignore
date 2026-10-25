@@ -6,7 +6,6 @@ package-lock.json
 css/
 js/min/
 *.html
-!_docs/
 _site/
 
 # Static assets staged from src/ for deployment
@@ -37,3 +36,6 @@ npm-debug.log*
 
 # Rendered cards and mockups
 out/
+
+# Affinity lock files
+*~lock~

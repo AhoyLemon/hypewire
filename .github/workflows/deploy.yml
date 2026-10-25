@@ -3,9 +3,6 @@ name: Deploy static content to Pages
 on:
   push:
     branches: ["main"]
-    # The poster commits tomorrow's schedule to main every day, which changes nothing on the site.
-    paths-ignore:
-      - ".github/workflows/post-bluesky.yml"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

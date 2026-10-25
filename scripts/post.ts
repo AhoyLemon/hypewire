@@ -10,12 +10,58 @@ import {
   printDate,
 } from "../src/ts/card/_headlineCard.js";
 import { corpus } from "../src/ts/corpus/_corpus.js";
-import { generate, type GeneratedPost } from "../src/ts/engine/_generate.js";
+import { type GeneratedPost } from "../src/ts/engine/_generate.js";
 import { postUrlFromAtUri } from "../src/ts/lib/blueskyLink.js";
+import { lastStructureId, recordPostInfo, rollPost } from "./_postHistory.js";
 import { renderCard } from "./_renderCard.js";
 
 const MAX_ATTEMPTS = 20;
+const SERVICE = new URL("https://bsky.social");
 const dryRun = process.argv.includes("--dry-run");
+
+const errorMessage = (err: unknown): string =>
+  err instanceof Error ? err.message : String(err);
+
+const structureLabel = (id: string): string =>
+  corpus.structures.find((s) => s.id === id)?.label ?? id;
+
+interface LastPost {
+  /** The structure to skip this time, or null when there's nothing to skip. */
+  structure: string | null;
+  /** What happened, for the log and the job summary. */
+  note: string;
+}
+
+/** The last post's structure, read from the account without logging in, so dry runs check it too. A failed read warns in Actions, because otherwise it looks exactly like an empty history. */
+async function lastPost(identifier: string | undefined): Promise<LastPost> {
+  if (!identifier)
+    return {
+      structure: null,
+      note: "No BLUESKY_IDENTIFIER, so the last post's structure wasn't checked.",
+    };
+  try {
+    const structure = await lastStructureId(
+      new Agent({ service: SERVICE }),
+      identifier,
+    );
+    return structure
+      ? {
+          structure,
+          note: `The last post was ${structureLabel(structure)}, so it sat this one out.`,
+        }
+      : {
+          structure: null,
+          note: "No structure on record for the last post, so any could come up.",
+        };
+  } catch (err) {
+    const note = `Couldn't read the last post's structure, so any could come up: ${errorMessage(err)}`;
+    console.warn(note);
+    console.log(
+      `::warning title=BlueSky: no post history::${escapeForWorkflowCommand(note)}`,
+    );
+    return { structure: null, note };
+  }
+}
 
 /** Writes to the GitHub Actions job summary. No-ops outside of Actions. */
 function appendSummary(markdown: string): void {
@@ -39,10 +85,10 @@ interface ReadyPost {
 }
 
 /** Retries with a fresh seed if generating or rendering the image ever throws. Returns null once MAX_ATTEMPTS is spent. */
-async function generatePost(): Promise<ReadyPost | null> {
+async function generatePost(avoid: string | null): Promise<ReadyPost | null> {
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
-      const post = generate(corpus);
+      const post = rollPost(avoid);
       const card = await renderCard({
         headline: post.headline,
         structureId: post.debug.structureId,
@@ -60,7 +106,9 @@ async function generatePost(): Promise<ReadyPost | null> {
 }
 
 async function main(): Promise<void> {
-  const ready = await generatePost();
+  const identifier = process.env.BLUESKY_IDENTIFIER;
+  const history = await lastPost(identifier);
+  const ready = await generatePost(history.structure);
   if (!ready) {
     const message = `Could not generate a post within ${MAX_ATTEMPTS} attempts; skipping this run.`;
     console.warn(message);
@@ -73,19 +121,17 @@ async function main(): Promise<void> {
 
   const { post, card } = ready;
   const label = `seed ${post.debug.seed} · ${post.debug.structureLabel} · ${post.debug.graphemes} graphemes`;
-
   if (dryRun) {
     const out = new URL("../out/", import.meta.url);
     const cardFile = new URL(`post-${post.debug.seed}.png`, out);
     await mkdir(out, { recursive: true });
     await writeFile(cardFile, card);
     console.log(
-      `${label}\n\n${post.headline}\n\n${post.excerpt}\n\nImage: ${fileURLToPath(cardFile)}`,
+      `${label}\n${history.note}\n\n${post.headline}\n\n${post.excerpt}\n\nImage: ${fileURLToPath(cardFile)}`,
     );
     return;
   }
 
-  const identifier = process.env.BLUESKY_IDENTIFIER;
   const password = process.env.BLUESKY_APP_PASSWORD;
   if (!identifier || !password) {
     throw new Error(
@@ -93,7 +139,7 @@ async function main(): Promise<void> {
     );
   }
 
-  const session = new CredentialSession(new URL("https://bsky.social"));
+  const session = new CredentialSession(SERVICE);
   await session.login({ identifier, password });
   const agent = new Agent(session);
 
@@ -118,12 +164,25 @@ async function main(): Promise<void> {
   });
   const postUrl = postUrlFromAtUri(result.uri, did);
   console.log(`Posted (${label}):`, postUrl);
+  console.log(history.note);
   console.log(
     `::notice title=BlueSky: posted::${escapeForWorkflowCommand(`Posted: ${postUrl}`)}`,
   );
   appendSummary(
-    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n> **${post.headline}**\n>\n> ${post.excerpt.replace(/\n/g, "\n> ")}`,
+    `## ✅ Posted to BlueSky\n\n**[View post](${postUrl})** · ${label}\n\n${history.note}\n\n> **${post.headline}**\n>\n> ${post.excerpt.replace(/\n/g, "\n> ")}`,
   );
+
+  // The post is already up, so a failure here only warns. The next post just won't know to skip this structure.
+  try {
+    await recordPostInfo(agent, did, result.uri, post);
+  } catch (err) {
+    const message = `Posted, but couldn't save its structure, so the next post may repeat it: ${errorMessage(err)}`;
+    console.warn(message);
+    console.log(
+      `::warning title=BlueSky: no post info::${escapeForWorkflowCommand(message)}`,
+    );
+    appendSummary(`⚠️ ${message}`);
+  }
 }
 
 main().catch((err) => {

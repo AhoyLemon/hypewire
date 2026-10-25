@@ -1,6 +1,7 @@
 import type { CSSProperties } from "satori/jsx";
 
 import { graphemeLength } from "../lib/graphemes.js";
+import { WORDMARK_SIZE, WORDMARK_SVG } from "./_wordmark.js";
 
 export const CARD_WIDTH = 1200;
 export const CARD_HEIGHT = 630;
@@ -28,6 +29,9 @@ const PAPER = "#f6f3ea";
 const MUTED = "#5a5a5a";
 const RULE = "#d6d0c2";
 const RED = "#b3121f";
+
+/** The masthead wordmark's height. Its width follows from the brand file's proportions. */
+const WORDMARK_HEIGHT = 40;
 
 /** The newspaper section each structure runs in. */
 export const SECTIONS: Record<string, string> = {
@@ -69,7 +73,15 @@ const HEADLINE_STEPS = [
 /** A satori element: the same shape as a React element, built without React. */
 export interface CardNode {
   type: string;
-  props: { style?: CSSProperties; children?: CardChild | CardChild[] };
+  props: CardProps;
+}
+
+interface CardProps {
+  style?: CSSProperties;
+  children?: CardChild | CardChild[];
+  src?: string;
+  width?: number;
+  height?: number;
 }
 type CardChild = CardNode | string;
 
@@ -119,16 +131,16 @@ export function headlineCard({
       borderBottom: `2px solid ${RULE}`,
     },
     [
-      el(
-        "div",
-        {
-          fontFamily: CARD_FONTS.label.name,
-          fontWeight: CARD_FONTS.label.weight,
-          fontSize: 40,
-          letterSpacing: "0.18em",
+      {
+        type: "img",
+        props: {
+          src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(WORDMARK_SVG)}`,
+          width: Math.round(
+            (WORDMARK_SIZE.width / WORDMARK_SIZE.height) * WORDMARK_HEIGHT,
+          ),
+          height: WORDMARK_HEIGHT,
         },
-        "HYPEWIRE",
-      ),
+      },
       el(
         "div",
         {

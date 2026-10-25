@@ -10,14 +10,11 @@ html(lang="en")
   body
     #app(v-cloak)
 
-      header.masthead
-        p.kicker Workbench
-        h1= siteTitle
-        p.dek AI hype headlines about the end of obscure things. For local testing only.
-
       main.workbench
+        h1.visually-hidden #{siteTitle} workbench
 
-        form.controls(@submit.prevent="onSubmit")
+        //- Pinned to the bottom-right corner, but first in the source so it's first in the tab order.
+        form.controls(@submit.prevent="onSubmit" aria-label="Generate posts")
           .fields
             .field
               label(for="StructureSelect") Structure
@@ -37,8 +34,7 @@ html(lang="en")
           .actions
             button.button.primary(type="submit" value="one") Generate
             button.button(type="submit" value="batch") Generate 20
-
-        p.error(v-if="error" role="alert") {{ error }}
+          p.error(v-if="error" role="alert") {{ error }}
 
         section.preview(v-if="post" aria-labelledby="PreviewHeading")
           h2#PreviewHeading Preview
