@@ -43,7 +43,7 @@ Well, sure. You think I wrote 50+ typescript files for my own pleasure?
 
 ## Should I be worried about AI?
 
-P
+Pass.
 
 ## Can I play with it?
 
