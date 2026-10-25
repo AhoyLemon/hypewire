@@ -24,7 +24,7 @@
     "clean": "rimraf css js/min"
   },
   "author": "Lemon",
-  "license": "MIT",
+  "license": "CC-BY-4.0",
   "devDependencies": {
     "@types/bun": "^1.4.4",
     "@types/node": "^20.10.0",
