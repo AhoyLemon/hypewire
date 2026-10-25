@@ -37,3 +37,6 @@ npm-debug.log*
 
 # Rendered cards and mockups
 out/
+
+# Affinity lock files
+*~lock~
