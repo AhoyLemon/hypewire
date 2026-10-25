@@ -3,8 +3,11 @@ import { fillTokens, resolveNode } from "./_resolve.js";
 import type {
   CastPools,
   Corpus,
+  GenderedWord,
   Generation,
   Phrase,
+  PronounMap,
+  Pronouns,
   Structure,
   Subject,
   TokenMap,
@@ -24,6 +27,8 @@ export interface ResolvedSubject {
 export interface Person {
   first: string;
   last: string;
+  /** From the first name. */
+  pronouns: Pronouns;
 }
 
 /** A generation with its stereotype traits picked down to strings. */
@@ -33,6 +38,7 @@ export interface ResolvedGeneration {
   age: number;
   /** This generation's own spokesperson, name plus age: "Juniper Turnblatt, 29". */
   speaker: string;
+  speakerPronouns: Pronouns;
   traits: Record<string, string>;
 }
 
@@ -53,6 +59,8 @@ export interface Cast {
   timeframe: Phrase;
   group: Phrase;
   product: Phrase;
+  /** Carried along so castTokens can build {expert.man} and friends. */
+  genderedWords: GenderedWord[];
 }
 
 export interface CastOverrides {
@@ -170,20 +178,33 @@ export const SPEAKER_FORMATS: Array<{
   { weight: 1, format: (name, age) => `${name} (${age})` },
 ];
 
-/** Picks the generation's traits, age, and its own spokesperson, so a speaker's age never contradicts another character's. {speaker} inside a trait is filled here. */
+function pickName(pools: CastPools, rng: Rng): Person {
+  const first = pickWeighted(pools.firstNames, byWeight, rng);
+  return {
+    first: first.name,
+    last: resolveNode(pools.lastNames, rng),
+    pronouns: first.pronouns,
+  };
+}
+
+/** Picks the generation's traits, age, and its own spokesperson, so a speaker's age never contradicts another character's. {speaker} and its pronouns inside a trait are filled here. */
 function resolveGeneration(
   generation: Generation,
   pools: CastPools,
   rng: Rng,
 ): ResolvedGeneration {
   const age = randomInt(generation.ages[0], generation.ages[1], rng);
-  const name = `${resolveNode(pools.firstNames, rng)} ${resolveNode(pools.lastNames, rng)}`;
+  const { first, last, pronouns } = pickName(pools, rng);
   const { format } = pickWeighted(SPEAKER_FORMATS, byWeight, rng);
-  const speaker = format(name, age);
+  const speaker = format(`${first} ${last}`, age);
+  const tokens = {
+    speaker,
+    ...pronounTokens("speaker", pronouns, pools.genderedWords),
+  };
   const traits = Object.fromEntries(
     Object.entries(generation.traits).map(([key, node]) => [
       key,
-      fillTokens(resolveNode(node, rng), { speaker }),
+      fillTokens(resolveNode(node, rng, { speaker: pronouns }), tokens),
     ]),
   );
   return {
@@ -191,6 +212,7 @@ function resolveGeneration(
     plural: generation.plural,
     age,
     speaker,
+    speakerPronouns: pronouns,
     traits,
   };
 }
@@ -212,10 +234,10 @@ export function pickCast(
   );
   const modelName = resolveNode(cast.models, rng);
   const versions = pickWeighted(cast.modelVersions, byWeight, rng);
-  const person = {
-    first: resolveNode(cast.firstNames, rng),
-    last: resolveNode(cast.lastNames, rng),
-    age: randomInt(34, 88, rng),
+  const person = { ...pickName(cast, rng), age: randomInt(34, 88, rng) };
+  const expert = {
+    ...pickName(cast, rng),
+    title: resolveNode(cast.titles, rng),
   };
 
   return {
@@ -223,13 +245,10 @@ export function pickCast(
     generation: resolveGeneration(generation, cast, rng),
     rival: resolveGeneration(rival, cast, rng),
     model: { name: modelName, new: versions.new, old: versions.old },
-    expert: {
-      first: resolveNode(cast.firstNames, rng),
-      last: resolveNode(cast.lastNames, rng),
-      title: resolveNode(cast.titles, rng),
-    },
+    expert,
     person,
-    relative: resolveNode(cast.relatives, rng),
+    // The relative is the expert's epithet, so "Godfather of AI" can lock to "he".
+    relative: resolveNode(cast.relatives, rng, { expert: expert.pronouns }),
     startup: resolveNode(cast.startups, rng),
     city: pickWeighted(cast.cities, byWeight, rng),
     money: resolveNode(cast.money, rng),
@@ -238,6 +257,7 @@ export function pickCast(
     timeframe: pickWeighted(cast.timeframes, byWeight, rng),
     group: pickWeighted(cast.groups, byWeight, rng),
     product: pickWeighted(cast.products, byWeight, rng),
+    genderedWords: cast.genderedWords,
   };
 }
 
@@ -262,6 +282,49 @@ const PLURAL = {
   s: "",
 };
 
+const PRONOUNS: Record<Pronouns, Record<string, string>> = {
+  he: { he: "he", him: "him", his: "his", himself: "himself", hes: "he's" },
+  she: { he: "she", him: "her", his: "her", himself: "herself", hes: "she's" },
+  they: {
+    he: "they",
+    him: "them",
+    his: "their",
+    himself: "themself",
+    hes: "they're",
+  },
+};
+
+const PERSON_VERBS = ["is", "isnt", "was", "has", "s"] as const;
+
+const GENDERED_INDEX: Record<Pronouns, number> = { he: 0, she: 1, they: 2 };
+
+/** A cast member's pronouns, verbs that agree with them, and gendered words, each keyed by its "he" form: {expert.his} is "his", "her" or "their", and {expert.man} is "man", "woman" or "person". Singular "they" takes plural verbs. */
+export function pronounTokens(
+  prefix: string,
+  pronouns: Pronouns,
+  words: readonly GenderedWord[],
+): TokenMap {
+  const verbs = pronouns === "they" ? PLURAL : SINGULAR;
+  const entries = [
+    ...Object.entries(PRONOUNS[pronouns]),
+    ...PERSON_VERBS.map((key) => [key, verbs[key]]),
+    ...words.map((word) => [word[0], word[GENDERED_INDEX[pronouns]]]),
+  ];
+  return Object.fromEntries(
+    entries.map(([key, value]) => [`${prefix}.${key}`, value]),
+  );
+}
+
+/** Who a lock() can name in a headline or excerpt. The keys match the token prefixes. */
+export function castPronouns(cast: Cast): PronounMap {
+  return {
+    expert: cast.expert.pronouns,
+    person: cast.person.pronouns,
+    "generation.speaker": cast.generation.speakerPronouns,
+    "rival.speaker": cast.rival.speakerPronouns,
+  };
+}
+
 function grammarTokens(prefix: string, plural: boolean): TokenMap {
   const forms = plural ? PLURAL : SINGULAR;
   return Object.fromEntries(
@@ -276,6 +339,7 @@ function phraseTokens(prefix: string, phrase: Phrase): TokenMap {
 function generationTokens(
   prefix: string,
   generation: ResolvedGeneration,
+  words: readonly GenderedWord[],
 ): TokenMap {
   const traits = Object.entries(generation.traits).map(([key, value]) => [
     `${prefix}.${key}`,
@@ -290,21 +354,22 @@ function generationTokens(
     [`${prefix}.them`]: PLURAL.them,
     [`${prefix}.age`]: String(generation.age),
     [`${prefix}.speaker`]: generation.speaker,
+    ...pronounTokens(`${prefix}.speaker`, generation.speakerPronouns, words),
     ...Object.fromEntries(traits),
   };
 }
 
 /** Flattens a cast into the {token} names the corpus uses. */
 export function castTokens(cast: Cast): TokenMap {
-  const { subject, expert, person } = cast;
+  const { subject, expert, person, genderedWords } = cast;
   const tokens: TokenMap = {
     subject: subject.name,
     "subject.bare": subject.bare,
     "subject.inline": subject.inline,
     "subject.bareInline": stripArticle(subject.inline),
     ...grammarTokens("subject", subject.plural),
-    ...generationTokens("generation", cast.generation),
-    ...generationTokens("rival", cast.rival),
+    ...generationTokens("generation", cast.generation, genderedWords),
+    ...generationTokens("rival", cast.rival, genderedWords),
     model: cast.model.name,
     "model.new": `${cast.model.name} ${cast.model.new}`,
     "model.old": `${cast.model.name} ${cast.model.old}`,
@@ -312,10 +377,12 @@ export function castTokens(cast: Cast): TokenMap {
     "expert.first": expert.first,
     "expert.last": expert.last,
     "expert.title": expert.title,
+    ...pronounTokens("expert", expert.pronouns, genderedWords),
     person: `${person.first} ${person.last}`,
     "person.first": person.first,
     "person.last": person.last,
     "person.age": String(person.age),
+    ...pronounTokens("person", person.pronouns, genderedWords),
     relative: cast.relative,
     startup: cast.startup,
     // Unlike other phrases, a place keeps its capitals mid-sentence ("Duluth"), so inline only differs when the corpus says so.

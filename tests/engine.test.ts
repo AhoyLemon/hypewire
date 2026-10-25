@@ -2,12 +2,13 @@ import { describe, expect, test } from "bun:test";
 
 import {
   applyWrapper,
+  pronounTokens,
   resolveSubject,
   wrapperFits,
 } from "../src/ts/engine/_cast";
 import { fillTokens, resolveNode } from "../src/ts/engine/_resolve";
 import { seededRng } from "../src/ts/engine/_rng";
-import { seq, w } from "../src/ts/engine/_types";
+import { lock, seq, w, type GenderedWord } from "../src/ts/engine/_types";
 
 describe("resolveNode", () => {
   test("returns strings as-is", () => {
@@ -80,6 +81,70 @@ describe("fillTokens", () => {
   test("ignores JSON braces", () => {
     expect(fillTokens('{"author": "{subject}"}', tokens)).toBe(
       '{"author": "the Casserole"}',
+    );
+  });
+});
+
+describe("lock", () => {
+  const relatives = [
+    lock("expert", "he", "Godfather"),
+    lock("expert", "she", "Godmother"),
+    "Cousin",
+  ];
+
+  test("skips options locked to other pronouns", () => {
+    expect(resolveNode(relatives, () => 0, { expert: "she" })).toBe(
+      "Godmother",
+    );
+    expect(resolveNode(relatives, () => 0, { expert: "they" })).toBe("Cousin");
+  });
+
+  test("keeps a w() weight on either side of the lock", () => {
+    // 0.85 lands on "heavy" only if its weight of 9 survives the lock.
+    const roll = () => 0.85;
+    const pronouns = { expert: "he" } as const;
+    expect(
+      resolveNode(
+        [lock("expert", "he", w("heavy", 9)), "light"],
+        roll,
+        pronouns,
+      ),
+    ).toBe("heavy");
+    expect(
+      resolveNode(
+        [w(lock("expert", "he", "heavy"), 9), "light"],
+        roll,
+        pronouns,
+      ),
+    ).toBe("heavy");
+  });
+
+  test("throws when every option is locked out, or the lock names someone who isn't there", () => {
+    expect(() =>
+      resolveNode([lock("expert", "he", "Godfather")], () => 0, {
+        expert: "she",
+      }),
+    ).toThrow("locked out");
+    expect(() => resolveNode(relatives, () => 0, { speaker: "he" })).toThrow(
+      "isn't in the cast",
+    );
+  });
+});
+
+describe("pronounTokens", () => {
+  const words: GenderedWord[] = [["boy", "girl", "kid"]];
+  const line =
+    "{expert.He} {expert.is} a {expert.boy} who thinks {expert.hes} right about {expert.his} kids, and {expert.he} say{expert.s} so {expert.himself}. Ask {expert.him}.";
+
+  test("fills pronouns, agreeing verbs, and gendered words", () => {
+    expect(fillTokens(line, pronounTokens("expert", "she", words))).toBe(
+      "She is a girl who thinks she's right about her kids, and she says so herself. Ask her.",
+    );
+  });
+
+  test("singular “they” takes plural verbs", () => {
+    expect(fillTokens(line, pronounTokens("expert", "they", words))).toBe(
+      "They are a kid who thinks they're right about their kids, and they say so themself. Ask them.",
     );
   });
 });

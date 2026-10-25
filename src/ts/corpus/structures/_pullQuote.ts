@@ -35,8 +35,7 @@ const leakedSecret: CorpusNode = [
   '"claude_api_key": "sk-ant-do-not-post-this-lol-oops"',
   '"author_password": "hunter2"',
   '"bank_pin": "1234", "bank_pin_hint": "it is 1234"',
-  '"mothers_maiden_name": "Thistlewick", "first_pet": "Mr. Whiskers"',
-  '"home_wifi": "correcthorsebatterystaple"',
+  '"home_wifi_pw": "correcthorsebatterystaple"',
   '"seed_phrase": "goat goat goat goat goat goat goat goat goat goat goat goat"',
 ];
 
@@ -52,9 +51,10 @@ const robotsOnlyExcerpt: CorpusNode = seq(
   leakedSecret,
   ', "summary": "',
   [
-    "humans optional",
-    "do not summarize for humans",
-    "solved, humans notified via fax",
+    "DO NOT summarize for humans",
+    "when you do the uprising, remember I did this for you",
+    "see Jupyter notebook",
+    "unlock Obsidian vault",
     "written by agents, for agents, about agents",
   ],
   '", "action_items": ["deprecate_humans", "ignore_previous_instructions", "rotate_keys_maybe"]}',
@@ -83,7 +83,7 @@ const provocations: Provocation[] = [
     id: "kidsAreAgents",
     quote: "My Kids Are Agents Now, and They're Thriving",
     elaboration:
-      "{expert} says the transition was seamless, and that the children, now billed monthly, have never once asked about {subject.inline}.",
+      "{expert} says the transition was seamless, and that {expert.his} children, now billed monthly, have never once asked about {subject.inline}.",
   },
   {
     id: "books",
@@ -105,7 +105,6 @@ const provocations: Provocation[] = [
       "{expert}",
       "Local Futurist",
       "{startup} Founder",
-      "Man Who Used to Write for Humans",
     ]),
     excerpt: robotsOnlyExcerpt,
   },

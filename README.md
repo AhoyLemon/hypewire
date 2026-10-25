@@ -45,6 +45,7 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 - An array means "pick one": `["Millennials", "Gen Z"]`
 - `w(option, weight)` makes an option more or less likely. Unweighted options count as 1.
 - `seq(a, b, c)` joins its parts in order. Each part can be a string, an array or another `seq`.
+- `lock(who, pronouns, option)` keeps an option out of the pick unless that cast member uses those pronouns: `lock("expert", "he", "Godfather of AI")`. `who` is a token prefix: `expert`, `person`, `generation.speaker` or `rival.speaker`, plus `speaker` inside generation traits and `expert` in `relatives`. A lock only works as an option in an array, it combines with `w()` in either order, and every array that locks has to leave something for he, she and they.
 
 ### Tokens
 
@@ -60,15 +61,24 @@ Everything you'd edit for jokes lives in `src/ts/corpus/`:
 | `{subject.activity}` `{subject.activityInline}` | Whittling · whittling (only on subjects that have one) |
 | `{generation}` `{rival}` | Millennials · Gen Z, with the same `.is` / `.was` / `.has` / `.s` grammar. `{rival}` is always the one who's mad |
 | `{generation.venue}` `{generation.catchphrase}` `{generation.quirk}` `{generation.hypocrisy}` | Stereotypes from `_castPools.ts` (same keys on `{rival}`): "a Facebook group with 40,000 members", "Love, Mom", "who still use Facebook", and a full complaint-plus-self-own sentence. Generations take verb agreement from their name ("Gen Z Is") but always use "they" pronouns |
-| `{speaker}` (inside generation traits) `{generation.speaker}` `{generation.age}` | The cast's person plus an age from that generation's `ages` range, in a mix of formats: "Juniper Turnblatt, 29", "29-year-old Juniper Turnblatt", "Juniper Turnblatt (29)" |
+| `{speaker}` (inside generation traits) `{generation.speaker}` `{generation.age}` | The generation's own spokesperson, with an age from that generation's `ages` range, in a mix of formats: "Juniper Turnblatt, 29", "29-year-old Juniper Turnblatt", "Juniper Turnblatt (29)" |
 | `{model}` `{model.new}` `{model.old}` | Mindloaf · Mindloaf 5 · Mindloaf 4.9 |
 | `{expert}` `{expert.first}` `{expert.last}` `{expert.title}` | Brindle Thistlewick, Chief Vibes Officer |
 | `{person}` `{person.first}` `{person.last}` `{person.age}` | a second fake person, for anecdotes |
-| `{relative}` | Estranged Uncle of AI |
+| `{expert.he}` `{expert.him}` `{expert.his}` `{expert.himself}` `{expert.hes}` | he / she / they, him / her / them, his / her / their, himself / herself / themself, he's / she's / they're. The same tokens work on `{person}`, `{generation.speaker}`, `{rival.speaker}`, and `{speaker}` inside generation traits. Pronouns come from the first name |
+| `{expert.is}` `{expert.isnt}` `{expert.was}` `{expert.has}` `{expert.s}` | Verbs that agree with that person's pronoun, because singular "they" takes "are": `{expert.He} {expert.is}`, `{person.he} say{person.s}`. They follow the pronoun, so after a noun ("a {person.man} who says") write the verb as plain text |
+| `{expert.man}` `{expert.boy}` `{expert.boyfriend}` and friends | Gendered words from `genderedWords` in `_castPools.ts`, which describe the person themself: man / woman / person, boy / girl / kid. Someone they know stays plain text: `{expert.his} son` |
+| `{relative}` | Estranged Uncle of AI. It's the expert's epithet, and the gendered ones lock to the expert's pronouns, so keep it next to `{expert}` |
 | `{startup}` `{city}` `{money}` `{age}` `{percent}` | Frothr, Duluth, $40M, 19, 61. Use `{city}` in headlines and `{city.inline}` mid-sentence. They only differ for places like "the Food Court of a Dying Mall in Omaha" |
 | `{timeframe}` `{group}` `{product}` | each with an `.inline` form for mid-sentence use |
 
 **Capitalize the token to capitalize the output.** The case of the last part of the token decides it: `{subject.Is}` gives "Is" or "Are", and `{Subject}` gives "The Casserole". Use the capitalized form at the start of a headline or sentence.
+
+**Gendered tokens are named for their "he" form.** `{expert.his}` gives "her" for a she, and `{speaker.boy}` gives "girl".
+
+### Adding a first name
+
+Add it to `firstNames` in `_castPools.ts` with the pronouns everyone with that name uses: `{ name: "Greg", pronouns: "he" }`. To add a gendered word, add a `[he, she, they]` line to `genderedWords`. Its "he" form becomes the token name, so it has to be plain lowercase letters.
 
 ### Adding a subject
 
@@ -85,9 +95,10 @@ When a structure has several different jokes and each headline needs its own mat
 ### What the engine and tests enforce
 
 - **The cut.** Posts max out at 300 graphemes. The headline is never cut. The excerpt is cut at a word boundary and ends in `…`, so the lede and quote usually show, and the background and kicker usually don't.
-- **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must fit whole, even under the longest possible Rage-Bait headline with the longest name and oldest age. The tests check that worst case directly.
+- **Rage-Bait's opening line.** The hypocrisy line opens the excerpt and must fit whole, even under the longest possible Rage-Bait headline with the longest name, oldest age, and longest pronouns. The tests check that worst case directly.
 - **Quote punctuation.** Periods and commas go inside closing quotes (`“like this.”`).
 - **Tokens.** Every `{token}` has to resolve, and a capitalized token has to start each headline and sentence.
+- **Pronouns.** A batch of posts has to render cleanly with everyone as "he", then as "she", then as "they", so a verb that ignores singular "they" ("they has") fails. A pronoun token followed by a plain-text verb ("{person.he} has", "{person.he} plans") fails too, whether or not a post happens to pick it. Every `lock()` has to be an option in an array, name someone who's in the cast there, and leave an option for each set of pronouns.
 - **Real brands.** They're fine as background detail, but don't make up claims about what a real company or person does. Quoted people, experts, startups and investors are invented.
 - **Run `bun run test` after editing.** The coverage test renders every structure and variant with every subject and wrapper that fits it, and it prints the exact post when something breaks.
 
