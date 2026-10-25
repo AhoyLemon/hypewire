@@ -2,9 +2,9 @@ name: Post to BlueSky
 
 on:
   schedule:
-    # BEGIN AUTO-GENERATED SCHEDULE (updated daily by scripts/reschedule-bluesky.ts — do not hand-edit)
-    - cron: "17 19 * * *"
-    # END AUTO-GENERATED SCHEDULE
+    # Four posts a day, around the clock. The 2am hour is skipped, so daylight saving never drops or doubles a slot.
+    - cron: "23 3,9,15,21 * * *"
+      timezone: "America/Chicago"
   workflow_dispatch:
 
 concurrency:
@@ -21,7 +21,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # The workflow-editing token is only handed to the push step below, never left in .git/config for the rest of the job.
+      # Scheduled posts drift within the hour, so they don't land at the same minute every day. Manual runs post right away.
+      - name: Wait a random 0-59 minutes
+        if: github.event_name == 'schedule'
+        run: |
+          delay=$((RANDOM % 3600))
+          echo "Posting in $((delay / 60))m $((delay % 60))s."
+          sleep "$delay"
+
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
@@ -39,23 +46,3 @@ jobs:
         env:
           BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
-
-      # always() so a failed post doesn't also skip rescheduling, or tomorrow would never get a slot. Manual runs post but never reschedule.
-      - name: Reschedule tomorrow's post
-        if: always() && github.event_name == 'schedule'
-        run: bun scripts/reschedule-bluesky.ts
-
-      - name: Commit and push tomorrow's schedule
-        if: always() && github.event_name == 'schedule'
-        env:
-          WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
-        run: |
-          if git diff --quiet; then
-            echo "Schedule unchanged."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .github/workflows/post-bluesky.yml
-          git commit -m "Reschedule BlueSky post for tomorrow"
-          git push "https://x-access-token:${WORKFLOW_PAT}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${GITHUB_REF_NAME}"
