@@ -45,6 +45,18 @@ export const SECTIONS: Record<string, string> = {
   trendCoinage: "Trends",
 };
 
+/** The longest headline the card is tested to fit. The corpus coverage test holds every headline to it. */
+export const MAX_HEADLINE = 200;
+
+/** Fontsource's latin subset, the only glyphs the card fonts load. Control characters count as missing. */
+const LATIN_SUBSET =
+  /[\u0020-\u00FF\u0131\u0152\u0153\u02BB\u02BC\u02C6\u02DA\u02DC\u0304\u0308\u0329\u2000-\u206F\u20AC\u2122\u2191\u2193\u2212\u2215\uFEFF\uFFFD]/u;
+
+/** Characters the card fonts have no glyph for, which would vanish from the image. */
+export function missingGlyphs(text: string): string[] {
+  return [...new Set([...text].filter((char) => !LATIN_SUBSET.test(char)))];
+}
+
 /** Headline sizes, largest first. The first step whose limit fits the headline wins. */
 const HEADLINE_STEPS = [
   { upTo: 45, size: 72 },

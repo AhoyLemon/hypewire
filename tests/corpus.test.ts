@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { MAX_HEADLINE, missingGlyphs } from "../src/ts/card/_headlineCard";
 import { corpus } from "../src/ts/corpus/_corpus";
 import {
   canWrap,
@@ -66,6 +67,14 @@ function problems(post: GeneratedPost): string[] {
   if (!excerpt.endsWith(ELLIPSIS)) issues.push("no ellipsis");
   if (graphemeLength(excerpt) < MIN_EXCERPT)
     issues.push(`excerpt under ${MIN_EXCERPT} graphemes`);
+  // The headline image is the only place these show, and nobody sees it before it posts.
+  if (graphemeLength(headline) > MAX_HEADLINE)
+    issues.push(`headline over ${MAX_HEADLINE} graphemes`);
+  const missing = missingGlyphs(headline);
+  if (missing.length)
+    issues.push(
+      `headline has characters the image can't draw: ${missing.join(" ")}`,
+    );
 
   return issues;
 }

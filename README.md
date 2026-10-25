@@ -102,7 +102,7 @@ When a structure has several different jokes and each headline needs its own mat
 - **Tokens.** Every `{token}` has to resolve, and a capitalized token has to start each headline and sentence.
 - **Pronouns.** A batch of posts has to render cleanly with everyone as "he", then as "she", then as "they", so a verb that ignores singular "they" ("they has") fails. A pronoun token followed by a plain-text verb ("{person.he} has", "{person.he} plans") fails too, whether or not a post happens to pick it. Every `lock()` has to be an option in an array, name someone who's in the cast there, and leave an option for each set of pronouns.
 - **Real brands.** They're fine as background detail, but don't make up claims about what a real company or person does. Quoted people, experts, startups and investors are invented.
-- **The headline image.** Every structure needs a section in `SECTIONS`, and the longest headline at each font size has to fit inside the image's padding. `tests/card.test.ts` lays out the worst ones and reports any text that spills.
+- **The headline image.** Every structure needs a section in `SECTIONS`. Every headline has to stay within `MAX_HEADLINE` (200 graphemes) and use only characters the card fonts can draw: Fontsource's Latin subset, so no emoji or letters like Ł. The coverage test checks both for every combination. `tests/card.test.ts` lays out the longest headlines and one at the cap, and reports any text that spills.
 - **Run `bun run test` after editing.** The coverage test renders every structure and variant with every subject and wrapper that fits it, and it prints the exact post when something breaks.
 
 ## The workbench
